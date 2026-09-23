@@ -200,3 +200,36 @@ html[dir="rtl"] [data-slot="switch-thumb"][data-state="checked"] {
 .time-zone-options>button.selected{background:var(--accent);color:var(--accent-foreground)}
 .time-zone-options>button:hover,.time-zone-options>button:focus-visible{background:var(--secondary);color:var(--secondary-foreground);outline:none}
 .time-zone-empty{padding:14px;font-size:13px;color:var(--muted-foreground)}
+
+/* The same theme-aware hover/focus treatment for all interactive settings. */
+.settings-view :is([data-slot="select-trigger"],.time-zone-trigger,.field>input,.field>textarea,.settings-number-field,.time-zone-search):hover:not([data-disabled]),
+.settings-view :is([data-slot="select-trigger"],.time-zone-trigger,.field>input,.field>textarea,.settings-number-field,.time-zone-search):focus-within {
+  border-color:var(--ring)!important;
+  background:color-mix(in srgb,var(--secondary) 62%,var(--card))!important;
+  transition:border-color .15s ease,background-color .15s ease,box-shadow .15s ease;
+}
+.settings-view :is([data-slot="select-trigger"],.time-zone-trigger):is(:hover,:focus-visible,[data-state="open"]) > svg {color:var(--primary);opacity:1}
+.settings-view :is(.button.subtle,.settings-category-trigger):hover:not(:disabled){
+  border-color:var(--ring)!important;
+  background:var(--secondary)!important;
+}
+.settings-view .button.primary:hover:not(:disabled){filter:brightness(.95)}
+.settings-view [data-slot="switch"]:hover:not([data-disabled]){box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 24%,transparent)}
+.settings-view [data-slot="slider-thumb"]:hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--ring) 24%,transparent)}
+.settings-view .time-zone-search:focus-within {outline:2px solid var(--ring);outline-offset:1px}
+/* Replace unthemed browser up/down spin arrows with matched icon buttons.
+   The field remains a true numeric input and retains direct keyboard editing. */
+.settings-number-field {height:42px;min-width:0;width:100%;display:flex;align-items:stretch;overflow:hidden;background:var(--card);border:1px solid var(--input);border-radius:7px;transition:border-color .15s,background-color .15s}
+.settings-number-field:focus-within{outline:2px solid var(--ring);outline-offset:1px}
+.settings-number-field>input {flex:1;min-width:0;width:100%;padding:9px 12px;border:0!important;background:transparent!important;border-radius:0;outline:0!important;box-shadow:none!important;color:var(--foreground);font-variant-numeric:tabular-nums}
+.settings-number-field>input::-webkit-outer-spin-button,.settings-number-field>input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.settings-number-field>input[type=number]{appearance:textfield;-moz-appearance:textfield}
+.settings-number-steps{display:flex;flex-direction:column;flex:0 0 28px;align-self:stretch;border-inline-start:1px solid var(--border)}
+.settings-number-steps>button {display:grid;place-items:center;flex:1;min-height:0;width:28px;padding:0;line-height:1;color:var(--muted-foreground);background:transparent;border:0;transition:background-color .15s,color .15s}
+.settings-number-steps>button+button{border-top:1px solid var(--border)}
+.settings-number-steps>button:hover:not(:disabled),.settings-number-steps>button:focus-visible{background:var(--secondary);color:var(--primary);outline:0}
+.settings-number-steps>button:focus-visible{box-shadow:inset 0 0 0 2px var(--ring)}
+.settings-number-steps>button:disabled{opacity:.3;cursor:default}
+/* Keep dropdown menus visually consistent with their triggers. */
+[data-slot="select-item"]:focus,[data-slot="select-item"]:hover{background:var(--secondary);color:var(--secondary-foreground)}
+@media (prefers-reduced-motion:reduce){.settings-number-field,.settings-number-steps>button{transition:none}}
