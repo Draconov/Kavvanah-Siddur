@@ -4,6 +4,7 @@ import * as React from "react"
 import { Slider as SliderPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { useDirection } from "@/components/ui/direction"
 
 function Slider({
   className,
@@ -13,6 +14,7 @@ function Slider({
   max = 100,
   ...props
 }: React.ComponentProps<typeof SliderPrimitive.Root>) {
+  const interfaceDirection = useDirection()
   const _values = React.useMemo(
     () =>
       Array.isArray(value)
@@ -26,6 +28,7 @@ function Slider({
   return (
     <SliderPrimitive.Root
       data-slot="slider"
+      dir={props.dir ?? interfaceDirection}
       defaultValue={defaultValue}
       value={value}
       min={min}

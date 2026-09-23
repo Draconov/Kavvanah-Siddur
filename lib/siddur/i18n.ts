@@ -6,6 +6,9 @@ export const UI_LANGUAGES={en:'English',ru:'Русский',uk:'Українсь
 export const LOCALES={en:'en-US',ru:'ru-RU',uk:'uk-UA',he:'he-IL'} as const;
 // English keys keep source-edition labels readable when no interface label exists.
 const words:Record<string,[string,string]>={
+ 'Search time zones…':['Поиск часовых поясов…','Пошук часових поясів…'],
+ 'No matching time zones.':['Часовые пояса не найдены.','Часових поясів не знайдено.'],
+ 'Previously selected time zone':['Ранее выбранный часовой пояс','Раніше вибраний часовий пояс'],
  'Clock format':['Формат часов','Формат годинника'],
  '24-hour':['24-часовой','24-годинний'],
  '12-hour (AM/PM)':['12-часовой (AM/PM)','12-годинний (AM/PM)'],
@@ -253,7 +256,7 @@ const words:Record<string,[string,string]>={
 // a new screen is added; an untranslated key still falls back to its English
 // label rather than displaying an empty control.
 const hebrewWords:Record<string,string>={
- 'Clock format':'תבנית השעון','24-hour':'24 שעות','12-hour (AM/PM)':'12 שעות (AM/PM)','Current local time':'השעה המקומית הנוכחית','Use device time zone':'השתמש באזור הזמן של המכשיר','Choose the time zone of the selected location. The clock uses your device time.':'בחר את אזור הזמן של המיקום שנבחר. השעון משתמש בזמן המכשיר.',
+ 'Search time zones…':'חיפוש אזורי זמן…','No matching time zones.':'לא נמצאו אזורי זמן.','Previously selected time zone':'אזור הזמן שנבחר בעבר', 'Clock format':'תבנית השעון','24-hour':'24 שעות','12-hour (AM/PM)':'12 שעות (AM/PM)','Current local time':'השעה המקומית הנוכחית','Use device time zone':'השתמש באזור הזמן של המכשיר','Choose the time zone of the selected location. The clock uses your device time.':'בחר את אזור הזמן של המיקום שנבחר. השעון משתמש בזמן המכשיר.',
  ...hebrewTitles,
  'Siddur':'סידור','Tanakh':'תנ״ך','Calendar':'לוח שנה','Prayer times':'זמני תפילה','Mizrach':'מזרח','Settings':'הגדרות',
  'TODAY IN THE HEBREW CALENDAR':'היום בלוח העברי','Israel calendar':'לוח ישראל','Diaspora calendar':'לוח התפוצות','Install app':'התקנת האפליקציה','Toggle dark mode':'החלפת מצב כהה',

@@ -141,3 +141,60 @@ html[dir="rtl"]:has(.preferences-dialog[data-state="open"]) body {
   margin-right: 0 !important;
   padding-right: 0 !important;
 }
+
+
+/* Custom site-wide scrollbars. Colors track the active theme and accent,
+   including the right-to-left interface. Keep scrollbar handling logical:
+   the browser chooses its physical side based on the scroll container's dir. */
+:root {
+  --scrollbar-thumb: color-mix(in srgb, var(--primary) 65%, var(--card));
+  --scrollbar-track: var(--muted);
+}
+/* Firefox and modern Chromium's standard scrollbar properties. */
+html, body, body * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+/* WebKit/older Chromium scrollbar styling. */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid var(--scrollbar-track);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+::-webkit-scrollbar-corner { background: var(--scrollbar-track); }
+/* The settings sheet still scrolls normally via wheel, touch, keyboard and
+   dragging; only the internal scrollbar is hidden on all supported engines. */
+.preferences-dialog .preferences-scroll {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none;
+}
+.preferences-dialog .preferences-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* Radix places an unchecked switch thumb at the right edge in RTL.
+   On checking, travel toward inline-end (left), not farther offscreen right. */
+html[dir="rtl"] [data-slot="switch-thumb"][data-state="checked"] {
+  /* Tailwind's translate-x utilities use the CSS `translate` property. */
+  translate: calc(-100% + 2px) 0;
+}
+
+/* Searchable time-zone selector within the settings sheet; supports both LTR and RTL. */
+.time-zone-picker{position:relative;min-width:0;width:100%}
+.time-zone-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:start}
+.time-zone-current{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;unicode-bidi:isolate}
+.time-zone-trigger>svg{flex-shrink:0;color:var(--muted-foreground)}
+.time-zone-panel{margin-top:6px;border:1px solid var(--border);border-radius:9px;background:var(--popover);color:var(--foreground);overflow:hidden;box-shadow:var(--shadow)}
+.time-zone-search{display:flex;align-items:center;gap:9px;margin:8px;padding:0 10px;border:1px solid var(--input);border-radius:6px;background:var(--card)}
+.time-zone-search>svg{flex-shrink:0;color:var(--muted-foreground)}
+.time-zone-search input{border:none!important;outline:none!important;box-shadow:none!important;background:transparent!important;min-width:0;width:100%;padding:9px 0;font:inherit;color:var(--foreground);direction:inherit}
+.time-zone-options{max-height:min(260px,34dvh);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--scrollbar-thumb) var(--scrollbar-track)}
+.time-zone-options>button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:10px 14px;text-align:start;font-size:13px;line-height:1.4;cursor:pointer;color:var(--foreground)}
+.time-zone-options>button>span{unicode-bidi:isolate}
+.time-zone-options>button.selected{background:var(--accent);color:var(--accent-foreground)}
+.time-zone-options>button:hover,.time-zone-options>button:focus-visible{background:var(--secondary);color:var(--secondary-foreground);outline:none}
+.time-zone-empty{padding:14px;font-size:13px;color:var(--muted-foreground)}
