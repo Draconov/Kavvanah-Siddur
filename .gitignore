@@ -1,0 +1,9 @@
+node_modules/
+dist/
+web/
+.next/
+.env*
+*.tsbuildinfo
+__pycache__/
+*.pyc
+.DS_Store
