@@ -7,7 +7,7 @@ export type Nusach = 'ashkenaz' | 'edot';
 export interface Place { name:string; latitude:number; longitude:number; timeZone:string; elevation:number; israel:boolean }
 export interface Settings {
   uiLanguage:UiLanguage; prayerLinks:boolean;
-  accent:Accent; calendarMode:CalendarMode;
+  accent:Accent; calendarMode:CalendarMode; clockFormat:'24h'|'12h';
   theme:'light'|'dark'|'black'|'paper'|'dark-paper'|'system'; nusach:Nusach; pronunciation:'sephardi'|'ashkenazi';
   transliterationLanguage:Language; translationLanguage:Language; layers:Layer[]; layout:'columns'|'stacked';
   textSize:number; font:'serif'|'sans'; vowels:boolean; place:Place;

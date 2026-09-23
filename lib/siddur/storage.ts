@@ -8,7 +8,7 @@ export function safeWrite(key:string,value:unknown):boolean {try{localStorage.se
 
 export function sanitizeSettings(raw:Partial<Settings>):Settings{
  const out={...DEFAULT_SETTINGS,...raw};
- const choices:Record<string,string[]>={uiLanguage:['en','ru','uk','he'],accent:['blue','gold','teal','plum','terracotta','green','amber','rose','violet','slate','olive','cyan'],calendarMode:['hebrew','gregorian'],theme:['light','dark','black','paper','dark-paper','system'],nusach:['ashkenaz','edot'],pronunciation:['sephardi','ashkenazi'],transliterationLanguage:['en','ru','uk'],translationLanguage:['en','ru','uk'],layout:['columns','stacked'],font:['serif','sans'],zmanMethod:['gra','mga'],nightfall:['8.5','7.083','72']};
+ const choices:Record<string,string[]>={uiLanguage:['en','ru','uk','he'],accent:['blue','gold','teal','plum','terracotta','green','amber','rose','violet','slate','olive','cyan'],calendarMode:['hebrew','gregorian'],clockFormat:['24h','12h'],theme:['light','dark','black','paper','dark-paper','system'],nusach:['ashkenaz','edot'],pronunciation:['sephardi','ashkenazi'],transliterationLanguage:['en','ru','uk'],translationLanguage:['en','ru','uk'],layout:['columns','stacked'],font:['serif','sans'],zmanMethod:['gra','mga'],nightfall:['8.5','7.083','72']};
  for(const [key,options] of Object.entries(choices))if(!options.includes(String(out[key as keyof Settings])))(out as unknown as Record<string,unknown>)[key]=DEFAULT_SETTINGS[key as keyof Settings];
  out.layers=Array.isArray(raw.layers)?[...new Set(raw.layers.filter(l=>['hebrew','transliteration','translation'].includes(l)))]:DEFAULT_SETTINGS.layers;
  if(!out.layers.includes('hebrew'))out.layers.unshift('hebrew' as Layer);

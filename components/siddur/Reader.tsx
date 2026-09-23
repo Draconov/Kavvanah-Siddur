@@ -25,7 +25,7 @@ export function Reader({id,paragraphs,settings,patch,personal,setPersonal,source
  function editTranslation(index:number){setEdit(index);setDraft(translationFor(paragraphs[index],settings.translationLanguage,`${id}:${index}`,personal)??'');}
  return <section className="reader-wrap" aria-label={t("Prayer reader")}>
   <div className="reader-tools">
-   <Tabs value={mode} onValueChange={setMode}><TabsList className="reading-modes"><TabsTrigger value="hebrew">{t("Hebrew")}</TabsTrigger><TabsTrigger value="reading">{t("+ Reading")}</TabsTrigger><TabsTrigger value="meaning">{t("+ Meaning")}</TabsTrigger><TabsTrigger value="all">{t("All three")}</TabsTrigger></TabsList></Tabs>
+   <Tabs value={mode} onValueChange={setMode}><TabsList className="reading-modes"><TabsTrigger value="hebrew">{t("Hebrew")}</TabsTrigger><TabsTrigger value="reading">{t("+ Reading")}</TabsTrigger><TabsTrigger value="meaning">{t("+ Meaning")}</TabsTrigger><TabsTrigger value="all">{t("All")}</TabsTrigger></TabsList></Tabs>
    <div className="tool-actions"><button className="icon-button" aria-label={t(settings.layout==='columns'?'Use stacked reading':'Use parallel columns')} title={t(settings.layout==='columns'?'Use stacked reading':'Use parallel columns')} onClick={()=>patch({layout:settings.layout==='columns'?'stacked':'columns'})}>{settings.layout==='columns'?<Rows3 size={19}/>:<Columns2 size={19}/>}</button><button className="icon-button" aria-label={t("Text appearance")} onClick={()=>setAppearance(true)}><SlidersHorizontal size={19}/></button></div>
   </div>
   <div className="reader-sheet">
