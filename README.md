@@ -10,7 +10,15 @@
 
 Read Hebrew prayers alongside transliteration and translation, explore the Tanakh, follow the Jewish calendar, and find prayer times for your location—all in one installable web app.
 
-[**Open Kavvanah ↗**](https://draconov.github.io/Kavvanah-Siddur/) &nbsp;·&nbsp; [Source code](https://github.com/Draconov/Kavvanah-Siddur) &nbsp;·&nbsp; [Content sources](CONTENT_SOURCES.md)
+<p>
+  <a href="https://draconov.github.io/Kavvanah-Siddur/"><img alt="Open online siddur" src="https://img.shields.io/badge/Open%20Kavvanah-Website-152443?style=for-the-badge&logo=googlechrome&logoColor=white" /></a>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Download Kavvanah apps" src="https://img.shields.io/badge/Download-Apps-BDA16D?style=for-the-badge&logo=github&logoColor=152443" /></a>
+</p>
+<p>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/actions/workflows/pages.yml"><img alt="Build and deploy status" src="https://github.com/Draconov/Kavvanah-Siddur/actions/workflows/pages.yml/badge.svg?branch=main" /></a>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/blob/main/LICENSE"><img alt="License GPL-2.0-only" src="https://img.shields.io/badge/License-GPL--2.0--only-152443?style=flat-square" /></a>
+  <a href="CONTENT_SOURCES.md"><img alt="Text and content sources" src="https://img.shields.io/badge/Content-Sources-71614C?style=flat-square" /></a>
+</p>
 
 </div>
 
@@ -24,24 +32,40 @@ Read Hebrew prayers alongside transliteration and translation, explore the Tanak
 | **Read the Tanakh** | Browse the included books and chapters, with personal reading progress. |
 | **Stay in rhythm** | View the Jewish calendar, local prayer times, and the direction to Jerusalem. |
 | **Make it yours** | Adjust your themes, accent colors, and text preferences. |
-| **Take it offline** | Install the site as a web app and download the included texts for offline reading. |
+| **Take it offline** | Install the web app and download the included texts, or use a native app with its web resources bundled locally. |
 
 > **Content note:** Siddur translations are still incomplete. Available text and translations depend on their source editions; see [Content sources](CONTENT_SOURCES.md) for attribution and coverage.
 
 ## Open or install
 
-**[Launch the online siddur →](https://draconov.github.io/Kavvanah-Siddur/)**
+<a href="https://draconov.github.io/Kavvanah-Siddur/"><img alt="Open the web app" src="https://img.shields.io/badge/Open-Web%20app-152443?style=for-the-badge&logo=googlechrome&logoColor=white" /></a>
 
-Open the site in a supported browser and use its **Install app** or **Add to Home Screen** option if available. In the app, open **Settings → Download all texts for offline use** to prepare an offline library.
+To use the web app, open the site in a supported browser and use **Install app** or **Add to Home Screen** if available. In Settings, select **Download all texts for offline use** to prepare an offline library. Preferences and personal translations are saved on your current device; export a backup before clearing browser storage or changing devices.
 
-Preferences and personal translations are saved on your current device. Export a backup of your personal translations from Settings before clearing browser storage or changing devices.
+### Downloadable development builds
 
+Every update to `main` triggers a unified workflow to build and deploy the website and package native apps. It publishes development **prereleases**, not signed production releases. Choose a platform below to view the downloadable packages; availability depends on successful builds.
 
-### Native preview builds
+<p>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Windows downloads" src="https://img.shields.io/badge/Windows-EXE-0078D4?style=for-the-badge&logo=windows11&logoColor=white" /></a>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Android downloads" src="https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=black" /></a>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Linux downloads" src="https://img.shields.io/badge/Linux-AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black" /></a>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="macOS downloads" src="https://img.shields.io/badge/macOS-APP-5C5C5C?style=for-the-badge&logo=apple&logoColor=white" /></a>
+</p>
+<p>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/actions/workflows/pages.yml"><img alt="View build and deployment workflow" src="https://img.shields.io/badge/View-Build%20status-71614C?style=flat-square&logo=githubactions&logoColor=white" /></a>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Browse all prereleases" src="https://img.shields.io/badge/Browse-All%20releases-152443?style=flat-square&logo=github&logoColor=white" /></a>
+</p>
 
-GitHub Actions offers manually triggered **Android APK preview** and **Windows EXE preview** workflows. Open the repository’s **Actions** tab, select a preview workflow, and choose **Run workflow**. Once a successful run finishes, download the artifact from its run page. These packages are *test builds*, not release-signed or store-distributed apps; Windows may warn about unsigned installers. The APK uses a debug signing key, so keep it out of a stable GitHub Release.
+| Platform | Package | Installation and limitations |
+| :-- | :-- | :-- |
+| Windows x64 | `Kavvanah-Windows-x64.exe` | Launch the portable EXE. Requires Windows WebView2 runtime; the EXE is unsigned. |
+| Linux x64 | `Kavvanah-Linux-x86_64.AppImage` | One AppImage. Mark as executable before running; some distributions need system libraries/FUSE. |
+| macOS Intel | `Kavvanah-macOS-x64.zip` | Unzip to obtain one `Kavvanah.app`. Unsigned and not notarized. |
+| macOS Apple Silicon | `Kavvanah-macOS-arm64.zip` | Unzip to obtain one `Kavvanah.app`. Unsigned and not notarized. |
+| Android | `Kavvanah-Android-universal-debug.apk` | One APK, but Android requires one-time installation. Debug-signed **for testing only**. |
 
-Both wrappers embed the static website and text files in the application rather than opening GitHub Pages. The live compass still requires a compatible, permitted orientation sensor. Official signed builds and macOS/Linux packaging can follow device testing and signing setup.
+These builds are not independently signed production applications. macOS Gatekeeper and Windows SmartScreen may warn or block unsigned builds. The app packages bundle the static website and included texts rather than fetching the UI from GitHub Pages. Live compass support still requires an available device sensor and the necessary permissions. iPhone/iPad users can install the web app from Safari; this workflow does not create an iOS `.ipa`.
 
 ## Development
 
@@ -66,7 +90,7 @@ The static build is generated in `dist/client/`. A ready-to-host build is includ
 python3 -m http.server 8080 --directory web
 ```
 
-The [GitHub Pages workflow](.github/workflows/pages.yml) builds and deploys the site from `main`. Project Pages hosting requires the included path-adaptation step in `scripts/prepare-pages.mjs`.
+[The unified workflow](.github/workflows/pages.yml) deploys the site from `main`. Project Pages hosting requires the path-adaptation step in `scripts/prepare-pages.mjs`. Set the repository's **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
 
 ## Maintenance and licenses
 
