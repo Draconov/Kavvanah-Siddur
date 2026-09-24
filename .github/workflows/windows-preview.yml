@@ -26,12 +26,19 @@ jobs:
           pnpm build
           test -f dist/client/index.html
           test -f dist/client/texts/ashkenaz.json
-      - name: Install Tauri 2 CLI
+      - name: Install Tauri CLI
         run: npm install --global "@tauri-apps/cli@^2"
-      - name: Build Windows NSIS installer
-        run: tauri build --bundles nsis
-      - uses: actions/upload-artifact@v4
+      # --no-bundle produces a directly launchable EXE, not an NSIS installer.
+      - name: Build Windows standalone executable
+        run: tauri build --no-bundle
+      - name: Rename portable EXE
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path distribution | Out-Null
+          Copy-Item 'src-tauri/target/release/kavvanah.exe' 'distribution/Kavvanah-Windows-x64.exe'
+      - name: Upload single EXE
+        uses: actions/upload-artifact@v4
         with:
-          name: Kavvanah-Windows-x64-preview
-          path: src-tauri/target/release/bundle/nsis/*-setup.exe
+          name: Kavvanah-Windows-Portable-EXE
+          path: distribution/Kavvanah-Windows-x64.exe
           if-no-files-found: error
