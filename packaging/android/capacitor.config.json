@@ -1,0 +1,8 @@
+{
+  "appId": "io.github.draconov.kavvanah",
+  "appName": "Kavvanah",
+  "webDir": "../../dist/client",
+  "server": {
+    "androidScheme": "https"
+  }
+}

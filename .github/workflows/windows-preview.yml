@@ -1,0 +1,37 @@
+name: Windows EXE preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build offline-capable website
+        shell: bash
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+          test -f dist/client/index.html
+          test -f dist/client/texts/ashkenaz.json
+      - name: Install Tauri 2 CLI
+        run: npm install --global "@tauri-apps/cli@^2"
+      - name: Build Windows NSIS installer
+        run: tauri build --bundles nsis
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kavvanah-Windows-x64-preview
+          path: src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error

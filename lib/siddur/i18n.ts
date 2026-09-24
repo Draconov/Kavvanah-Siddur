@@ -6,6 +6,12 @@ export const UI_LANGUAGES={en:'English',ru:'Русский',uk:'Українсь
 export const LOCALES={en:'en-US',ru:'ru-RU',uk:'uk-UA',he:'he-IL'} as const;
 // English keys keep source-edition labels readable when no interface label exists.
 const words:Record<string,[string,string]>={
+ 'Live compass requires HTTPS. Open the published website instead of a local file or insecure address.':['Для компаса требуется HTTPS. Откройте опубликованный сайт, а не локальный файл или небезопасный адрес.','Для компаса потрібен HTTPS. Відкрийте опублікований сайт, а не локальний файл чи незахищену адресу.'],
+ 'Motion detected, but the browser supplied no absolute compass heading. Check motion-sensor permission or use the bearing below with a compass.':['Движение обнаружено, но браузер не передал абсолютное направление. Проверьте разрешение датчиков движения или используйте указанный азимут с компасом.','Рух виявлено, але браузер не передав абсолютний напрямок. Перевірте дозвіл датчиків руху або скористайтеся вказаним азимутом із компасом.'],
+ 'The browser returned empty sensor readings. Check motion-sensor permission in your browser settings.':['Браузер вернул пустые показания датчиков. Проверьте разрешение датчиков движения в настройках браузера.','Браузер повернув порожні показники датчиків. Перевірте дозвіл датчиків руху в налаштуваннях браузера.'],
+ 'No compass readings arrived. Check motion-sensor permission and whether your device has a compass sensor.':['Показания компаса не поступили. Проверьте разрешение датчиков движения и наличие компаса в устройстве.','Показники компаса не надійшли. Перевірте дозвіл датчиків руху й наявність компаса у пристрої.'],
+ 'Brave on Android: open Settings → Site settings → Motion sensors, allow sensors for this site, then return and try again. If it still fails, test in Chrome to see whether the device supplies a compass heading.':['Brave на Android: откройте Настройки → Настройки сайтов → Датчики движения, разрешите доступ для этого сайта и попробуйте снова. Если не поможет, проверьте компас в Chrome.','Brave на Android: відкрийте Налаштування → Налаштування сайтів → Датчики руху, дозвольте доступ для цього сайту й спробуйте знову. Якщо не допоможе, перевірте компас у Chrome.'],
+
  'Search time zones…':['Поиск часовых поясов…','Пошук часових поясів…'],
  'No matching time zones.':['Часовые пояса не найдены.','Часових поясів не знайдено.'],
  'Previously selected time zone':['Ранее выбранный часовой пояс','Раніше вибраний часовий пояс'],
@@ -256,6 +262,12 @@ const words:Record<string,[string,string]>={
 // a new screen is added; an untranslated key still falls back to its English
 // label rather than displaying an empty control.
 const hebrewWords:Record<string,string>={
+ 'Live compass requires HTTPS. Open the published website instead of a local file or insecure address.':'מצפן חי דורש HTTPS. פתח את האתר המפורסם ולא קובץ מקומי או כתובת לא מאובטחת.',
+ 'Motion detected, but the browser supplied no absolute compass heading. Check motion-sensor permission or use the bearing below with a compass.':'זוהתה תנועה, אך הדפדפן לא מסר כיוון מצפן מוחלט. בדוק את הרשאת חיישני התנועה או השתמש בזווית המוצגת עם מצפן.',
+ 'The browser returned empty sensor readings. Check motion-sensor permission in your browser settings.':'הדפדפן החזיר נתוני חיישנים ריקים. בדוק את ההרשאה לחיישני תנועה בהגדרות הדפדפן.',
+ 'No compass readings arrived. Check motion-sensor permission and whether your device has a compass sensor.':'לא התקבלו נתוני מצפן. בדוק את הרשאת חיישני התנועה ואת קיומו של חיישן מצפן במכשיר.',
+ 'Brave on Android: open Settings → Site settings → Motion sensors, allow sensors for this site, then return and try again. If it still fails, test in Chrome to see whether the device supplies a compass heading.':'ב־Brave באנדרואיד: פתח הגדרות ← הגדרות אתרים ← חיישני תנועה, אפשר גישה לאתר ונסה שוב. אם עדיין לא עובד, בדוק ב־Chrome אם המכשיר מספק כיוון מצפן.',
+
  'Search time zones…':'חיפוש אזורי זמן…','No matching time zones.':'לא נמצאו אזורי זמן.','Previously selected time zone':'אזור הזמן שנבחר בעבר', 'Clock format':'תבנית השעון','24-hour':'24 שעות','12-hour (AM/PM)':'12 שעות (AM/PM)','Current local time':'השעה המקומית הנוכחית','Use device time zone':'השתמש באזור הזמן של המכשיר','Choose the time zone of the selected location. The clock uses your device time.':'בחר את אזור הזמן של המיקום שנבחר. השעון משתמש בזמן המכשיר.',
  ...hebrewTitles,
  'Siddur':'סידור','Tanakh':'תנ״ך','Calendar':'לוח שנה','Prayer times':'זמני תפילה','Mizrach':'מזרח','Settings':'הגדרות',

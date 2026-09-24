@@ -1,0 +1,49 @@
+name: Android APK preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - name: Build offline-capable website
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+          test -f dist/client/index.html
+          test -f dist/client/texts/ashkenaz.json
+      - name: Generate native Android project
+        working-directory: packaging/android
+        run: |
+          npm install --no-audit --no-fund --package-lock=false
+          npx cap add android
+          npx cap sync android
+      - name: Generate Android app icon from Kavvanah artwork
+        working-directory: packaging/android
+        run: npx capacitor-assets generate --android --iconBackgroundColor "#152443" --splashBackgroundColor "#152443"
+      - name: Compile installable test APK
+        working-directory: packaging/android/android
+        run: ./gradlew assembleDebug --no-daemon
+      - name: Save APK for device testing (not a release-signed build)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kavvanah-Android-preview-APK
+          path: packaging/android/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
