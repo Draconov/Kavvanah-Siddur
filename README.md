@@ -90,7 +90,7 @@ The static build is generated in `dist/client/`; generated website output is not
 python3 -m http.server 8080 --directory dist/client
 ```
 
-`VERSION` is the only release-version source. Change that file (for example from `1.0` to `1.1`) and the build synchronizes the semver fields required by npm, Tauri, Cargo, and Android. Do not maintain release numbers separately in those generated/tooling fields.
+`VERSION` is the only release-version source. Change that file (for example from `1.0.0` to `1.1.0`) and the build synchronizes the semver fields required by npm, Tauri, Cargo, and Android. Do not maintain release numbers separately in those generated/tooling fields.
 
 [The unified workflow](.github/workflows/pages.yml) deploys the site from `main`. Project Pages hosting requires the path-adaptation step in `scripts/prepare-pages.mjs`. Set the repository's **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
 
