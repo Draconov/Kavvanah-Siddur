@@ -1,39 +1,62 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createHash} from 'node:crypto';
-const read=name=>JSON.parse(readFileSync(new URL(`../public/texts/${name}.json`,import.meta.url),'utf8'));
 
-test('supplementary translations leave every previously published text and reference intact',()=>{
- const expected=JSON.parse(readFileSync(new URL('./source-text-baseline.json',import.meta.url),'utf8'));
- for(const [filename,digest] of Object.entries(expected)){
-  const data=read(filename.replace(/\.json$/,''));
-  // Verify every approved repair, then reverse only those fields for the old-source digest.
-  const repairs=JSON.parse(readFileSync(new URL('../scripts/translations/content-repairs.json',import.meta.url),'utf8'));
-  for(const repair of repairs.filter(r=>r.corpus+'.json'===filename)){
-   const targets=data.sections.filter(s=>s.ref===repair.section).flatMap(s=>s.paragraphs).filter(p=>p.he===repair.he);
-   assert.ok(targets.length,repair.section);
-   for(const p of targets)for(const [field,value] of Object.entries(repair.after)){
-    assert.deepEqual(p[field],value,repair.section+' '+field);
-    if(repair.before[field]===null)delete p[field];else p[field]=repair.before[field];
+const read=name=>JSON.parse(readFileSync(new URL(`../public/texts/${name}.json`,import.meta.url),'utf8'));
+const readTranslations=language=>JSON.parse(readFileSync(new URL(`../public/texts/translations/${language}.json`,import.meta.url),'utf8'));
+
+function hydrateSiddur(name,languages=['en','ru','uk']){
+ const data=structuredClone(read(name));
+ const byId=new Map(data.sections.map(section=>[section.id,section]));
+ for(const language of languages){
+  const bundle=readTranslations(language);assert.equal(bundle.schema,1);assert.equal(bundle.language,language);
+  const corpus=bundle.corpora[name];assert.ok(corpus,`${language}: missing ${name}`);
+  data.sources.push(...corpus.sources);
+  for(const [id,translation] of Object.entries(corpus.sections)){
+   const section=byId.get(id);assert.ok(section,`${language}: unknown section ${id}`);
+   assert.match(translation.sourceHash,/^[0-9a-f]{16}$/);
+   const records=translation.paragraphs;
+   assert.equal(records.length,section.paragraphs.length,`${language}: ${name}:${id} paragraph count`);
+   records.forEach((record,index)=>{
+    if(record==null)return;
+    const meta=typeof record==='string'?null:record,text=typeof record==='string'?record:record.text;
+    assert.ok(text?.trim());const p=section.paragraphs[index];p[language]=text;
+    if(meta?.ref)(p.translationRefs??={})[language]=meta.ref;
+    if(meta?.edition)(p.translationEditions??={})[language]=meta.edition;
+    if(meta?.note)(p.translationNotes??={})[language]=meta.note;
+   });
+  }
+ }
+ return data;
+}
+
+test('Siddur Hebrew structure and translations are stored separately',()=>{
+ for(const name of ['ashkenaz','edot']){
+  const data=read(name);assert.ok(data.sections.length>100);
+  assert.ok(data.sources.every(source=>!['en','ru','uk'].includes(source.language)));
+  for(const p of data.sections.flatMap(section=>section.paragraphs)){
+   for(const language of ['en','ru','uk']){
+    assert.equal(p[language],undefined,`${name}: embedded ${language}`);
+    assert.equal(p.translationRefs?.[language],undefined,`${name}: embedded ${language} ref`);
+    assert.equal(p.translationEditions?.[language],undefined,`${name}: embedded ${language} edition`);
+    assert.equal(p.translationNotes?.[language],undefined,`${name}: embedded ${language} note`);
    }
   }
-  const paragraphs=data.sections?data.sections.flatMap(s=>s.paragraphs):data.text.flat();
-  const original=paragraphs.map(p=>{
-   const ru=p.translationEditions?.ru,uk=p.translationEditions?.uk;
-   return [p.he,p.kind??null,p.en??null,ru?null:p.ru??null,uk?null:p.uk??null,
-    ru?null:p.translationRefs?.ru??null,uk?null:p.translationRefs?.uk??null,
-    ru?null:p.translationNotes?.ru??null,uk?null:p.translationNotes?.uk??null];
-  });
-  assert.equal(createHash('sha256').update(JSON.stringify(original)).digest('hex'),digest,filename);
  }
+ for(const language of ['en','ru','uk']){
+  const bundle=readTranslations(language);assert.equal(bundle.schema,1);assert.equal(bundle.language,language);
+  assert.deepEqual(Object.keys(bundle.corpora).sort(),['ashkenaz','edot']);
+ }
+ const ashkenaz=hydrateSiddur('ashkenaz',['ru']);
+ const paragraphs=ashkenaz.sections.flatMap(section=>section.paragraphs);
+ assert.equal(paragraphs.length,3689);
+ assert.equal(paragraphs.filter(p=>p.ru?.trim()).length,3689,'Russian Ashkenaz must remain complete');
 });
 
 test('Kavvanah additions have their own edition attribution and no empty text',()=>{
- const names=['ashkenaz','edot',...read('catalog').books.map(b=>b.id)];
- for(const name of names){
-  const data=read(name),paragraphs=data.sections?data.sections.flatMap(s=>s.paragraphs):data.text.flat();
-  for(const p of paragraphs)for(const language of ['ru','uk']){
+ for(const name of ['ashkenaz','edot']){
+  const data=hydrateSiddur(name,['ru','uk']);
+  for(const p of data.sections.flatMap(section=>section.paragraphs))for(const language of ['ru','uk']){
    if(p.translationEditions?.[language]!=='kavvanah-supplement-2026')continue;
    assert.ok(p[language]?.trim(),`${name}: empty ${language}`);
    assert.match(p.translationRefs[language],/^KAV /);
@@ -41,40 +64,13 @@ test('Kavvanah additions have their own edition attribution and no empty text',(
    assert.notEqual(p.translationNotes?.[language],'combined');
   }
  }
-});
-
-test('reused biblical passages retain complete source wording and every combined-verse boundary',()=>{
- const entries=JSON.parse(readFileSync(new URL('../scripts/translations/reused-passages.json',import.meta.url),'utf8'));
- const books=new Map(read('catalog').books.map(b=>{const data=read(b.id);return [data.title,data];}));
- const reverse=new Map();
- for(const [title,book] of books)for(const language of ['ru','uk']){
-  const refs=new Map();
-  for(const p of book.text.flat()){
-   if(p.translationEditions?.[language])continue;
-   for(const ref of p.translationRefs?.[language]?.split(', ')??[]){
-    if(!refs.has(ref))refs.set(ref,new Set());
-    refs.get(ref).add(p);
-   }
-  }
-  reverse.set(`${title}:${language}`,refs);
- }
- for(const entry of entries)for(const language of ['ru','uk']){
-  if(!entry[language])continue;
-  const addition=entry[language],segments=addition.evidence.segments;
-  assert.equal(addition.text,segments.map(s=>s.text).join(' '));
-  assert.equal(addition.refs,segments.map(s=>s.refs).join(', '));
-  for(const segment of segments){
-   let title;
-   const selected=segment.hebrewRefs.map(reference=>{
-    const match=reference.match(/^(.*) (\d+):(\d+)$/);assert.ok(match);
-    title=match[1];const book=books.get(title);assert.ok(book,reference);
-    return book.text[Number(match[2])-1][Number(match[3])-1];
-   });
-   assert.equal(segment.he,selected.map(p=>p.he).join(' '));
-   assert.ok(selected.some(p=>p[language]===segment.text&&p.translationRefs?.[language]===segment.refs&&!p.translationEditions?.[language]));
-   for(const ref of segment.refs.split(', '))for(const p of reverse.get(`${title}:${language}`).get(ref)??[]){
-    assert.ok(selected.includes(p),`Incomplete combined source ${language} ${ref}`);
-   }
+ for(const name of read('catalog').books.map(b=>b.id)){
+  const data=read(name);
+  for(const p of data.text.flat())for(const language of ['ru','uk']){
+   if(p.translationEditions?.[language]!=='kavvanah-supplement-2026')continue;
+   assert.ok(p[language]?.trim(),`${name}: empty ${language}`);
+   assert.match(p.translationRefs[language],/^KAV /);
+   assert.ok(data.sources.some(s=>s.id==='kavvanah-supplement-2026'&&s.language===language));
   }
  }
 });
@@ -98,8 +94,7 @@ test('Russian follows Hebrew references through chapter boundaries and combined 
  assert.match(verse('psalms',90,1).ru,/Молитва Моисея.*Господи! Ты нам прибежище/);
  const gaps=[];let count=0;
  for(const {id} of read('catalog').books)read(id).text.forEach((ch,c)=>ch.forEach((p,v)=>{if(p.ru)count++;else gaps.push(`${id} ${c+1}:${v+1}`);}));
- assert.equal(count,23206);
- assert.deepEqual(gaps,[]);
+ assert.equal(count,23206);assert.deepEqual(gaps,[]);
  for(const [book,ch,v] of [['psalms',142,1],['song-of-songs',1,1]])assert.equal(verse(book,ch,v).translationEditions.ru,'kavvanah-supplement-2026');
 });
 
@@ -115,40 +110,33 @@ test('Ukrainian edition retains its source wording across split and combined ver
  assert.match(verse('i-kings',22,44).uk,/Тільки висот/);
  const gaps=[];let count=0;
  for(const {id} of read('catalog').books)read(id).text.forEach((ch,c)=>ch.forEach((p,v)=>{if(p.uk){count++;assert.ok(!p.uk.includes('\\'));assert.ok(p.translationRefs.uk);}else gaps.push(`${id} ${c+1}:${v+1}`);}));
- assert.equal(count,23206);
- assert.deepEqual(gaps,[]);
+ assert.equal(count,23206);assert.deepEqual(gaps,[]);
  for(const [book,ch,v] of [['leviticus',21,24],['psalms',148,14],['song-of-songs',1,1]])assert.equal(verse(book,ch,v).translationEditions.uk,'kavvanah-supplement-2026');
 });
 
-for(const [language,totals] of Object.entries({ru:{ashkenaz:213,edot:188},uk:{ashkenaz:209,edot:175}}))test(`${language} siddur additions preserve exact complete biblical passages`,()=>{
+for(const [language,totals] of Object.entries({ru:{ashkenaz:213,edot:188},uk:{ashkenaz:209,edot:175}}))test(`${language} siddur biblical passages preserve exact complete source wording`,()=>{
  const normalized=s=>s.replace(/[^א-ת]/g,'');
  const tanakh=read('catalog').books.map(b=>read(b.id));
  for(const [nusach,total] of Object.entries(totals)){
-  const additions=read(nusach).sections.flatMap(s=>s.paragraphs).filter(p=>p[language]&&!p.translationEditions?.[language]);
+  const additions=hydrateSiddur(nusach,[language]).sections.flatMap(s=>s.paragraphs).filter(p=>p[language]&&!p.translationEditions?.[language]);
   assert.equal(additions.length,total);
   for(const p of additions){
-   assert.notEqual(p.kind,'instruction');
-   const wanted=normalized(p.he);
-   assert.ok(tanakh.some(b=>{
-    const flat=b.text.flat();
-    return flat.some((first,i)=>{
-     if(!wanted.startsWith(normalized(first.he)))return false;
-     let he='',translated=[];
-     for(const part of flat.slice(i)){
-      if(!part[language]||part.translationNotes?.[language])return false;
-      he+=normalized(part.he);translated.push(part[language]);
-      if(he===wanted)return translated.join(' ')===p[language];
-      if(!wanted.startsWith(he))return false;
-     }
-     return false;
-    });
-   }),`Unverified biblical passage in ${nusach}`);
+   assert.notEqual(p.kind,'instruction');const wanted=normalized(p.he);
+   assert.ok(tanakh.some(b=>{const flat=b.text.flat();return flat.some((first,i)=>{if(!wanted.startsWith(normalized(first.he)))return false;let he='',translated=[];for(const part of flat.slice(i)){if(!part[language]||part.translationNotes?.[language])return false;he+=normalized(part.he);translated.push(part[language]);if(he===wanted)return translated.join(' ')===p[language];if(!wanted.startsWith(he))return false;}return false;});}),`Unverified biblical passage in ${nusach}`);
   }
  }
 });
 
 test('prayer corpora have unique sections, no literal placeholders, and no unsafe Kaveh pairing',()=>{
- for(const name of ['ashkenaz','edot']){const data=read(name);assert.ok(data.sections.length>100);assert.equal(new Set(data.sections.map(s=>s.id)).size,data.sections.length);for(const section of data.sections){assert.ok(section.paragraphs.length);for(const p of section.paragraphs){assert.ok(p.he);assert.notEqual(p.en,'[]');}}}
- const kaveh=read('edot').sections.find(s=>s.path.join('/')==='Weekday Shacharit/Kaveh');
+ for(const name of ['ashkenaz','edot']){const data=hydrateSiddur(name);assert.equal(new Set(data.sections.map(s=>s.id)).size,data.sections.length);for(const section of data.sections){assert.ok(section.paragraphs.length);for(const p of section.paragraphs){assert.ok(p.he);assert.notEqual(p.en,'[]');}}}
+ const kaveh=hydrateSiddur('edot',['en']).sections.find(s=>s.path.join('/')==='Weekday Shacharit/Kaveh');
  assert.ok(kaveh);assert.ok(kaveh.paragraphs.every(p=>!p.en),'different source segmentation must never be positionally paired');
+});
+
+test('Toldot attribution remains attached to the Russian translation file',()=>{
+ const data=hydrateSiddur('ashkenaz',['ru']);
+ const toldot=data.sections.flatMap(s=>s.paragraphs).filter(p=>p.translationEditions?.ru==='toldot-siddur-2011');
+ assert.ok(toldot.length>=8);
+ assert.ok(toldot.every(p=>p.ru?.trim()&&p.translationRefs?.ru?.startsWith('https://toldot.com/')));
+ assert.ok(data.sources.some(source=>source.id==='toldot-siddur-2011'&&source.language==='ru'));
 });

@@ -9,7 +9,7 @@ const files=(await walk(root)).filter(f=>!hostingOnly.has(path.relative(root,f))
 const digest=createHash('sha256');for(const file of files.sort()){digest.update(path.relative(root,file));digest.update(await readFile(file));}
 const revision=digest.digest('hex').slice(0,12),cacheName=`kavvanah-${revision}`;
 const urls=['/',...files.map(f=>'/'+path.relative(root,f).split(path.sep).join('/')).filter(f=>f!=='/index.html'&&!f.endsWith('.rsc'))];
-const shell=urls.filter(url=>!url.startsWith('/texts/')||['/texts/ashkenaz.json','/texts/catalog.json','/texts/genesis.json'].includes(url));
+const shell=urls.filter(url=>!url.startsWith('/texts/')||['/texts/ashkenaz.json','/texts/translations/en.json','/texts/catalog.json','/texts/genesis.json'].includes(url));
 const manifest={revision,cacheName,urls};
 const sw=`/* Generated from the verified production assets. */
 const CACHE=${JSON.stringify(cacheName)};
@@ -20,5 +20,5 @@ self.addEventListener('fetch',event=>{const req=event.request,url=new URL(req.ur
 event.respondWith((async()=>{const cache=await caches.open(CACHE);if(req.mode==='navigate'){try{const response=await fetch(req);if(response.ok)await cache.put('/',response.clone());return response;}catch{return (await cache.match('/'))||Response.error();}}
 const hit=await cache.match(req);if(hit)return hit;try{const response=await fetch(req);if(response.ok&&(url.pathname.startsWith('/texts/')||url.pathname.startsWith('/assets/')||url.pathname.startsWith('/fonts/')||url.pathname.startsWith('/_next/')))await cache.put(req,response.clone());return response;}catch{return Response.error();}})());});
 `;
-for(const target of ['public','dist/client']){await writeFile(`${target}/sw.js`,sw);await writeFile(`${target}/offline-manifest.json`,JSON.stringify(manifest));}
+await writeFile(`${root}/sw.js`,sw);await writeFile(`${root}/offline-manifest.json`,JSON.stringify(manifest));
 console.log(`Offline manifest: ${urls.length} assets, ${shell.length} automatic shell assets, revision ${revision}`);

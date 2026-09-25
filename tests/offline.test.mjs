@@ -9,11 +9,10 @@ import vm from 'node:vm';
 test('offline build excludes hosting-only files and serves cached pages and texts',async()=>{
  const fixture=await mkdtemp(path.join(tmpdir(),'kavvanah-offline-test-'));
  try {
-  await mkdir(path.join(fixture,'dist/client/texts'),{recursive:true});
-  await mkdir(path.join(fixture,'public'));
-  for(const file of ['index.html','404.html','_headers','_redirects','texts/ashkenaz.json','texts/catalog.json','texts/genesis.json','texts/exodus.json'])await writeFile(path.join(fixture,'dist/client',file),file);
+  await mkdir(path.join(fixture,'dist/client/texts/translations'),{recursive:true});
+  for(const file of ['index.html','404.html','_headers','_redirects','texts/ashkenaz.json','texts/translations/en.json','texts/catalog.json','texts/genesis.json','texts/exodus.json'])await writeFile(path.join(fixture,'dist/client',file),file);
   execFileSync(process.execPath,[path.resolve('scripts/finalize-offline.mjs')],{cwd:fixture});
-  const manifest=JSON.parse(await readFile(path.join(fixture,'public/offline-manifest.json'),'utf8'));
+  const manifest=JSON.parse(await readFile(path.join(fixture,'dist/client/offline-manifest.json'),'utf8'));
   assert.ok(!manifest.urls.includes('/_headers'),'hosting headers are not fetchable assets');
   assert.ok(!manifest.urls.includes('/_redirects'),'hosting redirects are not fetchable assets');
   assert.ok(manifest.urls.includes('/texts/exodus.json'));
@@ -21,10 +20,10 @@ test('offline build excludes hosting-only files and serves cached pages and text
   const key=v=>typeof v==='string'?v:new URL(v.url).pathname;
   const cache={addAll:async urls=>urls.forEach(url=>saved.set(url,new Response(url))),match:async req=>saved.get(key(req))?.clone(),put:async(req,response)=>saved.set(key(req),response.clone())};
   const context={URL,Response,self:{location:{origin:'https://example.test'},addEventListener:(event,cb)=>events[event]=cb,skipWaiting:async()=>{},clients:{claim:async()=>{claimed=true;}}},caches:{open:async()=>cache,keys:async()=>[manifest.cacheName]},fetch:async req=>{if(!network)throw Error('Offline');return new Response(key(req));}};
-  vm.runInNewContext(await readFile(path.join(fixture,'public/sw.js'),'utf8'),context);
+  vm.runInNewContext(await readFile(path.join(fixture,'dist/client/sw.js'),'utf8'),context);
   let pending;
   events.install({waitUntil:p=>pending=p});await pending;
-  assert.ok(saved.has('/'));assert.ok(saved.has('/texts/ashkenaz.json'));
+  assert.ok(saved.has('/'));assert.ok(saved.has('/texts/ashkenaz.json'));assert.ok(saved.has('/texts/translations/en.json'));
   assert.ok(!saved.has('/texts/exodus.json'),'full library is opt-in');
   events.activate({waitUntil:p=>pending=p});await pending;assert.ok(claimed);
   async function request(url,mode='cors',method='GET'){pending=undefined;events.fetch({request:{url:`https://example.test${url}`,mode,method},respondWith:p=>pending=p});return pending;}

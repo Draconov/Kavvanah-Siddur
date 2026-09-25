@@ -1,13 +1,16 @@
 {
   "name": "kavvanah-siddur",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "GPL-2.0-only",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
   },
   "scripts": {
+    "version:sync": "node scripts/sync-version.mjs",
+    "predev": "node scripts/sync-version.mjs",
     "dev": "vinext dev",
+    "prebuild": "node scripts/sync-version.mjs",
     "build": "vinext build && node scripts/finalize-offline.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "check": "tsc --noEmit",

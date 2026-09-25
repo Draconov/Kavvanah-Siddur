@@ -147,8 +147,7 @@ def main():
     if set(missing) != EXPECTED_GAPS:
         raise ValueError(f'Unexpected missing translations: {missing}')
     updated.update(common.add_biblical_prayers(list(updated.values()),'uk',SOURCE_META))
-    for path, data in updated.items():
-        path.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
+    common.write_updates(updated, 'uk')
     print('Source SHA-256:', SOURCE_SHA256)
     print('Source omissions:', ', '.join(missing))
     print('Ukrainian Tanakh verses:',sum('uk' in p for d in updated.values() if 'text' in d for c in d['text'] for p in c))

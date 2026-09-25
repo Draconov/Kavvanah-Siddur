@@ -2,7 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as reading from '../lib/siddur/reading.ts';
-const corpus=n=>JSON.parse(fs.readFileSync(new URL(`../public/texts/${n}.json`,import.meta.url)));
+import {applySiddurTranslation} from '../lib/siddur/translations.ts';
+const base=n=>JSON.parse(fs.readFileSync(new URL(`../public/texts/${n}.json`,import.meta.url)));
+const translation=lang=>JSON.parse(fs.readFileSync(new URL(`../public/texts/translations/${lang}.json`,import.meta.url)));
+const corpus=(name,lang)=>lang?applySiddurTranslation(base(name),translation(lang)):base(name);
 test('spoken small-print passages receive reading aids while rubrics remain instructions',()=>{
  assert.equal(typeof reading.isReadingInstruction,'function');
  const s=corpus('ashkenaz').sections.find(s=>s.ref==='Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema');
@@ -12,8 +15,8 @@ test('spoken small-print passages receive reading aids while rubrics remain inst
  const edot=corpus('edot');
  for(const s of edot.sections)for(const p of s.paragraphs)if(p.he==='כֹּהֲנִים:')assert.equal(reading.isReadingInstruction(p),true);
 });
-test('Edot Mincha healing and prosperity translations align with their Hebrew paragraphs',()=>{
- const p=corpus('edot').sections.find(s=>s.ref==='Siddur Edot HaMizrach, Weekday Mincha, Amida').paragraphs;
+test('Edot Mincha English aligns with Hebrew in the canonical language file',()=>{
+ const p=corpus('edot','en').sections.find(s=>s.ref==='Siddur Edot HaMizrach, Weekday Mincha, Amida').paragraphs;
  assert.match(p[15].en??'',/^Heal us/);
  assert.equal(p[16].en,'[In Summer]');
  assert.match(p[17].en,/Bless us/);
@@ -22,6 +25,6 @@ test('Edot Mincha healing and prosperity translations align with their Hebrew pa
  assert.match(p[24].en,/Dwell within Jerusalem/);
  assert.match(p[25].en,/Tisha B/);
 });
-test('English corpus has no punctuation-only placeholders',()=>{
- for(const name of ['ashkenaz','edot'])for(const s of corpus(name).sections)for(const p of s.paragraphs)if(p.en)assert.match(p.en,/[A-Za-z]/,s.ref);
+test('English translation file has no punctuation-only placeholders',()=>{
+ for(const name of ['ashkenaz','edot'])for(const s of corpus(name,'en').sections)for(const p of s.paragraphs)if(p.en)assert.match(p.en,/[A-Za-z]/,s.ref);
 });

@@ -5,15 +5,18 @@ The application ships normalized text and full edition attribution.
 """
 import concurrent.futures, hashlib, html, json, re, time, urllib.parse, urllib.request
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from html.parser import HTMLParser
 
 ROOT=Path(__file__).resolve().parent.parent
-CACHE=ROOT/'.text-cache'; CACHE.mkdir(exist_ok=True)
+CACHE=ROOT/'.text-cache'
 OUT=ROOT/'public'/'texts'; OUT.mkdir(parents=True,exist_ok=True)
 BASE='https://storage.googleapis.com/sefaria-export/'
 ALLOWED={'Public Domain','PD','CC0','CC-BY','CC-BY-SA'}
 
 def fetch(path):
+    CACHE.mkdir(exist_ok=True)
     target=CACHE/(hashlib.sha256(path.encode()).hexdigest()+'.json')
     if target.exists(): return json.loads(target.read_text())
     url=BASE+urllib.parse.quote(path)
@@ -78,6 +81,8 @@ def category(path):
     if 'shacharit' in text or 'preparatory' in text:return 'Morning'
     return 'Other'
 
+from siddur_translation_io import preserve_existing_editions, save_siddur, strip_translations
+
 def siddur(nusach,title,he_versions,en_version):
     prefix='json/Liturgy/Siddur/'+title+'/'
     hebrew=[fetch(prefix+'Hebrew/'+v+'.json') for v in he_versions]
@@ -110,12 +115,35 @@ def siddur(nusach,title,he_versions,en_version):
           'service':' / '.join(path[:2]),'path':list(path),'ref':title+', '+', '.join(path),
           'paragraphs':paragraphs,'hebrewEdition':hebrew[hi]['versionTitle']})
     data={'title':title,'nusach':nusach,'sources':[source(v) for v in hebrew]+[source(english)],'sections':sections}
-    # Reapply reviewed corrections by exact Hebrew identity, never typography alone.
+    # The source Edot Mincha English has one empty Hebrew slot omitted from its
+    # segmentation. Correct that known alignment structurally rather than storing
+    # duplicate English prose in a repair manifest.
+    if nusach == 'edot':
+        ref='Siddur Edot HaMizrach, Weekday Mincha, Amida'
+        section=next((s for s in data['sections'] if s['ref']==ref),None)
+        if section is not None:
+            paragraphs=section['paragraphs']
+            if len(paragraphs) > 25 and paragraphs[15]['he'].startswith('רְפָאֵנוּ') and paragraphs[16]['he']=='בקיץ:' and paragraphs[25]['he'].startswith('בתשעה באב'):
+                # Raw source alignment has the English for paragraph N on N+1
+                # across this range. Shift existing source values back one slot.
+                values=[paragraphs[i].get('en') for i in range(16,26)]
+                for target,value in zip(range(15,25),values):
+                    if value: paragraphs[target]['en']=value
+                    else: paragraphs[target].pop('en',None)
+                paragraphs[25].pop('en',None)
+    # Reapply reviewed non-translation corrections by exact Hebrew identity.
     import runpy
     runpy.run_path(str(Path(__file__).with_name('repair-texts.py')))['apply_repairs'](data,nusach)
-    (OUT/(nusach+'.json')).write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')))
+    if OUT.resolve() == (ROOT/'public/texts').resolve():
+        # Canonical project-authored additions live only in translations/en.json.
+        # Preserve them when refreshing the public-source English import.
+        preserve_existing_editions(ROOT,nusach,data,'en',{'kavvanah-supplement-2026'})
+        save_siddur(ROOT, nusach, data, languages=('en',))
+    else:
+        OUT.mkdir(parents=True, exist_ok=True)
+        (OUT/(nusach+'.json')).write_text(json.dumps(strip_translations(data),ensure_ascii=False,separators=(',',':')))
     print(nusach,len(sections),'sections',sum(len(s['paragraphs']) for s in sections),'paragraphs',flush=True)
-    return data
+    return strip_translations(data)
 
 BOOKS=[
  ('Torah','Genesis'),('Torah','Exodus'),('Torah','Leviticus'),('Torah','Numbers'),('Torah','Deuteronomy'),

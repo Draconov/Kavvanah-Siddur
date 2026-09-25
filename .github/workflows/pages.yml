@@ -5,7 +5,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Only one run publishes for a particular branch at a time.
 concurrency:
   group: kavvanah-publish-${{ github.ref }}
   cancel-in-progress: true
@@ -32,6 +31,9 @@ jobs:
           pnpm build
           test -f dist/client/index.html
           test -f dist/client/texts/ashkenaz.json
+          test -f dist/client/texts/translations/en.json
+          test -f dist/client/texts/translations/ru.json
+          test -f dist/client/texts/translations/uk.json
       - name: Share offline-capable website with native build jobs
         uses: actions/upload-artifact@v4
         with:
@@ -78,10 +80,15 @@ jobs:
         with:
           name: kavvanah-web-source
           path: dist/client
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+      - name: Synchronize version from VERSION
+        run: node scripts/sync-version.mjs
       - uses: dtolnay/rust-toolchain@stable
       - name: Install Tauri CLI
         run: npm install --global "@tauri-apps/cli@^2"
-      - name: Build a directly executable app (no installer)
+      - name: Build directly executable app
         run: tauri build --no-bundle
       - name: Stage Windows executable
         shell: pwsh
@@ -95,7 +102,7 @@ jobs:
           if-no-files-found: error
 
   linux:
-    name: Linux · single AppImage
+    name: Linux · AppImage
     needs: website
     runs-on: ubuntu-22.04
     steps:
@@ -104,6 +111,11 @@ jobs:
         with:
           name: kavvanah-web-source
           path: dist/client
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+      - name: Synchronize version from VERSION
+        run: node scripts/sync-version.mjs
       - name: Install desktop build dependencies
         run: |
           sudo apt-get update
@@ -113,7 +125,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Install Tauri CLI
         run: npm install --global "@tauri-apps/cli@^2"
-      - name: Build standalone Linux AppImage
+      - name: Build Linux AppImage
         run: tauri build --bundles appimage
       - name: Stage AppImage
         run: |
@@ -150,16 +162,21 @@ jobs:
         with:
           name: kavvanah-web-source
           path: dist/client
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+      - name: Synchronize version from VERSION
+        run: node scripts/sync-version.mjs
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
       - name: Install Tauri CLI
         run: npm install --global "@tauri-apps/cli@^2"
-      - name: Generate Apple-compatible icon from the bundled Kavvanah artwork
+      - name: Generate Apple-compatible icon from bundled artwork
         run: tauri icon public/icons/icon-1024.png --output src-tauri/icons
-      - name: Build portable macOS application
+      - name: Build macOS application
         run: tauri build --bundles app --target "${{ matrix.target }}" --config src-tauri/tauri.macos.conf.json
-      - name: Archive the single .app bundle (preserve macOS metadata)
+      - name: Archive app bundle
         shell: bash
         run: |
           mkdir -p release
@@ -173,7 +190,7 @@ jobs:
           if-no-files-found: error
 
   android:
-    name: Android · one APK (test-signed)
+    name: Android · release APK
     needs: website
     runs-on: ubuntu-22.04
     steps:
@@ -189,6 +206,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      - name: Synchronize version from VERSION
+        run: node scripts/sync-version.mjs
       - name: Verify preinstalled Android SDK
         run: |
           test -n "${ANDROID_HOME:-}"
@@ -200,74 +219,92 @@ jobs:
           npm install --no-audit --no-fund --package-lock=false
           npx cap add android
           npx cap sync android
+      - name: Apply VERSION to generated Android project
+        run: node scripts/sync-version.mjs --android-gradle packaging/android/android/app/build.gradle
       - name: Generate Android launcher artwork
         working-directory: packaging/android
         run: npx capacitor-assets generate --android --iconBackgroundColor "#152443" --splashBackgroundColor "#152443"
-      - name: Compile single installable APK
+      - name: Compile release APK
         working-directory: packaging/android/android
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug --no-daemon
-      - name: Stage testing APK
+          ./gradlew assembleRelease --no-daemon
+      - name: Sign and stage release APK
+        shell: bash
         run: |
           mkdir -p release
-          cp packaging/android/android/app/build/outputs/apk/debug/app-debug.apk release/Kavvanah-Android-universal-debug.apk
+          unsigned="packaging/android/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          test -f "$unsigned"
+          keytool -genkeypair -noprompt \
+            -keystore "$RUNNER_TEMP/kavvanah-release.jks" \
+            -storepass changeit -keypass changeit -alias kavvanah \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Kavvanah, O=Kavvanah, C=IL"
+          apksigner="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -n "$apksigner"
+          zipalign="$(dirname "$apksigner")/zipalign"
+          test -x "$zipalign"
+          "$zipalign" -p -f 4 "$unsigned" "$RUNNER_TEMP/kavvanah-aligned.apk"
+          "$apksigner" sign \
+            --ks "$RUNNER_TEMP/kavvanah-release.jks" \
+            --ks-pass pass:changeit --key-pass pass:changeit \
+            --out release/Kavvanah-Android-universal.apk "$RUNNER_TEMP/kavvanah-aligned.apk"
+          "$apksigner" verify --verbose release/Kavvanah-Android-universal.apk
       - uses: actions/upload-artifact@v4
         with:
           name: Kavvanah-package-android
-          path: release/Kavvanah-Android-universal-debug.apk
+          path: release/Kavvanah-Android-universal.apk
           if-no-files-found: error
 
   release:
-    name: Publish downloadable development release
+    name: Publish versioned release
     needs: [website, pages, windows, linux, macos, android]
-    # Publish completed packages even when one platform fails; the run and
-    # release notes explicitly show failures. Never publish an incomplete site.
-    if: ${{ always() && needs.website.result == 'success' }}
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-      actions: read
     steps:
       - uses: actions/checkout@v4
-      - name: Download all completed platform packages
+        with:
+          fetch-depth: 0
+      - name: Read release version
+        shell: bash
+        run: |
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          test -n "$VERSION"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "TAG=v$VERSION" >> "$GITHUB_ENV"
+      - name: Download platform packages
         uses: actions/download-artifact@v4
         with:
           pattern: Kavvanah-package-*
           merge-multiple: true
           path: release
-      - name: Prepare release notes and confirm assets
+      - name: Prepare release notes
         shell: bash
-        env:
-          WINDOWS_RESULT: ${{ needs.windows.result }}
-          LINUX_RESULT: ${{ needs.linux.result }}
-          MACOS_RESULT: ${{ needs.macos.result }}
-          ANDROID_RESULT: ${{ needs.android.result }}
-          PAGES_RESULT: ${{ needs.pages.result }}
         run: |
-          test -d release
-          find release -maxdepth 1 -type f -print
           test -n "$(find release -maxdepth 1 -type f -print -quit)"
           cat > release-notes.md <<EOF
-          Automated **development build** of commit \`${GITHUB_SHA}\`.
+          Kavvanah **${VERSION}**, built from commit ${GITHUB_SHA}.
 
-          [Open the website](https://draconov.github.io/Kavvanah-Siddur/) · [View this build's logs](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})
+          [Open the website](https://draconov.github.io/Kavvanah-Siddur/) · [Build logs](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})
 
-          Platform results: Windows **${WINDOWS_RESULT}** · Linux **${LINUX_RESULT}** · macOS (both architectures) **${MACOS_RESULT}** · Android **${ANDROID_RESULT}** · GitHub Pages **${PAGES_RESULT}**.
+          - Windows: portable x64 EXE; WebView2 must be available on the system.
+          - Linux: x86_64 AppImage; some distributions require FUSE/system libraries.
+          - macOS: Intel and Apple Silicon app bundles. They are unsigned and not notarized, so macOS may require manual approval.
+          - Android: release-mode universal APK, automatically signed for direct installation. The CI signing key is not a store-distribution key.
 
-          - Windows: directly launch the EXE; WebView2 must be available on the system.
-          - Linux: download one AppImage; make it executable before launching. Some distributions require system libraries/FUSE.
-          - macOS: unzip to obtain one .app (Intel or Apple Silicon). This build is **unsigned and not notarized** and macOS may block it.
-          - Android: the APK is **debug-signed** for testing. Android requires a normal one-time application installation.
-
-          These are test builds, not store releases or signed production packages. If a platform is missing, inspect its job in the linked Actions run.
+          VERSION is the sole release-version source in the repository. Rebuilding the same version replaces the previous GitHub release and assets for that version.
           EOF
-      - name: Create this commit's prerelease with real downloadable assets
+      - name: Replace this version's GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
-          gh release create "build-${GITHUB_RUN_NUMBER}" release/* \
+          gh release delete "$TAG" --yes || true
+          git tag -f "$TAG" "$GITHUB_SHA"
+          git push origin "refs/tags/$TAG" --force
+          gh release create "$TAG" release/* \
             --target "$GITHUB_SHA" \
-            --title "Kavvanah development build #${GITHUB_RUN_NUMBER}" \
+            --title "Kavvanah $VERSION" \
             --notes-file release-notes.md \
-            --prerelease --latest=false
+            --latest

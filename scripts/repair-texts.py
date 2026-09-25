@@ -2,6 +2,9 @@
 """Apply reviewed, exact-Hebrew content repairs without shifting paragraph IDs."""
 import argparse,json
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from siddur_translation_io import load_siddur, save_siddur
 ROOT=Path(__file__).resolve().parents[1]
 
 def apply_repairs(data,corpus,strict=False):
@@ -18,16 +21,13 @@ def apply_repairs(data,corpus,strict=False):
                 if p.get(field) not in [entry['before'][field],value]:
                     raise ValueError('Repair would overwrite changed content: '+entry['section']+' '+field)
                 if p.get(field)!=value:p[field]=value;count+=1
-    for language in ['en','ru','uk']:
-        if any(p.get('translationEditions',{}).get(language)=='kavvanah-supplement-2026' for s in data['sections'] for p in s['paragraphs']) and not any(s.get('id')=='kavvanah-supplement-2026' and s['language']==language for s in data['sources']):
-            data['sources'].append({'id':'kavvanah-supplement-2026','title':'Kavvanah','version':'Kavvanah supplementary translations (2026)','language':language,'license':'','url':'/'})
     return count
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--check',action='store_true');args=parser.parse_args()
     for name in ['ashkenaz','edot']:
-        path=ROOT/f'public/texts/{name}.json';data=json.loads(path.read_text());before=json.dumps(data,ensure_ascii=False);changes=apply_repairs(data,name,strict=True)
+        data=load_siddur(ROOT,name);before=json.dumps(data,ensure_ascii=False,sort_keys=True);changes=apply_repairs(data,name,strict=True)
         if args.check:
-            if json.dumps(data,ensure_ascii=False)!=before:raise ValueError(name+': unapplied repairs')
-        else:path.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
+            if json.dumps(data,ensure_ascii=False,sort_keys=True)!=before:raise ValueError(name+': unapplied repairs')
+        else:save_siddur(ROOT,name,data)
         print(name,changes,'field changes')

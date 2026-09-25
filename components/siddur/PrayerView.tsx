@@ -3,15 +3,17 @@ import { useEffect,useMemo,useState } from 'react';
 import { ArrowLeft,ArrowRight,BookOpen,Search,LoaderCircle } from 'lucide-react';
 import { useUI } from '@/lib/siddur/i18n-context';
 import { prayerForTime } from '@/lib/siddur/navigation';
+import { applySiddurTranslation } from '@/lib/siddur/translations';
 import { Reader } from './Reader';
 import { Choice,EmptyState } from './Controls';
 import { safeRead,safeWrite } from '@/lib/siddur/storage';
 import type { Settings,SiddurData,PersonalTranslations } from '@/lib/siddur/types';
+import type { SiddurTranslationFile } from '@/lib/siddur/translations';
 
 export function PrayerView({settings,patch,personal,setPersonal,requestedTime}:{requestedTime?:string|null;settings:Settings;patch:(v:Partial<Settings>)=>void;personal:PersonalTranslations;setPersonal:(p:PersonalTranslations)=>void}){
  const {t}=useUI();
  const [data,setData]=useState<SiddurData|null>(null),[error,setError]=useState(''),[selected,setSelected]=useState(''),[category,setCategory]=useState('Morning'),[query,setQuery]=useState(''),[retry,setRetry]=useState(0);
- useEffect(()=>{const ac=new AbortController();setData(null);setError('');fetch(`/texts/${settings.nusach}.json`,{signal:ac.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<SiddurData>;}).then((next:SiddurData)=>{setData(next);const old=safeRead<string>(`kavvanah.section.${settings.nusach}`,'');const first=(requestedTime?prayerForTime(requestedTime,next.sections):null)??next.sections.find(p=>p.id===old)??next.sections.find(p=>p.category==='Morning'&&p.title==='Shema')??next.sections.find(p=>p.category==='Morning'&&/shema/i.test(p.title))??next.sections[0];setSelected(first.id);setCategory(first.category);}).catch(e=>{if(e.name!=='AbortError')setError('This prayer edition could not be loaded. Connect to the internet or download it for offline reading.');});return()=>ac.abort();},[settings.nusach,retry,requestedTime]);
+ useEffect(()=>{const ac=new AbortController();setData(null);setError('');Promise.all([fetch(`/texts/${settings.nusach}.json`,{signal:ac.signal}),fetch(`/texts/translations/${settings.translationLanguage}.json`,{signal:ac.signal})]).then(async([baseResponse,translationResponse])=>{if(!baseResponse.ok||!translationResponse.ok)throw Error();const base=await baseResponse.json() as SiddurData;const translations=await translationResponse.json() as SiddurTranslationFile;return applySiddurTranslation(base,translations);}).then((next:SiddurData)=>{setData(next);const old=safeRead<string>(`kavvanah.section.${settings.nusach}`,'');const first=(requestedTime?prayerForTime(requestedTime,next.sections):null)??next.sections.find(p=>p.id===old)??next.sections.find(p=>p.category==='Morning'&&p.title==='Shema')??next.sections.find(p=>p.category==='Morning'&&/shema/i.test(p.title))??next.sections[0];setSelected(first.id);setCategory(first.category);}).catch(e=>{if(e.name!=='AbortError')setError('This prayer edition or translation could not be loaded. Connect to the internet or download it for offline reading.');});return()=>ac.abort();},[settings.nusach,settings.translationLanguage,retry,requestedTime]);
  const sections=useMemo(()=>data?.sections.filter(s=>(category==='All'||s.category===category)&&(!query||`${s.title} ${t(s.title)} ${s.heTitle} ${s.path.join(' ')} ${s.path.map(p=>t(p)).join(' ')}`.toLowerCase().includes(query.toLowerCase())))??[],[data,category,query,settings.uiLanguage]);
  const prayer=data?.sections.find(p=>p.id===selected);
  const index=sections.findIndex(s=>s.id===selected);

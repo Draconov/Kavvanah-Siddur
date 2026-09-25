@@ -42,9 +42,9 @@ Read Hebrew prayers alongside transliteration and translation, explore the Tanak
 
 To use the web app, open the site in a supported browser and use **Install app** or **Add to Home Screen** if available. In Settings, select **Download all texts for offline use** to prepare an offline library. Preferences and personal translations are saved on your current device; export a backup before clearing browser storage or changing devices.
 
-### Downloadable development builds
+### Downloadable releases
 
-Every update to `main` triggers a unified workflow to build and deploy the website and package native apps. It publishes development **prereleases**, not signed production releases. Choose a platform below to view the downloadable packages; availability depends on successful builds.
+Every update to `main` builds the website and native packages. GitHub publishes a normal release using the version in the root `VERSION` file. Rebuilding the same version replaces that version’s previous release and assets in place.
 
 <p>
   <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Windows downloads" src="https://img.shields.io/badge/Windows-EXE-0078D4?style=for-the-badge&logo=windows11&logoColor=white" /></a>
@@ -54,7 +54,7 @@ Every update to `main` triggers a unified workflow to build and deploy the websi
 </p>
 <p>
   <a href="https://github.com/Draconov/Kavvanah-Siddur/actions/workflows/pages.yml"><img alt="View build and deployment workflow" src="https://img.shields.io/badge/View-Build%20status-71614C?style=flat-square&logo=githubactions&logoColor=white" /></a>
-  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Browse all prereleases" src="https://img.shields.io/badge/Browse-All%20releases-152443?style=flat-square&logo=github&logoColor=white" /></a>
+  <a href="https://github.com/Draconov/Kavvanah-Siddur/releases"><img alt="Browse all releases" src="https://img.shields.io/badge/Browse-All%20releases-152443?style=flat-square&logo=github&logoColor=white" /></a>
 </p>
 
 | Platform | Package | Installation and limitations |
@@ -63,9 +63,9 @@ Every update to `main` triggers a unified workflow to build and deploy the websi
 | Linux x64 | `Kavvanah-Linux-x86_64.AppImage` | One AppImage. Mark as executable before running; some distributions need system libraries/FUSE. |
 | macOS Intel | `Kavvanah-macOS-x64.zip` | Unzip to obtain one `Kavvanah.app`. Unsigned and not notarized. |
 | macOS Apple Silicon | `Kavvanah-macOS-arm64.zip` | Unzip to obtain one `Kavvanah.app`. Unsigned and not notarized. |
-| Android | `Kavvanah-Android-universal-debug.apk` | One APK, but Android requires one-time installation. Debug-signed **for testing only**. |
+| Android | `Kavvanah-Android-universal.apk` | Release-mode universal APK. CI signs it for direct installation; the CI key is not a store-distribution signing key. |
 
-These builds are not independently signed production applications. macOS Gatekeeper and Windows SmartScreen may warn or block unsigned builds. The app packages bundle the static website and included texts rather than fetching the UI from GitHub Pages. Live compass support still requires an available device sensor and the necessary permissions. iPhone/iPad users can install the web app from Safari; this workflow does not create an iOS `.ipa`.
+Windows and macOS packages are not code-signed/notarized, so Windows SmartScreen or macOS Gatekeeper may warn or block them. The app packages bundle the static website and included texts rather than fetching the UI from GitHub Pages. Live compass support still requires an available device sensor and the necessary permissions. iPhone/iPad users can install the web app from Safari; this workflow does not create an iOS `.ipa`.
 
 ## Development
 
@@ -84,16 +84,18 @@ pnpm test
 pnpm build
 ```
 
-The static build is generated in `dist/client/`. A ready-to-host build is included in `web/` when supplied with a release. Serve it over HTTP(S), not by opening `index.html` as a local file. To test a `web/` build locally:
+The static build is generated in `dist/client/`; generated website output is not committed to the repository. Serve `dist/client/` over HTTP(S) when testing a production build locally.
 
 ```sh
-python3 -m http.server 8080 --directory web
+python3 -m http.server 8080 --directory dist/client
 ```
+
+`VERSION` is the only release-version source. Change that file (for example from `1.0` to `1.1`) and the build synchronizes the semver fields required by npm, Tauri, Cargo, and Android. Do not maintain release numbers separately in those generated/tooling fields.
 
 [The unified workflow](.github/workflows/pages.yml) deploys the site from `main`. Project Pages hosting requires the path-adaptation step in `scripts/prepare-pages.mjs`. Set the repository's **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
 
 ## Maintenance and licenses
 
-Text importers and reviewed translation mappings live in `scripts/`. After reimporting original editions, run the supplementary importer and then the Toldot importer. Keep paragraph identities stable: personal translations depend on them.
+Hebrew Siddur structure lives in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Siddur translations are stored once per language in `public/texts/translations/en.json`, `ru.json`, and `uk.json`; the app joins the selected language at runtime. Run `python3 scripts/validate-siddur-translations.py` after text maintenance. Tanakh importers and the small Tanakh-only supplement remain in `scripts/`. Keep section and paragraph order stable: personal translations depend on those identities.
 
 Application code is licensed under **GPL-2.0-only**. Text editions, fonts, and third-party dependencies have their own terms. Preserve [LICENSE](LICENSE), [CONTENT_SOURCES.md](CONTENT_SOURCES.md), and the bundled notices when redistributing.

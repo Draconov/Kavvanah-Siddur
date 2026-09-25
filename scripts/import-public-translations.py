@@ -12,7 +12,10 @@ from collections import defaultdict
 import hashlib
 import json
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import re
+from siddur_translation_io import load_siddur, save_siddur
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_SHA256 = '5fbf2ff04f3e87d0cc9ee465fd276f3a8727b4688cdbd8988b99312566b4978e'
@@ -129,7 +132,7 @@ def add_biblical_prayers(books, language='ru', metadata=SOURCE_META):
     updated={}
     for nusach in ('ashkenaz','edot'):
         path=ROOT/'public/texts'/f'{nusach}.json'
-        data=json.loads(path.read_text()); count=0
+        data=load_siddur(ROOT,nusach); count=0
         for section in data['sections']:
             for p in section['paragraphs']:
                 if p.get('translationRefs',{}).get(language):
@@ -168,6 +171,14 @@ def add_biblical_prayers(books, language='ru', metadata=SOURCE_META):
         print(f'{nusach}: {count} complete biblical passages')
     return updated
 
+
+def write_updates(updated, language):
+    for path, data in updated.items():
+        if path.stem in ('ashkenaz', 'edot'):
+            save_siddur(ROOT, path.stem, data, languages=(language,))
+        else:
+            path.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('source', type=Path)
@@ -186,8 +197,7 @@ def main():
     if set(missing)!={'PSA 142:1','SNG 1:1'}:
         raise ValueError(f'Unexpected missing translations: {missing}')
     updated.update(add_biblical_prayers(list(updated.values())))
-    for path,data in updated.items():
-        path.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
+    write_updates(updated, 'ru')
     print('Source SHA-256:',hashlib.sha256(args.source.read_bytes()).hexdigest())
     print('Source omits numbered headings:',', '.join(missing))
     print('Russian Tanakh verses:',sum('ru' in p for d in updated.values() if 'text' in d for c in d['text'] for p in c))
