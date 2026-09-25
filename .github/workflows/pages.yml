@@ -17,14 +17,13 @@ jobs:
     name: Build shared offline website
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v3
         with:
           version: 11.25.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22.13.0'
-          cache: pnpm
+          runtime: node@22.13.0
+          cache: true
+          install: false
       - name: Install and build
         run: |
           pnpm install --frozen-lockfile
@@ -35,7 +34,7 @@ jobs:
           test -f dist/client/texts/translations/ru.json
           test -f dist/client/texts/translations/uk.json
       - name: Share offline-capable website with native build jobs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: kavvanah-web-source
           path: dist/client/
@@ -55,32 +54,32 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: kavvanah-web-source
           path: dist/client
       - name: Adapt site paths for GitHub Pages
         run: node scripts/prepare-pages.mjs
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/client
       - name: Publish website
         id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   windows:
     name: Windows · portable EXE
     needs: website
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: kavvanah-web-source
           path: dist/client
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22.13.0'
       - name: Synchronize version from VERSION
@@ -95,7 +94,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path release | Out-Null
           Copy-Item 'src-tauri/target/release/kavvanah.exe' 'release/Kavvanah-Windows-x64.exe'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Kavvanah-package-windows
           path: release/Kavvanah-Windows-x64.exe
@@ -106,12 +105,12 @@ jobs:
     needs: website
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: kavvanah-web-source
           path: dist/client
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22.13.0'
       - name: Synchronize version from VERSION
@@ -134,7 +133,7 @@ jobs:
           test "$#" -eq 1 && test -f "$1"
           cp "$1" release/Kavvanah-Linux-x86_64.AppImage
           chmod +x release/Kavvanah-Linux-x86_64.AppImage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Kavvanah-package-linux
           path: release/Kavvanah-Linux-x86_64.AppImage
@@ -157,12 +156,12 @@ jobs:
             suffix: arm64
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: kavvanah-web-source
           path: dist/client
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22.13.0'
       - name: Synchronize version from VERSION
@@ -183,7 +182,7 @@ jobs:
           app="src-tauri/target/${{ matrix.target }}/release/bundle/macos/Kavvanah.app"
           test -d "$app"
           ditto -c -k --sequesterRsrc --keepParent "$app" "release/Kavvanah-macOS-${{ matrix.suffix }}.zip"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Kavvanah-package-macos-${{ matrix.suffix }}
           path: release/Kavvanah-macOS-${{ matrix.suffix }}.zip
@@ -194,15 +193,15 @@ jobs:
     needs: website
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: kavvanah-web-source
           path: dist/client
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22.13.0'
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
@@ -250,7 +249,7 @@ jobs:
             --ks-pass pass:changeit --key-pass pass:changeit \
             --out release/Kavvanah-Android-universal.apk "$RUNNER_TEMP/kavvanah-aligned.apk"
           "$apksigner" verify --verbose release/Kavvanah-Android-universal.apk
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Kavvanah-package-android
           path: release/Kavvanah-Android-universal.apk
@@ -263,7 +262,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Read release version
@@ -274,7 +273,7 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "TAG=v$VERSION" >> "$GITHUB_ENV"
       - name: Download platform packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: Kavvanah-package-*
           merge-multiple: true
