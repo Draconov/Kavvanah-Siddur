@@ -13,6 +13,9 @@ test('Hebrew is an interface language without changing reader language choices',
  assert.equal(DEFAULT_SETTINGS.uiLanguage,'en');
  assert.equal(DEFAULT_SETTINGS.accent,'blue');
  assert.equal(DEFAULT_SETTINGS.calendarMode,'hebrew');
+ assert.equal(DEFAULT_SETTINGS.translationEditions.en,'en-jps-1917');
+ assert.equal(DEFAULT_SETTINGS.translationEditions.ru,'ru-synodal-1876');
+ assert.equal(DEFAULT_SETTINGS.translationEditions.uk,'uk-jewish-modern');
 });
 
 test('calendar modes use actual month boundaries through leap months and year changes',()=>{

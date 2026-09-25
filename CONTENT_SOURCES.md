@@ -9,7 +9,8 @@ Kavvanah preserves edition metadata in every book and siddur JSON file. The read
 | Tanakh Hebrew | Tanach with Nikkud | Public Domain |
 | Tanakh English | The Holy Scriptures: A New Translation (JPS 1917) | Public Domain |
 | Russian Tanakh and exact biblical passages in the siddur | Russian Synodal Translation (1876), CrossWire RusSynodal 1.9.1 | Public Domain |
-| Ukrainian Tanakh and exact biblical passages in the siddur | Ukrainian Freedom Bible, historical Kulish–Puluj translation, eBible revision 2025-02-05 | Public Domain |
+| Ukrainian Tanakh · Kulish–Puluj | Ukrainian Freedom Bible, historical Kulish–Puluj translation, eBible revision 2025-02-05 | Public Domain |
+| Ukrainian Tanakh · Ohiienko | Іван Огієнко, 1962 (UBIO / YouVersion edition 186); imported from the user-supplied Old Testament HTML | Source file does not state redistribution terms |
 | Ashkenaz Hebrew | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981; The Metsudah siddur, 1981 | CC-BY |
 | Ashkenaz Hebrew fallback | Daat Siddur Ashkenaz | Public Domain |
 | Ashkenaz English | Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 | CC-BY |
@@ -42,6 +43,29 @@ Siddur translations are no longer duplicated in maintenance manifests: the check
 
 There are five supplementary language entries across four Tanakh verses: Russian Psalm 142:1 and Song of Songs 1:1; Ukrainian Leviticus 21:24, Psalm 148:14, and Song of Songs 1:1. The public-source importers leave these omissions empty so the Tanakh supplement can fill them explicitly. Run `python3 scripts/import-tanakh-supplement.py --check` to verify the checked-in result.
 
+## Preferred Tanakh editions
+
+Kavvanah stores a preferred translation edition independently for English, Russian, and Ukrainian. The edition registry lives in `lib/siddur/translation-editions.json`; adding another Tanakh edition later requires one registry entry and, for a bundled external edition, one edition file at the configured path. Existing users keep a separate preference for each language.
+
+Current edition choices are:
+
+- English: **JPS 1917**.
+- Russian: **Russian Synodal 1876**.
+- Ukrainian default: **Jewish modern · Varda Torah + Turkonjak UTT** — Torah source: the Varda/Publishers Row Ukrainian Torah flipbook supplied for this project; Nevi’im and Ketuvim source: Turkonjak UTT.
+- Ukrainian alternatives: **Огієнко 1962**, **Турконяк · УТТ**, and **Куліш–Пулюй 1905**.
+
+Two Ukrainian Tanakh editions are now fully bundled as independent files under `public/texts/translations/tanakh/`: **Огієнко 1962** and **Куліш–Пулюй 1905**. Each file contains all 23,206 displayed Tanakh verses and exactly matches Kavvanah's 39-book Hebrew structure. Selecting either edition in Settings loads that edition directly; it is no longer a placeholder.
+
+The Ohiienko corpus is built reproducibly by `scripts/import-ukrainian-tanakh-editions.py` from the user-supplied `Biblia_Staryi_zapovit.htm`. The source identifies itself as Metropolitan Ilarion (Ivan Ohiienko)'s 1962 translation from Hebrew. Its reviewed source SHA-256 is `39d01a90dd8d85afe22a2e93f275fd3b6a0180b1ad3a93a61ebf9f4754aa5bd9`. Kavvanah uses explicit mappings for known versification differences rather than chapter-length inference: the grouped commandments in Exodus 20 and Deuteronomy 5, the Numbers 25/26 boundary, 1 Chronicles 12, Nehemiah 7, Orthodox-style Psalm numbering, Isaiah 63/64, and Malachi 3/4. Paragraph metadata keeps the original Ohiienko source reference whenever the displayed Hebrew reference differs.
+
+The user-supplied YouVersion Bible APK is used only as edition/versification metadata, not as a hidden verse corpus. It identifies Ohiienko as version **186 / UBIO** and Turkonjak as **1755 / УТТ**, both with YouVersion versification scheme 4. The reviewed APK SHA-256 is `fa44628ccda9e6282e1c2f067d11d9bf32eef4611accfb677b154e80f1551a7b`. The standalone Turkonjak corpus is still not bundled because the APK contains edition metadata but not the complete verse text.
+
+`uk-kulish-puluj-1905.json` extracts the already reviewed/aligned public-domain Kulish–Puluj corpus from Kavvanah's canonical Tanakh data into its own selectable edition file. It preserves original verse references and the three separately identified Kavvanah omission supplements.
+
+The **Jewish modern · Varda Torah + Turkonjak UTT** preference remains registered as the Ukrainian default but is still incomplete as a standalone bundle. Until both authorized source corpora are imported, it explicitly falls back to Kulish–Puluj and is never relabelled as if the fallback text were Varda/Turkonjak.
+
+Source references: Varda Ukrainian Torah: https://fliphtml5.com/esre/jcde/%D0%A2%D0%BE%D1%80%D0%B0%3A_%D0%9F%E2%80%99%D1%8F%D1%82%D0%B8%D0%BA%D0%BD%D0%B8%D0%B6%D0%B6%D1%8F%C2%A0%D0%9C%D0%BE%D0%B9%D1%81%D0%B5%D1%94%D0%B2%D0%B5/19/ ; Turkonjak UTT: https://www.bible.com/uk/versions/1755 ; Ohiienko 1962: https://www.bible.com/uk/versions/186 .
+
 ## Pronunciation and observance
 
 Latin, Russian, and Ukrainian transliteration is computed with `hebrew-transliteration`. Cyrillic sounds are assigned to individual Hebrew phonemes before rendering, preserving bet/vet, kaf/khaf, pe/fe, and letter boundaries. Silent final he, mappiq, sheva, maqaf context, and divine-name abbreviations have regression tests. Unpointed or unsupported words are retained in Hebrew instead of assigning invented vowels or consonant sounds. Sephardi/Israeli and Ashkenazi reading aids are distinct from nusach. They have not undergone complete professional proofreading and do not encode every community pronunciation.
@@ -69,6 +93,8 @@ The app requires no paid API at runtime. Texts are bundled; date, solar, bearing
 The Hebrew prayer structure is stored only in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Prayer translations are stored once per language in `public/texts/translations/en.json`, `public/texts/translations/ru.json`, and `public/texts/translations/uk.json`. Each language file contains both nusachim, its own source metadata, and paragraph-level reference/edition metadata where needed. The app loads the selected language file and joins it to the Hebrew structure by stable section id and paragraph position. Run `python3 scripts/validate-siddur-translations.py` to verify the split and the complete Russian Ashkenaz coverage.
 
 The Russian file consolidates the reviewed work that was temporarily split across Toldot web excerpts, Toldot Siddur Android EPUB alignment, repeated-passage review, biblical matching and completion batches. Those intermediate batch, audit, duplicate manifest and APK-catalog files are intentionally not retained. All 3,689 displayed Hebrew paragraphs in the current Ashkenaz corpus have Russian text.
+
+English and Ukrainian Ashkenaz completion is being expanded directly in the canonical per-language files rather than through temporary batch manifests. Exact repeated Hebrew is reused only when the existing translation is unambiguous. Exact whole-verse and contiguous-verse passages may reuse the bundled public-domain JPS 1917 English Tanakh or Ukrainian Freedom Bible and retain their source metadata; newly translated liturgical prose is marked as Kavvanah supplementary text. The Weekday Ashkenaz English corpus is complete in the current data set; Shabbat, festival, blessing, and Ukrainian coverage remain in progress.
 
 Toldot Yeshurun passages retain the `toldot-siddur-2011` edition and their Toldot links. The web excerpts come from the 2011 Ashkenaz Siddur series, including https://toldot.com/articles/articles_16075.html and https://toldot.com/articles/articles_16194.html. The source states that republication is welcomed with an active Toldot.com hyperlink after each reproduced item; this is attribution-conditioned permission, not a public-domain or Creative Commons declaration. Additional Toldot passages were aligned against Hebrew/Russian EPUB material in the user-provided Toldot Siddur Android application; the APK itself is not included in the repository. No unrelated publisher text is relabeled as Toldot.
 

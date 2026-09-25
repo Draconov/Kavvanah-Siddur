@@ -29,7 +29,7 @@ Read Hebrew prayers alongside transliteration and translation, explore the Tanak
 | | |
 | :-- | :-- |
 | **Pray your way** | Switch between Hebrew, transliteration, translation, or all reading layers. Choose your preferred prayer tradition and pronunciation aid. |
-| **Read the Tanakh** | Browse the included books and chapters, with personal reading progress. |
+| **Read the Tanakh** | Browse the included books and chapters, choose a preferred translation edition per language, and keep personal reading progress. |
 | **Stay in rhythm** | View the Jewish calendar, local prayer times, and the direction to Jerusalem. |
 | **Make it yours** | Adjust your themes, accent colors, and text preferences. |
 | **Take it offline** | Install the web app and download the included texts, or use a native app with its web resources bundled locally. |
@@ -96,6 +96,6 @@ python3 -m http.server 8080 --directory dist/client
 
 ## Maintenance and licenses
 
-Hebrew Siddur structure lives in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Siddur translations are stored once per language in `public/texts/translations/en.json`, `ru.json`, and `uk.json`; the app joins the selected language at runtime. Run `python3 scripts/validate-siddur-translations.py` after text maintenance. Tanakh importers and the small Tanakh-only supplement remain in `scripts/`. Keep section and paragraph order stable: personal translations depend on those identities.
+Hebrew Siddur structure lives in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Siddur translations are stored once per language in `public/texts/translations/en.json`, `ru.json`, and `uk.json`; the app joins the selected language at runtime. Tanakh edition preferences are data-driven by `lib/siddur/translation-editions.json`, so additional edition files can be added without redesigning Settings. Ukrainian Ohiienko 1962 and Kulish–Puluj are bundled as complete standalone edition files; Turkonjak UTT and the Jewish-modern composite remain registered targets until their complete source corpora are imported. Run `python3 scripts/validate-siddur-translations.py` after text maintenance. Tanakh importers and the small Tanakh-only supplement remain in `scripts/`. Keep section and paragraph order stable: personal translations depend on those identities.
 
 Application code is licensed under **GPL-2.0-only**. Text editions, fonts, and third-party dependencies have their own terms. Preserve [LICENSE](LICENSE), [CONTENT_SOURCES.md](CONTENT_SOURCES.md), and the bundled notices when redistributing.

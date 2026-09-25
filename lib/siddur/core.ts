@@ -1,5 +1,6 @@
 import { HDate, HebrewCalendar, Location, GeoLocation, Zmanim } from '@hebcal/core';
 import type { Place, Settings } from './types.ts';
+import { DEFAULT_TRANSLATION_EDITIONS } from './translation-editions.ts';
 export { HDate };
 
 export const PLACES: Place[] = [
@@ -35,7 +36,7 @@ export const PLACES: Place[] = [
  {name:'Buenos Aires',latitude:-34.6037,longitude:-58.3816,timeZone:'America/Argentina/Buenos_Aires',elevation:25,israel:false},
 ];
 
-export const DEFAULT_SETTINGS: Settings = {uiLanguage:'en',prayerLinks:true,accent:'blue',calendarMode:'hebrew',clockFormat:'24h',theme:'light',nusach:'ashkenaz',pronunciation:'sephardi',transliterationLanguage:'en',translationLanguage:'en',layers:['hebrew','transliteration','translation'],layout:'columns',textSize:26,font:'serif',vowels:true,place:PLACES[0],zmanMethod:'gra',nightfall:'8.5',candleMinutes:18,useElevation:false};
+export const DEFAULT_SETTINGS: Settings = {uiLanguage:'en',prayerLinks:true,accent:'blue',calendarMode:'hebrew',clockFormat:'24h',theme:'light',nusach:'ashkenaz',pronunciation:'sephardi',transliterationLanguage:'en',translationLanguage:'en',translationEditions:{...DEFAULT_TRANSLATION_EDITIONS},layers:['hebrew','transliteration','translation'],layout:'columns',textSize:26,font:'serif',vowels:true,place:PLACES[0],zmanMethod:'gra',nightfall:'8.5',candleMinutes:18,useElevation:false};
 
 export function distanceKm(lat1:number,lon1:number,lat2:number,lon2:number):number{
  const r=Math.PI/180,a=(lat2-lat1)*r,b=(lon2-lon1)*r;

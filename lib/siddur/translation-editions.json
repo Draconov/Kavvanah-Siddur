@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "defaults": {
+    "en": "en-jps-1917",
+    "ru": "ru-synodal-1876",
+    "uk": "uk-jewish-modern"
+  },
+  "editions": [
+    {
+      "id": "en-jps-1917",
+      "language": "en",
+      "label": "JPS 1917",
+      "description": "The Holy Scriptures: A New Translation (JPS 1917)",
+      "builtin": true,
+      "available": true,
+      "source": [
+        "https://www.sefaria.org"
+      ]
+    },
+    {
+      "id": "ru-synodal-1876",
+      "language": "ru",
+      "label": "Russian Synodal 1876",
+      "description": "Russian Synodal Translation (1876), RusSynodal 1.9.1",
+      "builtin": true,
+      "available": true,
+      "source": [
+        "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=RusSynodal"
+      ]
+    },
+    {
+      "id": "uk-jewish-modern",
+      "language": "uk",
+      "label": "Jewish modern · Varda Torah + Turkonjak UTT",
+      "description": "Preferred Ukrainian edition: Varda Ukrainian Torah for the Five Books of Moses, Turkonjak UTT for Nevi’im and Ketuvim.",
+      "builtin": false,
+      "available": false,
+      "fallback": "uk-kulish-puluj-1905",
+      "path": "/texts/translations/tanakh/uk-jewish-modern.json",
+      "source": [
+        "https://fliphtml5.com/esre/jcde/%D0%A2%D0%BE%D1%80%D0%B0%3A_%D0%9F%E2%80%99%D1%8F%D1%82%D0%B8%D0%BA%D0%BD%D0%B8%D0%B6%D0%B6%D1%8F%C2%A0%D0%9C%D0%BE%D0%B9%D1%81%D0%B5%D1%94%D0%B2%D0%B5/19/",
+        "https://www.bible.com/uk/versions/1755"
+      ]
+    },
+    {
+      "id": "uk-ohienko-1962",
+      "language": "uk",
+      "label": "Огієнко 1962",
+      "description": "Біблія в перекладі Івана Огієнка, 1962.",
+      "builtin": false,
+      "available": true,
+      "path": "/texts/translations/tanakh/uk-ohienko-1962.json",
+      "source": [
+        "https://www.bible.com/uk/versions/186",
+        "http://www.ukrlc.org/bible/index.htm"
+      ],
+      "provider": "YouVersion",
+      "providerVersionId": 186,
+      "abbreviation": "UBIO",
+      "versificationSchemeId": 4
+    },
+    {
+      "id": "uk-turkonjak-utt",
+      "language": "uk",
+      "label": "Турконяк · УТТ",
+      "description": "Переклад Р. Турконяка (УТТ), Ukrainian Bible Society.",
+      "builtin": false,
+      "available": false,
+      "fallback": "uk-kulish-puluj-1905",
+      "path": "/texts/translations/tanakh/uk-turkonjak-utt.json",
+      "source": [
+        "https://www.bible.com/uk/versions/1755"
+      ],
+      "provider": "YouVersion",
+      "providerVersionId": 1755,
+      "abbreviation": "УТТ",
+      "versificationSchemeId": 4
+    },
+    {
+      "id": "uk-kulish-puluj-1905",
+      "language": "uk",
+      "label": "Куліш–Пулюй 1905",
+      "description": "Historical Kulish–Puluj Ukrainian translation, bundled through the Ukrainian Freedom Bible edition.",
+      "builtin": false,
+      "available": true,
+      "source": [
+        "https://ebible.org/find/details.php?id=ukrfb"
+      ],
+      "path": "/texts/translations/tanakh/uk-kulish-puluj-1905.json"
+    }
+  ]
+}
