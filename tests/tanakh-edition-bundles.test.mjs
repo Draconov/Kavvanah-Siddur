@@ -79,7 +79,7 @@ test('Kulish bundle preserves the three reviewed Kavvanah omission supplements',
  }
 });
 
-test('Turkonjak bundle exposes only reviewed aligned books and falls back elsewhere',()=>{
+test('Turkonjak bundle exposes all reviewed Tanakh books with narrow per-verse fallback',()=>{
  const data=bundle('uk-turkonjak-utt');
  const meta=registry.editions.find(x=>x.id==='uk-turkonjak-utt');
  assert.equal(data.edition,'uk-turkonjak-utt');
@@ -94,7 +94,7 @@ test('Turkonjak bundle exposes only reviewed aligned books and falls back elsewh
    for(const record of translated.chapters[c]){ assert.ok(recordText(record)?.trim()); total++; }
   }
  }
- assert.equal(total,21179);
+ assert.equal(total,23206);
 });
 
 test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
@@ -104,6 +104,13 @@ test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
  assert.equal(at('genesis',33,7).ref,'TUB GEN 33:6');
  assert.equal(at('genesis',33,7).note,'combined');
  assert.equal(at('genesis',31,51).edition,'uk-ohienko-1962');
+ assert.equal(at('exodus',20,13).ref,'TUB EXO 20:13, TUB EXO 20:14, TUB EXO 20:15, TUB EXO 20:16');
+ assert.equal(at('exodus',20,13).note,'combined');
+ assert.equal(at('exodus',36,8).edition,'uk-ohienko-1962');
+ assert.equal(at('exodus',38,9).ref,'TUB EXO 37:7');
+ assert.equal(at('exodus',38,30).ref,'TUB EXO 39:7, TUB EXO 39:9');
+ assert.equal(at('exodus',39,1).ref,'TUB EXO 36:8');
+ assert.equal(at('exodus',39,39).edition,'uk-ohienko-1962');
  assert.equal(at('deuteronomy',5,17).ref,'TUB DEU 5:17, TUB DEU 5:18, TUB DEU 5:19, TUB DEU 5:20');
  assert.equal(at('deuteronomy',5,18).ref,'TUB DEU 5:21');
  assert.equal(at('deuteronomy',2,14).ref,'TUB DEU 2:13');
@@ -133,6 +140,24 @@ test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
  assert.equal(at('i-samuel',17,12).edition,'uk-ohienko-1962');
  assert.equal(at('i-samuel',17,32).ref,'TUB 1SA 17:12');
  assert.equal(at('i-samuel',18,6).ref,'TUB 1SA 18:1');
+ assert.equal(at('i-kings',2,35).ref,'TUB 1KI 2:35 [canonical clause]');
+ assert.equal(at('i-kings',2,36).ref,'TUB 1KI 2:50');
+ assert.equal(at('i-kings',3,1).edition,'uk-ohienko-1962');
+ assert.equal(at('i-kings',3,2).ref,'TUB 1KI 3:1');
+ assert.equal(at('i-kings',4,20).ref,'TUB 1KI 2:61 [canonical clause]');
+ assert.equal(at('i-kings',5,5).ref,'TUB 1KI 2:67 [canonical clause]');
+ assert.equal(at('i-kings',6,37).ref,'TUB 1KI 6:4');
+ assert.equal(at('i-kings',7,13).ref,'TUB 1KI 7:1');
+ assert.equal(at('i-kings',7,17).edition,'uk-ohienko-1962');
+ assert.equal(at('i-kings',7,51).ref,'TUB 1KI 7:37');
+ assert.equal(at('i-kings',9,15).edition,'uk-ohienko-1962');
+ assert.equal(at('i-kings',9,26).ref,'TUB 1KI 9:15');
+ assert.equal(at('i-kings',12,25).ref,'TUB 1KI 12:48');
+ assert.equal(at('i-kings',14,21).ref,'TUB 1KI 14:1');
+ assert.equal(at('i-kings',20,1).ref,'TUB 1KI 21:1');
+ assert.equal(at('i-kings',21,1).ref,'TUB 1KI 20:1');
+ assert.equal(at('i-kings',22,47).edition,'uk-ohienko-1962');
+ assert.equal(at('i-kings',22,51).ref,'TUB 1KI 22:47');
  assert.equal(at('ii-chronicles',15,19).ref,'TUB 2CH 15:18 [final sentence]');
  assert.equal(at('ii-chronicles',27,8).edition,'uk-ohienko-1962');
  assert.equal(at('ii-chronicles',36,23).ref,'TUB 2CH 36:27 [canonical clause only]');
@@ -166,5 +191,5 @@ test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
  let fallbacks=0;
  for(const book of Object.values(d)) for(const chapter of book.chapters) for(const record of chapter)
   if(record?.edition==='uk-ohienko-1962') fallbacks++;
- assert.equal(fallbacks,386);
+ assert.equal(fallbacks,532);
 });

@@ -23,8 +23,8 @@ YES_ASSET='assets/internal/default_book/uk-utt--1.yes'
 YES_MAGIC=bytes.fromhex('98580d0a005de003')
 BOOKNUM={'genesis':10,'exodus':20,'leviticus':30,'numbers':40,'deuteronomy':50,'joshua':60,'judges':70,'ruth':80,'i-samuel':90,'ii-samuel':100,'i-kings':110,'ii-kings':120,'i-chronicles':130,'ii-chronicles':140,'ezra':150,'nehemiah':160,'esther':190,'job':220,'psalms':230,'proverbs':240,'ecclesiastes':250,'song-of-songs':260,'isaiah':290,'jeremiah':300,'lamentations':310,'ezekiel':330,'daniel':340,'hosea':350,'joel':360,'amos':370,'obadiah':380,'jonah':390,'micah':400,'nahum':410,'habakkuk':420,'zephaniah':430,'haggai':440,'zechariah':450,'malachi':460}
 BOOKCODE={
-    'genesis':'GEN','numbers':'NUM','deuteronomy':'DEU','joshua':'JOS','i-samuel':'1SA',
-    'ii-kings':'2KI','ii-chronicles':'2CH','nehemiah':'NEH','esther':'EST','job':'JOB',
+    'genesis':'GEN','exodus':'EXO','numbers':'NUM','deuteronomy':'DEU','joshua':'JOS','i-samuel':'1SA',
+    'i-kings':'1KI','ii-kings':'2KI','ii-chronicles':'2CH','nehemiah':'NEH','esther':'EST','job':'JOB',
     'psalms':'PSA','proverbs':'PRO','song-of-songs':'SNG','isaiah':'ISA','jeremiah':'JER',
     'ezekiel':'EZK','daniel':'DAN','hosea':'HOS',
 }
@@ -177,7 +177,97 @@ def reviewed_plan(bid,code,by):
         if note: value['note']=note
         return value
 
-    if bid=='numbers':
+    if bid=='exodus':
+        # TUB follows the LXX construction order in Exodus 36-39. Keep only
+        # reviewed canonical correspondences and discard source-only ordering
+        # material rather than attaching it to same-numbered Hebrew verses.
+        skip_range(20,1,max(by[20]))
+        map_range(20,1,12,20,1)
+        for sv in range(13,17): mapv(20,sv,20,13)
+        map_range(20,17,26,20,14)
+
+        for sch in (36,37,38,39): skip_range(sch,1,max(by[sch]))
+        map_range(36,1,7,36,1)
+        map_range(36,8,38,39,1)
+        # LXX courtyard block -> canonical courtyard block.
+        map_range(37,7,21,38,9)
+        # Metals accounting -> canonical Exodus 38:24-31.
+        map_range(39,1,6,38,24)
+        mapv(39,7,38,30); mapv(39,9,38,30); mapv(39,8,38,31)
+        # Presentation of the finished sanctuary -> canonical 39:32-43.
+        mapv(39,10,39,32)
+        mapv(39,13,39,33); mapv(39,20,39,34); mapv(39,14,39,35)
+        mapv(39,17,39,36); mapv(39,16,39,37); mapv(39,15,39,38)
+        mapv(39,19,39,40); mapv(39,21,39,40); mapv(39,18,39,41)
+        mapv(39,22,39,42); mapv(39,23,39,43)
+        # Canonical construction detail not preserved verse-for-verse in the
+        # supplied LXX module stays on the reviewed Ohiienko fallback.
+        fallback_range(36,8,38); fallback_range(37,1,29); fallback_range(38,1,8); fallback(39,39)
+
+    elif bid=='i-kings':
+        # 3 Kingdoms / 1 Kings in the supplied LXX module contains large
+        # additions and several block moves. Reset only the affected source
+        # chapters, then map verified canonical material explicitly.
+        for sch in (2,3,4,5,6,7,9,12,14,20,21,22):
+            skip_range(sch,1,max(by[sch]))
+
+        # Chapter 2: canonical 1-35, then a long Greek summary/addition, then
+        # canonical Shimei 36-46 at source 50-60.
+        map_range(2,1,35,2,1)
+        first,_=split_once(by[2][35],'І царство піднялося')
+        overrides[2,35]=rec(first,'TUB 1KI 2:35 [canonical clause]','split')
+        map_range(2,50,60,2,36)
+
+        # Chapter 3 omits canonical 3:1; the remainder is shifted by one.
+        fallback(3,1); map_range(3,1,27,3,2)
+
+        # Chapter 4 is canonical through v19; v20 survives in the Greek
+        # summary at source 2:61.
+        map_range(4,1,19,4,1); mapv(2,61,4,20)
+        _,last=split_once(by[2][61],'і Юда й Ізраїль')
+        overrides[4,20]=rec(last,'TUB 1KI 2:61 [canonical clause]','split')
+
+        # Chapter 5 has four omitted supply verses plus one empty source slot;
+        # three omitted verses survive in the chapter-2 Greek summary.
+        mapv(2,62,5,1); map_range(5,2,4,5,2); mapv(2,67,5,5); mapv(2,69,5,6)
+        _,last=split_once(by[2][67],'і Юда й Ізраїль')
+        overrides[5,5]=rec(last,'TUB 1KI 2:67 [canonical clause]','split')
+        mapv(5,1,5,7); fallback(5,8); map_range(5,9,32,5,9)
+
+        # Temple construction: source 6:2-3 are additions, 6:4-5 preserve the
+        # canonical closing dates, and 6:6-14 correspond to canonical 2-10.
+        mapv(6,1,6,1); map_range(6,6,14,6,2); fallback_range(6,11,14)
+        map_range(6,15,36,6,15); mapv(6,4,6,37); mapv(6,5,6,38)
+
+        # Chapter 7 places Hiram's bronze work before Solomon's palace. Restore
+        # the Masoretic display order without relabelling source-only material.
+        map_range(7,38,49,7,1)
+        # Hiram's bronze-work block maps sequentially with five canonical
+        # verses omitted and three source-only/duplicate lines.
+        map_range(7,1,4,7,13); fallback(7,17); mapv(7,5,7,18); fallback(7,19)
+        map_range(7,6,8,7,20); skip(7,9)
+        mapv(7,10,7,23); mapv(7,11,7,24); fallback(7,25); mapv(7,12,7,26); skip(7,13)
+        map_range(7,14,17,7,27); fallback(7,31); map_range(7,18,31,7,32); skip(7,32)
+        mapv(7,33,7,46); fallback(7,47); map_range(7,34,37,7,48)
+
+        # Chapter 9 omits canonical 15-25; the fleet closes the chapter.
+        map_range(9,1,14,9,1); fallback_range(9,15,25); map_range(9,15,17,9,26)
+
+        # Chapter 12 contains a long alternate Greek narrative in 25-47; its
+        # canonical ending resumes at source 48.
+        map_range(12,1,24,12,1); map_range(12,48,56,12,25)
+
+        # LXX chapter 14 contains only the Rehoboam close, canonical 14:21-31.
+        fallback_range(14,1,20); map_range(14,1,11,14,21)
+
+        # Naboth and Ben-Hadad chapters are swapped in this source.
+        map_range(20,1,29,21,1); map_range(21,1,43,20,1)
+
+        # Chapter 22 omits the Edom/ships paragraph block before Jehoshaphat's
+        # death; source 47-50 resume at canonical 51-54.
+        map_range(22,1,46,22,1); fallback_range(22,47,50); map_range(22,47,50,22,51)
+
+    elif bid=='numbers':
         # The two census chapters preserve all canonical material but order the
         # tribal blocks differently in the supplied LXX module.
         map_range(1,24,35,1,26)

@@ -31,10 +31,10 @@ test('Jewish modern is a real per-book composite preset, not one global fallback
  assert.equal(prophets.effective.id,'uk-turkonjak-utt');
  assert.equal(prophets.usedFallback,false);
 
- const unresolvedProphets=resolveEditionForBook('uk','uk-jewish-modern','i-kings','Prophets');
- assert.equal(unresolvedProphets.intended.id,'uk-turkonjak-utt');
- assert.equal(unresolvedProphets.effective.id,'uk-ohienko-1962');
- assert.equal(unresolvedProphets.usedFallback,true);
+ const kings=resolveEditionForBook('uk','uk-jewish-modern','i-kings','Prophets');
+ assert.equal(kings.intended.id,'uk-turkonjak-utt');
+ assert.equal(kings.effective.id,'uk-turkonjak-utt');
+ assert.equal(kings.usedFallback,false);
 
  const amos=resolveEditionForBook('uk','uk-jewish-modern','amos','Prophets');
  assert.equal(amos.effective.id,'uk-turkonjak-utt');
@@ -46,7 +46,7 @@ test('Jewish modern is a real per-book composite preset, not one global fallback
  assert.equal(writings.usedFallback,false);
 });
 
-test('partial Turkonjak edition stays preferred and resolves fallback per book',()=>{
+test('complete-book Turkonjak edition stays preferred for every Tanakh book',()=>{
  const resolved=effectiveEdition('uk','uk-turkonjak-utt');
  assert.equal(resolved.preferred.id,'uk-turkonjak-utt');
  assert.equal(resolved.effective.id,'uk-turkonjak-utt');
@@ -55,7 +55,8 @@ test('partial Turkonjak edition stays preferred and resolves fallback per book',
  assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','psalms','Writings').effective.id,'uk-turkonjak-utt');
  assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','isaiah','Prophets').effective.id,'uk-turkonjak-utt');
  assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','jeremiah','Prophets').effective.id,'uk-turkonjak-utt');
- assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','i-kings','Prophets').effective.id,'uk-ohienko-1962');
+ assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','i-kings','Prophets').effective.id,'uk-turkonjak-utt');
+ assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','exodus','Torah').effective.id,'uk-turkonjak-utt');
 });
 
 test('future edition files override only their language',()=>{
