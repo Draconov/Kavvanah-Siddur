@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {TRANSLATION_EDITIONS,applyTanakhTranslation,effectiveEdition,editionsForLanguage} from '../lib/siddur/translation-editions.ts';
+import {TRANSLATION_EDITIONS,applyTanakhTranslation,effectiveEdition,editionsForLanguage,resolveEditionForBook,translationEdition,editionHasMissingComponents} from '../lib/siddur/translation-editions.ts';
 
 test('edition registry has independent defaults and four Ukrainian choices',()=>{
  assert.equal(TRANSLATION_EDITIONS.schema,1);
@@ -12,15 +12,41 @@ test('edition registry has independent defaults and four Ukrainian choices',()=>
  assert.deepEqual(editionsForLanguage('uk').map(x=>x.id),[
   'uk-jewish-modern','uk-ohienko-1962','uk-turkonjak-utt','uk-kulish-puluj-1905'
  ]);
+ assert.equal(translationEdition('uk-varda-torah','uk').selectable,false);
 });
 
-test('unbundled preferred Ukrainian editions fall back without changing the preference',()=>{
- const resolved=effectiveEdition('uk','uk-jewish-modern');
- assert.equal(resolved.preferred.id,'uk-jewish-modern');
- assert.equal(resolved.effective.id,'uk-kulish-puluj-1905');
- assert.equal(resolved.preferred.available,false);
- assert.equal(resolved.effective.available,true);
- assert.equal(resolved.effective.builtin,false);
+test('Jewish modern is a real per-book composite preset, not one global fallback',()=>{
+ const settingsResolution=effectiveEdition('uk','uk-jewish-modern');
+ assert.equal(settingsResolution.preferred.id,'uk-jewish-modern');
+ assert.equal(settingsResolution.effective.id,'uk-jewish-modern');
+ assert.equal(editionHasMissingComponents(settingsResolution.preferred),true);
+
+ const torah=resolveEditionForBook('uk','uk-jewish-modern','genesis','Torah');
+ assert.equal(torah.intended.id,'uk-varda-torah');
+ assert.equal(torah.effective.id,'uk-ohienko-1962');
+ assert.equal(torah.usedFallback,true);
+
+ const prophets=resolveEditionForBook('uk','uk-jewish-modern','isaiah','Prophets');
+ assert.equal(prophets.intended.id,'uk-turkonjak-utt');
+ assert.equal(prophets.effective.id,'uk-ohienko-1962');
+ assert.equal(prophets.usedFallback,true);
+
+ const amos=resolveEditionForBook('uk','uk-jewish-modern','amos','Prophets');
+ assert.equal(amos.effective.id,'uk-turkonjak-utt');
+ assert.equal(amos.usedFallback,false);
+
+ const writings=resolveEditionForBook('uk','uk-jewish-modern','psalms','Writings');
+ assert.equal(writings.intended.id,'uk-turkonjak-utt');
+ assert.equal(writings.effective.id,'uk-ohienko-1962');
+ assert.equal(writings.usedFallback,true);
+});
+
+test('partial Turkonjak edition stays preferred and resolves fallback per book',()=>{
+ const resolved=effectiveEdition('uk','uk-turkonjak-utt');
+ assert.equal(resolved.preferred.id,'uk-turkonjak-utt');
+ assert.equal(resolved.effective.id,'uk-turkonjak-utt');
+ assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','amos','Prophets').effective.id,'uk-turkonjak-utt');
+ assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','isaiah','Prophets').effective.id,'uk-ohienko-1962');
 });
 
 test('future edition files override only their language',()=>{

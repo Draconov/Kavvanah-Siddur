@@ -1,6 +1,12 @@
 import registry from './translation-editions.json' with { type: 'json' };
 import type { BookData, Language, Paragraph, Source } from './types.ts';
 
+export interface TranslationEditionComponent {
+  edition: string;
+  categories?: string[];
+  books?: string[];
+}
+
 export interface TranslationEdition {
   id: string;
   language: Language;
@@ -8,6 +14,8 @@ export interface TranslationEdition {
   description: string;
   builtin: boolean;
   available: boolean;
+  availableBooks?: string[];
+  selectable?: boolean;
   fallback?: string;
   path?: string;
   source: string[];
@@ -15,6 +23,7 @@ export interface TranslationEdition {
   providerVersionId?: number;
   abbreviation?: string;
   versificationSchemeId?: number;
+  composite?: TranslationEditionComponent[];
 }
 
 export interface TranslationEditionRegistry {
@@ -42,11 +51,22 @@ export interface TanakhTranslationFile {
   books: Record<string, TanakhTranslationBook>;
 }
 
+export interface EditionResolution {
+  preferred: TranslationEdition;
+  intended: TranslationEdition;
+  effective: TranslationEdition;
+  usedFallback: boolean;
+}
+
 export const TRANSLATION_EDITIONS = registry as TranslationEditionRegistry;
 export const DEFAULT_TRANSLATION_EDITIONS = TRANSLATION_EDITIONS.defaults;
 
-export function editionsForLanguage(language: Language): TranslationEdition[] {
+function allEditionsForLanguage(language: Language): TranslationEdition[] {
   return TRANSLATION_EDITIONS.editions.filter(edition => edition.language === language);
+}
+
+export function editionsForLanguage(language: Language): TranslationEdition[] {
+  return allEditionsForLanguage(language).filter(edition => edition.selectable !== false);
 }
 
 export function translationEdition(id: string | undefined, language?: Language): TranslationEdition | undefined {
@@ -55,16 +75,51 @@ export function translationEdition(id: string | undefined, language?: Language):
 }
 
 export function preferredEdition(language: Language, id?: string): TranslationEdition {
-  return translationEdition(id, language)
-    ?? translationEdition(TRANSLATION_EDITIONS.defaults[language], language)
-    ?? editionsForLanguage(language)[0]!;
+  const requested = translationEdition(id, language);
+  if (requested?.selectable !== false) return requested;
+  const fallbackDefault = translationEdition(TRANSLATION_EDITIONS.defaults[language], language);
+  if (fallbackDefault?.selectable !== false) return fallbackDefault;
+  return editionsForLanguage(language)[0]!;
+}
+
+function resolveAvailable(language: Language, edition: TranslationEdition, seen = new Set<string>()): TranslationEdition {
+  if (edition.available || edition.builtin) return edition;
+  if (seen.has(edition.id)) return edition;
+  seen.add(edition.id);
+  const fallback = translationEdition(edition.fallback, language);
+  return fallback ? resolveAvailable(language, fallback, seen) : edition;
 }
 
 export function effectiveEdition(language: Language, id?: string): { preferred: TranslationEdition; effective: TranslationEdition } {
   const preferred = preferredEdition(language, id);
-  if (preferred.available || preferred.builtin) return {preferred, effective: preferred};
-  const fallback = translationEdition(preferred.fallback, language);
-  return {preferred, effective: fallback ?? preferred};
+  // Composite presets are resolved per Tanakh book; keeping the preset here prevents
+  // Settings from collapsing an intentionally mixed edition into one global fallback.
+  if (preferred.composite?.length) return {preferred, effective: preferred};
+  return {preferred, effective: resolveAvailable(language, preferred)};
+}
+
+function componentForBook(edition: TranslationEdition, bookId: string, category: string): TranslationEdition | undefined {
+  const component = edition.composite?.find(item =>
+    (!item.books || item.books.includes(bookId)) &&
+    (!item.categories || item.categories.includes(category))
+  );
+  return component ? translationEdition(component.edition, edition.language) : undefined;
+}
+
+export function resolveEditionForBook(language: Language, id: string | undefined, bookId: string, category: string): EditionResolution {
+  const preferred = preferredEdition(language, id);
+  const intended = componentForBook(preferred, bookId, category) ?? preferred;
+  const bookAvailable = !intended.availableBooks || intended.availableBooks.includes(bookId);
+  const effective = bookAvailable ? resolveAvailable(language, intended) : resolveAvailable(language, translationEdition(intended.fallback, language) ?? intended);
+  return {preferred, intended, effective, usedFallback: effective.id !== intended.id};
+}
+
+export function editionHasMissingComponents(edition: TranslationEdition): boolean {
+  if (!edition.composite?.length) return !(edition.available || edition.builtin);
+  return edition.composite.some(component => {
+    const source = translationEdition(component.edition, edition.language);
+    return !source || !(source.available || source.builtin);
+  });
 }
 
 export function applyTanakhTranslation(base: BookData, bundle: TanakhTranslationFile): BookData {

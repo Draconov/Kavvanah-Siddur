@@ -50,6 +50,16 @@ def verify_bible_apk(path: Path):
                     raise ValueError(f'YouVersion {version_id} metadata changed: {meta}')
             if int(schemes[str(version_id)]) != expected['scheme']:
                 raise ValueError(f'YouVersion {version_id} versification scheme changed')
+        # The supplied APK is a metadata source, not a Bible-text archive. Keep this
+        # assertion so a future APK revision cannot silently be treated as a corpus.
+        utt_path = f'{APK_FIRST_RUN}/1755.json'
+        utt_info = apk.getinfo(utt_path)
+        utt_meta = json.loads(apk.read(utt_path))
+        if set(utt_meta) != {'t','a','l'} or utt_info.file_size > 1024:
+            raise ValueError('Unexpected Turkonjak payload in Bible APK; review before importing text')
+        named_utt_assets = [item.filename for item in apk.infolist() if item.filename != utt_path and ('1755' in item.filename.lower() or 'turkon' in item.filename.lower())]
+        if named_utt_assets:
+            raise ValueError(f'Unexpected Turkonjak assets in Bible APK: {named_utt_assets[:5]}')
     return digest
 
 BOOKS = OrderedDict([

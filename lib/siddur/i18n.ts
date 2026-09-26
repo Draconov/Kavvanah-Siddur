@@ -78,6 +78,8 @@ const words:Record<string,[string,string]>={
  'Preferred edition':['Предпочитаемое издание','Бажане видання'],
  'Settings preferred translation edition':['Предпочитаемое издание перевода в настройках','Бажане видання перекладу в налаштуваннях'],
  'This edition is configured but its text is not bundled yet. Kavvanah temporarily uses {edition}.':['Это издание настроено, но его текст пока не включён. Kavvanah временно использует {edition}.','Це видання налаштоване, але його текст іще не включено. Kavvanah тимчасово використовує {edition}.'],
+ 'Missing components use fallback only for the affected Tanakh books.':['Недостающие компоненты используют резервное издание только для затронутых книг Танаха.','Відсутні компоненти використовують резервне видання лише для відповідних книг Танаху.'],
+ '{preferred} is selected. This book temporarily uses {effective} because {intended} is not bundled yet.':['Обрано {preferred}. Для этой книги временно используется {effective}, потому что {intended} пока не включено.','Обрано {preferred}. Для цієї книги тимчасово використовується {effective}, бо {intended} ще не включено.'],
  'Current edition: {edition}':['Текущее издание: {edition}','Поточне видання: {edition}'],
  'Settings text size':['Размер текста в настройках','Розмір тексту в налаштуваннях'],
  'Settings font style':['Шрифт в настройках','Шрифт у налаштуваннях'],

@@ -51,6 +51,8 @@ test('Siddur Hebrew structure and translations are stored separately',()=>{
  const paragraphs=ashkenaz.sections.flatMap(section=>section.paragraphs);
  assert.equal(paragraphs.length,3689);
  assert.equal(paragraphs.filter(p=>p.ru?.trim()).length,3689,'Russian Ashkenaz must remain complete');
+ const edot=hydrateSiddur('edot',['ru']);
+ assert.equal(edot.sections.flatMap(section=>section.paragraphs).filter(p=>p.ru?.trim()).length,647,'Russian Edot reviewed coverage regressed');
 });
 
 test('Kavvanah additions have their own edition attribution and no empty text',()=>{
@@ -114,7 +116,7 @@ test('Ukrainian edition retains its source wording across split and combined ver
  for(const [book,ch,v] of [['leviticus',21,24],['psalms',148,14],['song-of-songs',1,1]])assert.equal(verse(book,ch,v).translationEditions.uk,'kavvanah-supplement-2026');
 });
 
-for(const [language,totals] of Object.entries({ru:{ashkenaz:213,edot:188},uk:{ashkenaz:209,edot:175}}))test(`${language} siddur biblical passages preserve exact complete source wording`,()=>{
+for(const [language,totals] of Object.entries({ru:{ashkenaz:213,edot:187},uk:{ashkenaz:209,edot:175}}))test(`${language} siddur biblical passages preserve exact complete source wording`,()=>{
  const normalized=s=>s.replace(/[^א-ת]/g,'');
  const tanakh=read('catalog').books.map(b=>read(b.id));
  for(const [nusach,total] of Object.entries(totals)){
@@ -139,4 +141,13 @@ test('Toldot attribution remains attached to the Russian translation file',()=>{
  assert.ok(toldot.length>=8);
  assert.ok(toldot.every(p=>p.ru?.trim()&&p.translationRefs?.ru?.startsWith('https://toldot.com/')));
  assert.ok(data.sources.some(source=>source.id==='toldot-siddur-2011'&&source.language==='ru'));
+});
+
+
+test('Hitas Aleinu attribution is limited to the reviewed Edot occurrences',()=>{
+ const data=hydrateSiddur('edot',['ru']);
+ const hitas=data.sections.flatMap(section=>section.paragraphs).filter(p=>p.translationEditions?.ru==='hitas-siddur-3.8.0');
+ assert.equal(hitas.length,21);
+ assert.ok(hitas.every(p=>p.ru?.trim()&&p.translationRefs?.ru?.startsWith('HITAS 3.8.0 APK sha256:')));
+ assert.ok(data.sources.some(source=>source.id==='hitas-siddur-3.8.0'&&source.language==='ru'));
 });

@@ -5,7 +5,7 @@ import { ArrowLeft,ArrowRight,BookOpen,Check,LoaderCircle } from 'lucide-react';
 import { Reader } from './Reader';
 import { Choice,EmptyState } from './Controls';
 import { safeRead,safeWrite } from '@/lib/siddur/storage';
-import { applyTanakhTranslation,effectiveEdition } from '@/lib/siddur/translation-editions';
+import { applyTanakhTranslation,resolveEditionForBook } from '@/lib/siddur/translation-editions';
 import type { TanakhTranslationFile } from '@/lib/siddur/translation-editions';
 import type { BookData,BookInfo,Settings,PersonalTranslations } from '@/lib/siddur/types';
 
@@ -17,10 +17,11 @@ export function TanakhView({settings,patch,personal,setPersonal}:{settings:Setti
   const ac=new AbortController();setBook(null);setError('');setSaved(false);setEditionNotice('');
   const language=settings.translationLanguage;
   const requested=settings.translationEditions[language];
-  const {preferred,effective}=effectiveEdition(language,requested);
-  setActiveEdition(effective.label);
-  if(preferred.id!==effective.id)setEditionNotice(t('This edition is configured but its text is not bundled yet. Kavvanah temporarily uses {edition}.',{edition:effective.label}));
   fetch(`/texts/${bookId}.json`,{signal:ac.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<BookData>;}).then(async(data:BookData)=>{
+   const resolution=resolveEditionForBook(language,requested,data.id,data.category);
+   const {preferred,intended,effective,usedFallback}=resolution;
+   setActiveEdition(preferred.composite?.length&&!usedFallback?`${preferred.label} · ${effective.label}`:effective.label);
+   if(usedFallback)setEditionNotice(t('{preferred} is selected. This book temporarily uses {effective} because {intended} is not bundled yet.',{preferred:preferred.label,effective:effective.label,intended:intended.label}));
    if(effective.builtin||!effective.path)return data;
    const response=await fetch(effective.path,{signal:ac.signal});
    if(!response.ok)throw Error();

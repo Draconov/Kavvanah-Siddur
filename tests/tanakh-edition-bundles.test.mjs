@@ -46,10 +46,13 @@ test('registry exposes real Ohiienko and Kulish bundles and pins YouVersion meta
  assert.equal(byId['uk-ohienko-1962'].versificationSchemeId,4);
  assert.equal(byId['uk-kulish-puluj-1905'].available,true);
  assert.equal(byId['uk-kulish-puluj-1905'].path,'/texts/translations/tanakh/uk-kulish-puluj-1905.json');
- assert.equal(byId['uk-turkonjak-utt'].available,false);
- assert.equal(byId['uk-turkonjak-utt'].providerVersionId,1755);
- assert.equal(byId['uk-turkonjak-utt'].abbreviation,'УТТ');
- assert.equal(byId['uk-turkonjak-utt'].versificationSchemeId,4);
+ assert.equal(byId['uk-turkonjak-utt'].available,true);
+ assert.equal(byId['uk-varda-torah'].available,false);
+ assert.equal(byId['uk-varda-torah'].selectable,false);
+ assert.deepEqual(byId['uk-jewish-modern'].composite,[
+  {edition:'uk-varda-torah',categories:['Torah']},
+  {edition:'uk-turkonjak-utt',categories:['Prophets','Writings']}
+ ]);
 });
 
 test('reviewed Ohiienko versification joins/splits are recorded explicitly',()=>{
@@ -74,4 +77,22 @@ test('Kulish bundle preserves the three reviewed Kavvanah omission supplements',
   assert.equal(record.edition,'kavvanah-supplement-2026');
   assert.match(record.ref,/^KAV /);
  }
+});
+
+test('Turkonjak user-supplied bundle exposes only structurally exact books and falls back elsewhere',()=>{
+ const data=bundle('uk-turkonjak-utt');
+ const meta=registry.editions.find(x=>x.id==='uk-turkonjak-utt');
+ assert.equal(data.edition,'uk-turkonjak-utt');
+ assert.equal(Object.keys(data.books).length,meta.availableBooks.length);
+ let total=0;
+ for(const bookId of meta.availableBooks){
+  const base=readJson(`public/texts/${bookId}.json`);
+  const translated=data.books[bookId];
+  assert.equal(translated.chapters.length,base.text.length);
+  for(let c=0;c<base.text.length;c++){
+   assert.equal(translated.chapters[c].length,base.text[c].length);
+   for(const record of translated.chapters[c]){ assert.ok(recordText(record)?.trim()); total++; }
+  }
+ }
+ assert.equal(total,4091);
 });
