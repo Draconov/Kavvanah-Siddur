@@ -94,7 +94,7 @@ test('Turkonjak bundle exposes only reviewed aligned books and falls back elsewh
    for(const record of translated.chapters[c]){ assert.ok(recordText(record)?.trim()); total++; }
   }
  }
- assert.equal(total,13119);
+ assert.equal(total,21179);
 });
 
 test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
@@ -123,8 +123,48 @@ test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
  assert.equal(at('isaiah',45,25).ref,'TUB ISA 45:24');
  assert.equal(at('isaiah',63,19).ref,'TUB ISA 63:19, TUB ISA 63:20');
  assert.equal(at('hosea',5,15).ref,'TUB HOS 5:15, TUB HOS 5:16');
+ assert.equal(at('numbers',1,24).ref,'TUB NUM 1:36');
+ assert.equal(at('numbers',10,34).ref,'TUB NUM 10:36');
+ assert.equal(at('numbers',26,15).ref,'TUB NUM 26:24');
+ assert.equal(at('numbers',26,23).ref,'TUB NUM 26:19 [Tola/Puvah families]');
+ assert.equal(at('joshua',8,30).ref,'TUB JOS 9:3');
+ assert.equal(at('joshua',20,4).edition,'uk-ohienko-1962');
+ assert.equal(at('joshua',24,29).ref,'TUB JOS 24:30');
+ assert.equal(at('i-samuel',17,12).edition,'uk-ohienko-1962');
+ assert.equal(at('i-samuel',17,32).ref,'TUB 1SA 17:12');
+ assert.equal(at('i-samuel',18,6).ref,'TUB 1SA 18:1');
+ assert.equal(at('ii-chronicles',15,19).ref,'TUB 2CH 15:18 [final sentence]');
+ assert.equal(at('ii-chronicles',27,8).edition,'uk-ohienko-1962');
+ assert.equal(at('ii-chronicles',36,23).ref,'TUB 2CH 36:27 [canonical clause only]');
+ assert.equal(at('nehemiah',3,15).ref,'TUB NEH 3:14, TUB NEH 3:15');
+ assert.equal(at('nehemiah',7,68).ref,'TUB NEH 7:69');
+ assert.equal(at('nehemiah',11,36).ref,'TUB NEH 11:32');
+ assert.equal(at('proverbs',16,1).edition,'uk-ohienko-1962');
+ assert.equal(at('proverbs',31,25).ref,'TUB PRO 31:26');
+ assert.equal(at('proverbs',31,26).ref,'TUB PRO 31:25');
+ assert.equal(at('ezekiel',1,28).ref,'TUB EZK 1:28, TUB EZK 1:29');
+ assert.equal(at('ezekiel',7,1).edition,'uk-ohienko-1962');
+ assert.equal(at('ezekiel',32,1).edition,'uk-ohienko-1962');
+ assert.equal(at('esther',1,1).ref,'TUB EST 1:18');
+ assert.equal(at('esther',3,13).ref,'TUB EST 3:13 [canonical clause]');
+ assert.equal(at('esther',5,3).ref,'TUB EST 5:1');
+ assert.equal(at('esther',9,5).edition,'uk-ohienko-1962');
+ assert.equal(at('esther',9,6).ref,'TUB EST 9:5');
+ assert.equal(at('esther',10,3).ref,'TUB EST 10:3 [canonical clause]');
+ assert.equal(at('daniel',3,24).ref,'TUB DAN 3:91');
+ assert.equal(at('daniel',3,31).ref,'TUB DAN 4:1');
+ assert.equal(at('daniel',4,1).ref,'TUB DAN 4:4');
+ assert.equal(at('jeremiah',2,8).ref,'TUB JER 2:7 [first clause]');
+ assert.equal(at('jeremiah',2,9).ref,'TUB JER 2:7 [final clause]');
+ assert.equal(at('jeremiah',7,2).ref,'TUB JER 7:1');
+ assert.equal(at('jeremiah',17,5).ref,'TUB JER 17:1');
+ assert.equal(at('jeremiah',23,7).ref,'TUB JER 23:41');
+ assert.equal(at('jeremiah',31,35).ref,'TUB JER 31:36');
+ assert.equal(at('jeremiah',33,14).edition,'uk-ohienko-1962');
+ assert.equal(at('jeremiah',39,14).ref,'TUB JER 39:4');
+ assert.equal(at('jeremiah',49,7).ref,'TUB JER 49:6');
  let fallbacks=0;
  for(const book of Object.values(d)) for(const chapter of book.chapters) for(const record of chapter)
   if(record?.edition==='uk-ohienko-1962') fallbacks++;
- assert.equal(fallbacks,28);
+ assert.equal(fallbacks,386);
 });
