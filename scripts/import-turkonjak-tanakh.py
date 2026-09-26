@@ -136,6 +136,35 @@ def exact_book(base,by,oh,bid):
         chapters.append(out)
     return chapters,blanks
 
+def reviewed_exact_patches(chapters,by,bid):
+    """Trim reviewed joins that otherwise appear as an empty next verse.
+
+    These books already match the target chapter/verse shape, so the generic
+    exact importer is correct except for a few TUB lines that contain the text
+    of the following canonical verse while that following SQLite row is empty.
+    Return the number of fallback rows recovered.
+    """
+    recovered=0
+    def rec(text,ref,note='split'): return {'text':text,'ref':ref,'note':note}
+
+    if bid=='leviticus':
+        first,second=split_once(by[19][28],'Не опоганиш твоєї дочки')
+        chapters[18][27]=rec(first,'TUB 19:28 [canonical 19:28 clause]')
+        chapters[18][28]=rec(second,'TUB 19:28 [canonical 19:29 clause]'); recovered+=1
+    elif bid=='ii-samuel':
+        first,second=split_once(by[16][1],'І сказав цар до Сіви: Що це тобі?')
+        chapters[15][0]=rec(first,'TUB 16:1 [canonical 16:1 clause]')
+        chapters[15][1]=rec(second,'TUB 16:1 [canonical 16:2 clause]'); recovered+=1
+    elif bid=='i-chronicles':
+        first,second=split_once(by[11][8],'І Давид пішов')
+        chapters[10][7]=rec(first,'TUB 11:8 [city-building clause]')
+        chapters[10][8]=rec(second,'TUB 11:8 [canonical 11:9 clause]'); recovered+=1
+    elif bid=='lamentations':
+        first,second=split_once(by[4][4],'Ті, що їдять вибагані страви')
+        chapters[3][3]=rec(first,'TUB 4:4 [canonical 4:4 clause]')
+        chapters[3][4]=rec(second,'TUB 4:4 [canonical 4:5 clause]'); recovered+=1
+    return recovered
+
 def judges_book(base,by,oh):
     chapters=[]; blanks=0
     for target_ch,chapter in enumerate(base['text'],1):
@@ -177,7 +206,27 @@ def reviewed_plan(bid,code,by):
         if note: value['note']=note
         return value
 
-    if bid=='exodus':
+    if bid=='genesis':
+        # Two chapter-boundary rows also fold the final Hebrew verse of the
+        # preceding chapter into the first TUB verse of the next chapter.
+        g225,g31=split_once(by[3][1],'Змій же був')
+        overrides[2,25]=rec(g225,'TUB GEN 3:1 [canonical 2:25 clause]','split')
+        overrides[3,1]=rec(g31,'TUB GEN 3:1 [canonical 3:1 clause]','split')
+        g532,g61=split_once(by[6][1],'І сталося коли')
+        overrides[5,32]=rec(g532,'TUB GEN 6:1 [canonical 5:32 clause]','split')
+        overrides[6,1]=rec(g61,'TUB GEN 6:1 [canonical 6:1 clause]','split')
+
+        # TUB 31:46 and 31:48 each contain material belonging to two Hebrew
+        # display verses.  Split those joins so canonical 31:51 no longer
+        # needs a fallback and the neighbouring records do not carry duplicates.
+        p46,p48=split_once(by[31][46],'І сказав йому Лаван:')
+        overrides[31,46]=rec(p46,'TUB GEN 31:46 [canonical 31:46 clause]','split')
+        overrides[31,48]=rec(p48,'TUB GEN 31:46 [canonical 31:48 clause]','split')
+        p51,p52=split_once(by[31][48],'свідчить ця могила')
+        overrides[31,51]=rec(p51,'TUB GEN 31:48 [canonical 31:51 clause]','split')
+        overrides[31,52]=rec(' '.join((p52,by[31][52])).strip(),'TUB GEN 31:48, TUB GEN 31:52 [canonical 31:52 clauses]','combined')
+
+    elif bid=='exodus':
         # TUB follows the LXX construction order in Exodus 36-39. Keep only
         # reviewed canonical correspondences and discard source-only ordering
         # material rather than attaching it to same-numbered Hebrew verses.
@@ -200,9 +249,42 @@ def reviewed_plan(bid,code,by):
         mapv(39,17,39,36); mapv(39,16,39,37); mapv(39,15,39,38)
         mapv(39,19,39,40); mapv(39,21,39,40); mapv(39,18,39,41)
         mapv(39,22,39,42); mapv(39,23,39,43)
+        # The LXX moves several *execution* blocks instead of omitting them.
+        # Recover only same-event construction text; do not substitute the
+        # earlier instruction parallels from Exodus 25-30.
+        mapv(37,1,36,8); mapv(37,2,36,9)
+        mapv(37,3,36,35); mapv(37,4,36,36); mapv(37,5,36,37); mapv(37,6,36,38)
+
+        # Ark, table, lampstand, and anointing-incense execution material is
+        # preserved in TUB/LXX source chapter 38.
+        mapv(38,1,37,1); mapv(38,2,37,2); mapv(38,3,37,3)
+        mapv(38,5,37,6); mapv(38,6,37,7); mapv(38,7,37,8); mapv(38,8,37,9)
+        mapv(38,9,37,10); mapv(38,10,37,13); mapv(38,12,37,16); mapv(38,13,37,17)
+        mapv(38,14,37,18); mapv(38,15,37,18); mapv(38,17,37,23); mapv(38,25,37,29)
+
+        # A few bronze-altar / laver details survive later in the same source
+        # chapter. Split the exact combined network/rings sentence.
+        mapv(38,23,38,3); mapv(38,26,38,8)
+        x384,x385=split_once(by[38][24],'І поклав')
+        overrides[38,4]=rec(x384,'TUB EXO 38:24 [altar network clause]','split')
+        overrides[38,5]=rec(x385,'TUB EXO 38:24 [altar rings clause]','split')
+
         # Canonical construction detail not preserved verse-for-verse in the
         # supplied LXX module stays on the reviewed Ohiienko fallback.
-        fallback_range(36,8,38); fallback_range(37,1,29); fallback_range(38,1,8); fallback(39,39)
+        fallback_range(36,10,34)
+        fallback(37,4,5,11,12,14,15,19,20,21,22,24,25,26,27,28)
+        fallback(38,1,2,6,7); fallback(39,39)
+
+        # Chapter 40 repeats setup/washing language preserved elsewhere in the
+        # same Turkonjak corpus. Reuse only the exact matching clauses.
+        _,x407=split_once(by[30][18],'І поставиш')
+        overrides[40,7]=rec(x407,'TUB EXO 30:18 [canonical repeated 40:7 clause]','canonical repetition')
+        wash=by[38][27]
+        _,wash=split_once(wash,'щоб умивали')
+        x4031,x4032=split_once(wash,'коли вони входили')
+        overrides[40,31]=rec(x4031,'TUB EXO 38:27 [canonical repeated 40:31 clause]','canonical repetition')
+        overrides[40,32]=rec(x4032,'TUB EXO 38:27 [canonical repeated 40:32 clause]','canonical repetition')
+        overrides[40,11]=rec(' '.join((by[30][28],by[30][29])).strip(),'TUB EXO 30:28-29 [canonical repeated 40:11 basin/anointing clause]','canonical repetition')
 
     elif bid=='i-kings':
         # 3 Kingdoms / 1 Kings in the supplied LXX module contains large
@@ -218,8 +300,11 @@ def reviewed_plan(bid,code,by):
         overrides[2,35]=rec(first,'TUB 1KI 2:35 [canonical clause]','split')
         map_range(2,50,60,2,36)
 
-        # Chapter 3 omits canonical 3:1; the remainder is shifted by one.
-        fallback(3,1); map_range(3,1,27,3,2)
+        # Canonical 3:1 survives at the start of the chapter-2 Greek summary;
+        # the actual source chapter 3 then resumes at canonical 3:2.
+        k31,_=split_once(by[2][38],'доки він')
+        overrides[3,1]=rec(k31,'TUB 1KI 2:38 [canonical 3:1 clause]','split')
+        map_range(3,1,27,3,2)
 
         # Chapter 4 is canonical through v19; v20 survives in the Greek
         # summary at source 2:61.
@@ -232,33 +317,82 @@ def reviewed_plan(bid,code,by):
         mapv(2,62,5,1); map_range(5,2,4,5,2); mapv(2,67,5,5); mapv(2,69,5,6)
         _,last=split_once(by[2][67],'і Юда й Ізраїль')
         overrides[5,5]=rec(last,'TUB 1KI 2:67 [canonical clause]','split')
-        mapv(5,1,5,7); fallback(5,8); map_range(5,9,32,5,9)
+        mapv(5,1,5,7); fallback(5,8); map_range(5,9,30,5,9)
+        # The foundation/builders clauses moved to source 6:2-3.
+        mapv(6,2,5,31); mapv(6,3,5,32)
 
-        # Temple construction: source 6:2-3 are additions, 6:4-5 preserve the
-        # canonical closing dates, and 6:6-14 correspond to canonical 2-10.
+        # Temple construction: 6:4-5 preserve the canonical closing dates,
+        # and 6:6-14 correspond to canonical 6:2-10.
         mapv(6,1,6,1); map_range(6,6,14,6,2); fallback_range(6,11,14)
         map_range(6,15,36,6,15); mapv(6,4,6,37); mapv(6,5,6,38)
 
         # Chapter 7 places Hiram's bronze work before Solomon's palace. Restore
         # the Masoretic display order without relabelling source-only material.
         map_range(7,38,49,7,1)
-        # Hiram's bronze-work block maps sequentially with five canonical
-        # verses omitted and three source-only/duplicate lines.
-        map_range(7,1,4,7,13); fallback(7,17); mapv(7,5,7,18); fallback(7,19)
-        map_range(7,6,8,7,20); skip(7,9)
-        mapv(7,10,7,23); mapv(7,11,7,24); fallback(7,25); mapv(7,12,7,26); skip(7,13)
-        map_range(7,14,17,7,27); fallback(7,31); map_range(7,18,31,7,32); skip(7,32)
-        mapv(7,33,7,46); fallback(7,47); map_range(7,34,37,7,48)
+        # Hiram's bronze-work block has several local LXX compressions and
+        # reorders. Map the objects themselves rather than assuming sequence.
+        map_range(7,1,4,7,13)
+        mapv(7,5,7,17); mapv(7,6,7,18); mapv(7,8,7,19); mapv(7,9,7,20); mapv(7,7,7,21)
+        fallback(7,22)
+        mapv(7,10,7,23); mapv(7,11,7,24); mapv(7,13,7,25); mapv(7,12,7,26)
+        map_range(7,14,17,7,27); fallback(7,31); map_range(7,18,31,7,32)
+        mapv(7,33,7,46); mapv(7,32,7,47); map_range(7,34,37,7,48)
 
-        # Chapter 9 omits canonical 15-25; the fleet closes the chapter.
-        map_range(9,1,14,9,1); fallback_range(9,15,25); map_range(9,15,17,9,26)
+        # Canonical 8:12-13 survives as the appended Solomon poem in TUB 8:53.
+        k853,poem=split_once(by[8][53],'Тоді сказав Соломон про дім')
+        _,darkhouse=split_once(poem,'Господь сказав')
+        k812,k813rest=split_once(darkhouse,'Збудуй мій дім')
+        k813,_=split_once(k813rest,'Чи не ось це')
+        overrides[8,53]=rec(k853,'TUB 1KI 8:53 [canonical 8:53 clause]','split')
+        overrides[8,12]=rec(k812,'TUB 1KI 8:53 [canonical 8:12 poem clause]','split')
+        overrides[8,13]=rec(k813,'TUB 1KI 8:53 [canonical 8:13 poem clause]','split')
+
+        # Chapter 9 omits most of canonical 15-23, but 24-25 are preserved in
+        # the chapter-2 Greek summary before the fleet closes the chapter.
+        map_range(9,1,14,9,1); fallback_range(9,15,23); mapv(2,41,9,24); mapv(2,42,9,25)
+        map_range(9,15,17,9,26)
+
+        # Canonical 12:2 is folded into the end of TUB 11:43.
+        k1143,k1202=split_once(by[11][43],'І сталося, що як почув Єровоам')
+        overrides[11,43]=rec(k1143,'TUB 1KI 11:43 [canonical 11:43 clause]','split')
+        overrides[12,2]=rec(k1202,'TUB 1KI 11:43 [canonical 12:2 clause]','split')
 
         # Chapter 12 contains a long alternate Greek narrative in 25-47; its
         # canonical ending resumes at source 48.
         map_range(12,1,24,12,1); map_range(12,48,56,12,25)
 
         # LXX chapter 14 contains only the Rehoboam close, canonical 14:21-31.
+        # A few Jeroboam/Ahijah details survive in the alternate narrative at
+        # TUB 12:31-37; recover only clauses with direct canonical equivalents.
         fallback_range(14,1,20); map_range(14,1,11,14,21)
+        k1401,_=split_once(by[12][31],'І пішов Єровоам')
+        overrides[14,1]=rec(k1401,'TUB 1KI 12:31 [canonical 14:1 clause]','split')
+        _,k1412=split_once(by[12][35],'Ось ти відійдеш')
+        overrides[14,12]=rec(k1412,'TUB 1KI 12:35 [canonical 14:12 clause]','split')
+        k1411,k1413=split_once(by[12][36],'І оплакуватимуть дитину')
+        overrides[14,11]=rec(k1411,'TUB 1KI 12:36 [canonical 14:11 clause]','split')
+        overrides[14,13]=rec(k1413,'TUB 1KI 12:36 [canonical 14:13 clause]','split')
+        overrides[14,17]=rec(by[12][37],'TUB 1KI 12:37 [canonical 14:17 event]','canonical parallel')
+
+        # Source 11:1 folds the canonical wife count (11:3) into the middle of
+        # canonical 11:1. Rebuild the two display verses without duplication.
+        k111,krest=split_once(by[11][1],'І було в нього сімсот жінок')
+        k113,k111b=split_once(krest,'І він взяв жінок - чужинок')
+        overrides[11,1]=rec(' '.join((k111,k111b)).strip(),'TUB 1KI 11:1 [canonical 11:1 clauses]','split')
+        overrides[11,3]=rec(k113,'TUB 1KI 11:1 [canonical 11:3 clause]','split')
+
+        # A few Hebrew verses are canonical repetitions or are joined to the
+        # preceding TUB line. Reuse/split only the exact matching source text.
+        k1627,k1628=split_once(by[16][27],'І заснув Амврій')
+        overrides[16,27]=rec(k1627,'TUB 1KI 16:27 [canonical 16:27 clause]','split')
+        overrides[16,28]=rec(k1628,'TUB 1KI 16:27 [canonical 16:28 clause]','split')
+        k1327,_=split_once(by[13][13],'і він сів на нього')
+        overrides[13,27]=rec(k1327,'TUB 1KI 13:13 [canonical repeated 13:27 clause]','canonical repetition')
+        overrides[15,6]=rec(by[14][10],'TUB 1KI 14:10 [canonical repeated 15:6 clause]','canonical repetition')
+        overrides[15,32]=rec(by[15][16],'TUB 1KI 15:16 [canonical repeated 15:32 clause]','canonical repetition')
+        k1915,k1916=split_once(by[19][15],'І Ія сина Намессія')
+        overrides[19,15]=rec(k1915,'TUB 1KI 19:15 [Hazael clause]','split')
+        overrides[19,16]=rec(k1916,'TUB 1KI 19:15 [Jehu/Elisha clause]','split')
 
         # Naboth and Ben-Hadad chapters are swapped in this source.
         map_range(20,1,29,21,1); map_range(21,1,43,20,1)
@@ -294,7 +428,10 @@ def reviewed_plan(bid,code,by):
         map_range(26,46,47,26,42)
 
     elif bid=='joshua':
-        fallback(8,12,13,26)
+        first,last=split_once(by[7][2],'І повернулися до Ісуса')
+        overrides[7,2]=rec(first,'TUB JOS 7:2 [reconnaissance clause]','split')
+        overrides[7,3]=rec(last,'TUB JOS 7:2 [report clause]','split')
+        fallback(8,13,26)
         map_range(9,3,8,8,30)
         map_range(9,9,33,9,3)
         fallback(10,15,43)
@@ -325,7 +462,12 @@ def reviewed_plan(bid,code,by):
         a,b=split_once(by[22][11],'І він був з нею схований')
         overrides[22,11]=rec(a,'TUB 2CH 22:11 [rescue clause]','split')
         overrides[22,12]=rec(b,'TUB 2CH 22:11 [concealment clause]','split')
-        mapv(27,8,27,9); fallback(27,8)
+        # Hebrew 27:8 repeats the king's age/reign from 27:1; the LXX/TUB
+        # omits that duplicate line.  Reuse only the matching clause from
+        # TUB 27:1, while source 27:8 remains canonical 27:9.
+        repeated,_=split_once(by[27][1],', й імя його матері')
+        overrides[27,8]=rec(repeated,'TUB 2CH 27:1 [canonical repeated 27:8 clause]','canonical repetition')
+        mapv(27,8,27,9)
         prefix,_=split_once(by[35][19],'І цар Йосія спалив')
         overrides[35,19]=rec(prefix,'TUB 2CH 35:19 [canonical clause]','split')
         skip_range(36,6,9); map_range(36,10,27,36,6)
@@ -335,6 +477,10 @@ def reviewed_plan(bid,code,by):
         overrides[36,23]=rec(text[:-len(suffix)].strip(),'TUB 2CH 36:27 [canonical clause only]','split')
 
     elif bid=='nehemiah':
+        # TUB 2:17 contains both canonical 2:17 and the otherwise-empty 2:18.
+        a,b=split_once(by[2][17],'І сповістив я їм')
+        overrides[2,17]=rec(a,'TUB NEH 2:17 [canonical 2:17 clause]','split')
+        overrides[2,18]=rec(b,'TUB NEH 2:17 [canonical 2:18 clause]','split')
         a,b=split_once(by[3][6],'І при їхній руці скріплював')
         overrides[3,6]=rec(a,'TUB NEH 3:6 [Old Gate clause]','split')
         overrides[3,7]=rec(b,'TUB NEH 3:6 [next builders]','split')
@@ -347,21 +493,99 @@ def reviewed_plan(bid,code,by):
         skip_range(11,25,31); mapv(11,32,11,36)
 
     elif bid=='proverbs':
-        # These four LXX chapters substantially omit/reorder Masoretic verses;
-        # keep their canonical display on the existing reviewed fallback.
-        skip_chapters.update({16,18,19,20})
-        for ch in skip_chapters: fallback_range(ch,1,max(by[ch]))
+        # Proverbs 16 is strongly reordered in the LXX.  The supplied TUB
+        # chapter nevertheless preserves most Masoretic sayings after the
+        # opening additions/omissions.  Map only the reviewed correspondences.
+        skip_range(16,1,max(by[16]))
+        mapv(16,5,16,4); mapv(16,2,16,5)
+        map_range(16,6,12,16,10)
+        first,rest=split_once(by[16][13],'Хто сприймає напоумлення')
+        _,rest=split_once(rest,'Хто береже свої дороги')
+        guarded,_=split_once(rest,'Хто любить своє життя')
+        overrides[16,17]=rec(' '.join((first,guarded)).strip(),'TUB PRO 16:13 [canonical clauses]','split')
+        map_range(16,14,29,16,18)
+
+        # Proverbs 18:1-21 are in canonical order.  Source 18:22 carries the
+        # canonical wife saying followed by LXX-only/cross-chapter material.
+        wife,_=split_once(by[18][22],'Хто викидає добру жінку')
+        overrides[18,22]=rec(wife,'TUB PRO 18:22 [canonical clause]','split')
+
+        # TUB Proverbs 19 starts with canonical 19:4; MT 19:1-3 are absent.
+        map_range(19,1,26,19,4)
+
+        # Proverbs 20 keeps 1-13, but source 20:9 also carries canonical
+        # 20:20-22 and source 20:13 carries canonical 20:23.  Verses 14-19
+        # are absent in this LXX form; source 14-20 resume at canonical 24-30.
+        skip(20,9)
+        p9,rest=split_once(by[20][9],'Хто злословить батька')
+        p20,rest=split_once(rest,'Часть раніше поспішно')
+        p21,p22=split_once(rest,'Не кажи:')
+        overrides[20,9]=rec(p9,'TUB PRO 20:9 [canonical 20:9 clause]','split')
+        overrides[20,20]=rec(p20,'TUB PRO 20:9 [canonical 20:20 clause]','split')
+        overrides[20,21]=rec(p21,'TUB PRO 20:9 [canonical 20:21 clause]','split')
+        overrides[20,22]=rec(p22,'TUB PRO 20:9 [canonical 20:22 clause]','split')
+        skip(20,13)
+        p13,p23=split_once(by[20][13],'Подвійна важка гидота')
+        overrides[20,13]=rec(p13,'TUB PRO 20:13 [canonical 20:13 clause]','split')
+        overrides[20,23]=rec(p23,'TUB PRO 20:13 [canonical 20:23 clause]','split')
+        map_range(20,14,20,20,24)
+
         # Proverbs 31:25-26 are transposed in the supplied TUB module.
         mapv(31,25,31,26); mapv(31,26,31,25)
 
+    elif bid=='psalms':
+        # Hebrew Psalm 116:14 and 116:18 repeat the same vow formula. TUB's
+        # LXX Psalm 115 keeps it only once (at source 115:9 -> Hebrew 116:18),
+        # so reuse that exact Turkonjak line for the earlier canonical repeat.
+        overrides[116,14]=rec(by[115][9],'TUB PSA 115:9 [canonical repeated 116:14 clause]','canonical repetition')
+
     elif bid=='ezekiel':
-        # Chapter 7 is internally reordered in the LXX text; chapter 32 has a
-        # different omitted/split sequence.  Keep those two chapters canonical
-        # until a phrase-level mapping is separately reviewed.
-        skip_chapters.update({7,32})
-        fallback_range(7,1,27); fallback_range(32,1,32)
         fallback(1,14)
         overrides[1,28]=rec(' '.join((by[1][28],by[1][29])).strip(),'TUB EZK 1:28, TUB EZK 1:29','combined')
+
+        # Ezekiel 7 has the same material as the Masoretic chapter, but the
+        # opening judgement formula is rearranged.  Restore the display order
+        # and split TUB 7:10 into canonical 7:6 and 7:10.
+        skip_range(7,1,max(by[7]))
+        mapv(7,1,7,1); mapv(7,2,7,2); mapv(7,7,7,3); mapv(7,8,7,4)
+        fallback(7,5)
+        p6,p10=split_once(by[7][10],'ось господний день.')
+        overrides[7,6]=rec(p6,'TUB EZK 7:10 [end formula]','split')
+        overrides[7,10]=rec(p10,'TUB EZK 7:10 [day/rod clause]','split')
+        mapv(7,4,7,7); mapv(7,5,7,8); mapv(7,6,7,9)
+        map_range(7,11,27,7,11)
+
+        # Several empty TUB rows elsewhere in Ezekiel are not omissions: the
+        # canonical verse is joined to the preceding source row. Split only at
+        # exact reviewed phrases from the hash-pinned corpus.
+        p3,p4=split_once(by[22][3],'ти переступило в їхній крові')
+        overrides[22,3]=rec(p3,'TUB EZK 22:3 [canonical 22:3 clause]','split')
+        overrides[22,4]=rec(p4,'TUB EZK 22:3 [canonical 22:4 clause]','split')
+        p6,p7=split_once(by[24][6],'Бо його кров посеред нього')
+        overrides[24,6]=rec(p6,'TUB EZK 24:6 [canonical 24:6 clause]','split')
+        overrides[24,7]=rec(p7,'TUB EZK 24:6 [canonical 24:7 clause]','split')
+        p2,rest=split_once(by[30][2],'бо близько господний день')
+        p3,p4=split_once(rest,'І прийде меч')
+        overrides[30,2]=rec(p2,'TUB EZK 30:2 [canonical 30:2 clause]','split')
+        overrides[30,3]=rec(p3,'TUB EZK 30:2 [canonical 30:3 clause]','split')
+        overrides[30,4]=rec(p4,'TUB EZK 30:2 [canonical 30:4 clause]','split')
+        p3,p4=split_once(by[34][3],'Ви не скріплюєте слабке')
+        overrides[34,3]=rec(p3,'TUB EZK 34:3 [canonical 34:3 clause]','split')
+        overrides[34,4]=rec(p4,'TUB EZK 34:3 [canonical 34:4 clause]','split')
+
+        # Ezekiel 32 is nearly verse-for-verse.  The sole substantial loss is
+        # canonical 32:25; source 32:21 combines 19/21, while 22-23 split the
+        # Asshur paragraph across the opposite boundary.
+        skip_range(32,1,max(by[32]))
+        map_range(32,1,18,32,1)
+        mapv(32,20,32,20)
+        p21,p19=split_once(by[32][21],'Від кого ти кращий?')
+        overrides[32,21]=rec(p21,'TUB EZK 32:21 [mighty-men introduction]','split')
+        overrides[32,19]=rec(p19,'TUB EZK 32:21 [canonical 32:19 clause]','split')
+        p22,p23=split_once(by[32][22],'і їхний гріб в глибині ями')
+        overrides[32,22]=rec(p22,'TUB EZK 32:22 [Asshur clause]','split')
+        overrides[32,23]=rec(' '.join((p23,by[32][23])).strip(),'TUB EZK 32:22-23 [grave clause]','combined')
+        mapv(32,24,32,24); fallback(32,25); map_range(32,26,32,32,26)
 
     elif bid=='esther':
         skip_range(1,1,17); map_range(1,18,39,1,1)
@@ -370,9 +594,12 @@ def reviewed_plan(bid,code,by):
         skip_range(3,14,19); mapv(3,20,3,14); mapv(3,21,3,15)
         fallback(4,6)
         # Greek prayers and the expanded royal audience follow canonical 4:17.
+        # Preserve the two canonical audience verses from that expanded block.
         skip_range(4,18,45)
-        map_range(5,1,12,5,3); fallback(5,1,2)
-        skip(8,9); fallback(8,9); skip_range(8,13,36)
+        overrides[5,1]=rec(' '.join((by[4][31],by[4][36])).strip(),'TUB EST 4:31, TUB EST 4:36 [canonical audience clauses]','combined')
+        overrides[5,2]=rec(' '.join((by[4][38],by[4][42])).strip(),'TUB EST 4:38, TUB EST 4:42 [canonical sceptre clauses]','combined')
+        map_range(5,1,12,5,3)
+        skip_range(8,13,36)
         map_range(8,37,41,8,13)
         # TUB 9:5 is the Susa 500-dead verse (canonical 9:6); canonical 9:5
         # itself is omitted and 9:6 is an empty placeholder in the module.
@@ -391,6 +618,37 @@ def reviewed_plan(bid,code,by):
         map_range(4,4,37,4,1)
 
     elif bid=='jeremiah':
+        # Several empty target rows are actually joined to the preceding TUB
+        # verse. Split them only at exact phrases from the pinned source.
+        a,b=split_once(by[1][6],'І Господь сказав до мене:')
+        overrides[1,6]=rec(a,'TUB JER 1:6 [canonical 1:6 clause]','split')
+        overrides[1,7]=rec(b,'TUB JER 1:6 [canonical 1:7 clause]','split')
+        a,b=split_once(by[4][10],'В тому часі скажуть')
+        overrides[4,10]=rec(a,'TUB JER 4:10 [canonical 4:10 clause]','split')
+        overrides[4,11]=rec(b,'TUB JER 4:10 [canonical 4:11 clause]','split')
+        a,b=split_once(by[14][13],'І Господь сказав до мене:')
+        overrides[14,13]=rec(a,'TUB JER 14:13 [canonical 14:13 clause]','split')
+        overrides[14,14]=rec(b,'TUB JER 14:13 [canonical 14:14 clause]','split')
+        a,b=split_once(by[19][5],'Через це ось приходять дні')
+        overrides[19,5]=rec(a,'TUB JER 19:5 [canonical 19:5 clause]','split')
+        overrides[19,6]=rec(b,'TUB JER 19:5 [canonical 19:6 clause]','split')
+        j2212,rest=split_once(by[22][12],'Він що будує свій дім')
+        j2213,j2214a=split_once(rest,'Ти збудував собі гарний дім')
+        overrides[22,12]=rec(j2212,'TUB JER 22:12 [canonical 22:12 clause]','split')
+        overrides[22,13]=rec(j2213,'TUB JER 22:12 [canonical 22:13 clause]','split')
+        overrides[22,14]=rec(' '.join((j2214a,by[22][13])).strip(),'TUB JER 22:12-13 [canonical 22:14 clauses]','combined')
+        a,b=split_once(by[23][26],'Які задумують')
+        overrides[23,26]=rec(a,'TUB JER 23:26 [canonical 23:26 clause]','split')
+        overrides[23,27]=rec(b,'TUB JER 23:26 [canonical 23:27 clause]','split')
+        a,b=split_once(by[32][17],'Ти, що чиниш милосердя')
+        overrides[32,17]=rec(a,'TUB JER 32:17 [canonical 32:17 clause]','split')
+        overrides[32,18]=rec(b,'TUB JER 32:17 [canonical 32:18 clause]','split')
+        a,rest=split_once(by[34][5],'І Єремія сказав')
+        b,c=split_once(rest,'І сила царя Вавилону')
+        overrides[34,5]=rec(a,'TUB JER 34:5 [canonical 34:5 clause]','split')
+        overrides[34,6]=rec(b,'TUB JER 34:5 [canonical 34:6 clause]','split')
+        overrides[34,7]=rec(c,'TUB JER 34:5 [canonical 34:7 clause]','split')
+
         # 2:1 is absent; TUB 2:7 folds canonical 2:8-9 into one source line.
         fallback(2,1); map_range(2,1,6,2,2)
         a,b=split_once(by[2][7],'Через це ще судитимуся')
@@ -401,23 +659,41 @@ def reviewed_plan(bid,code,by):
         fallback(7,1,27); map_range(7,1,25,7,2); map_range(7,26,32,7,28)
         # LXX TUB begins this chapter at canonical 17:5.
         fallback_range(17,1,4); map_range(17,1,23,17,5)
-        # Canonical 23:7-8 are duplicated at the end of the TUB chapter; 23:27
-        # itself is absent.
-        skip(23,7); skip(23,8); skip(23,27); fallback(23,27)
+        # Canonical 23:7-8 are duplicated at the end of the TUB chapter. Source
+        # 23:27 itself is empty; canonical 23:27 was recovered above from 23:26.
+        skip(23,7); skip(23,8); skip(23,27)
         mapv(23,41,23,7); mapv(23,42,23,8)
         # Five Masoretic verses are absent in the shorter LXX form.
         fallback(27,1,7,13,17,20)
         map_range(27,1,6,27,2); map_range(27,7,10,27,8)
+        overrides[27,12]=rec(' '.join((by[27][10],by[27][11])).strip(),'TUB JER 27:10-11 [canonical 27:12 address to Zedekiah]','combined')
         map_range(27,11,13,27,14); map_range(27,14,15,27,18); map_range(27,16,17,27,21)
         # The supplied LXX text ends this chapter after canonical 33:13.
         fallback_range(33,14,26)
-        # TUB 39:4-8 contain canonical 39:14-18; the capture/exile block is
-        # absent from this chapter in the source.
+        # TUB 39:4-8 contain canonical 39:14-18. The capture/exile block is
+        # absent here, but much of it is repeated verbatim in TUB Jeremiah 52.
         fallback_range(39,4,13); map_range(39,4,8,39,14)
+        overrides[39,4]=rec(by[52][7],'TUB JER 52:7 [canonical repeated 39:4 event]','canonical repetition')
+        overrides[39,5]=rec(' '.join((by[52][8],by[52][9])).strip(),'TUB JER 52:8-9 [canonical repeated 39:5 event]','canonical repetition')
+        overrides[39,6]=rec(by[52][10],'TUB JER 52:10 [canonical repeated 39:6 event]','canonical repetition')
+        overrides[39,7]=rec(by[52][11],'TUB JER 52:11 [canonical repeated 39:7 event]','canonical repetition')
+        overrides[39,8]=rec(' '.join((by[52][13],by[52][14])).strip(),'TUB JER 52:13-14 [canonical repeated 39:8 event]','canonical repetition')
+        overrides[39,10]=rec(by[52][16],'TUB JER 52:16 [canonical repeated 39:10 event]','canonical repetition')
         fallback_range(48,45,47)
         fallback(49,6); map_range(49,6,38,49,7)
         # 31:35-37 are present but appear in a 37,35,36 order.
         mapv(31,35,31,37); mapv(31,36,31,35); mapv(31,37,31,36)
+
+        # Later MT locations repeat wording that is still preserved elsewhere
+        # in this shorter LXX module. Reuse only exact canonical repetitions.
+        overrides[8,11]=rec(by[6][14],'TUB JER 6:14 [canonical repeated 8:11 clause]','canonical repetition')
+        overrides[8,12]=rec(by[6][15],'TUB JER 6:15 [canonical repeated 8:12 clause]','canonical repetition')
+        j2218,j2219=split_once(by[22][18],'Похороном осла')
+        overrides[22,18]=rec(j2218,'TUB JER 22:18 [canonical 22:18 clause]','split')
+        overrides[22,19]=rec(j2219,'TUB JER 22:18 [canonical 22:19 clause]','split')
+        overrides[30,10]=rec(by[46][27],'TUB JER 46:27 [canonical repeated 30:10 clause]','canonical repetition')
+        overrides[30,11]=rec(by[46][28],'TUB JER 46:28 [canonical repeated 30:11 clause]','canonical repetition')
+        overrides[30,22]=rec(by[32][38],'TUB JER 32:38 [canonical repeated 30:22 clause]','canonical repetition')
 
     return mapping,fallback_targets,skip_chapters,overrides
 
@@ -465,6 +741,8 @@ def build(tub_zip:Path):
             by=defaultdict(dict)
             for ch,v,text in rows: by[ch][v]=clean(text)
             chapters,book_blanks=exact_book(base,by,oh,bid)
+            if chapters is not None:
+                book_blanks-=reviewed_exact_patches(chapters,by,bid)
             if chapters is None and bid=='judges': chapters,book_blanks=judges_book(base,by,oh)
             if chapters is None and bid in BOOKCODE:
                 code=BOOKCODE[bid]
