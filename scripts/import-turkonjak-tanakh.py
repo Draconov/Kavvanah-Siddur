@@ -4,9 +4,10 @@
 The supplied TUB SQLite module is the 1997–2007 Ukrainian Bible Society
 Turkonjak translation based on the LXX. Straightforward books are imported
 only when their chapter/verse shape exactly matches Kavvanah's Hebrew-canon
-display. Reviewed LXX/Orthodox-versification mappings are additionally used
-for Judges, Psalms and Song of Songs. Anything not explicitly verified remains
-on the configured Ohiienko fallback rather than being guessed into place.
+display. Reviewed per-book mappings cover the places where the TUB module uses
+LXX/Orthodox numbering, combines Hebrew verses, or carries Greek additions.
+Anything not explicitly verified remains on the configured Ohiienko fallback
+rather than being guessed into place.
 """
 from __future__ import annotations
 import argparse, hashlib, json, re, sqlite3, tempfile, zipfile
@@ -21,7 +22,10 @@ XAPK_APK='by.uniq.ukrainska_biblia_turkoniak_2011.apk'
 YES_ASSET='assets/internal/default_book/uk-utt--1.yes'
 YES_MAGIC=bytes.fromhex('98580d0a005de003')
 BOOKNUM={'genesis':10,'exodus':20,'leviticus':30,'numbers':40,'deuteronomy':50,'joshua':60,'judges':70,'ruth':80,'i-samuel':90,'ii-samuel':100,'i-kings':110,'ii-kings':120,'i-chronicles':130,'ii-chronicles':140,'ezra':150,'nehemiah':160,'esther':190,'job':220,'psalms':230,'proverbs':240,'ecclesiastes':250,'song-of-songs':260,'isaiah':290,'jeremiah':300,'lamentations':310,'ezekiel':330,'daniel':340,'hosea':350,'joel':360,'amos':370,'obadiah':380,'jonah':390,'micah':400,'nahum':410,'habakkuk':420,'zephaniah':430,'haggai':440,'zechariah':450,'malachi':460}
-BOOKCODE={'psalms':'PSA','song-of-songs':'SNG'}
+BOOKCODE={
+    'genesis':'GEN','deuteronomy':'DEU','ii-kings':'2KI','job':'JOB','psalms':'PSA',
+    'song-of-songs':'SNG','isaiah':'ISA','hosea':'HOS',
+}
 # TUB's Judges content is sequential but its SQLite chapter labels skip 4 and 12.
 JUDGES_TARGET_TO_TUB={1:1,2:2,3:3,**{target:target+1 for target in range(4,11)},**{target:target+2 for target in range(11,22)}}
 
@@ -44,10 +48,16 @@ def refs(value:str):
     return [(code,int(chapter),v) for v in range(int(first),int(last or first)+1) if v>0]
 
 def rso_mappings():
-    """Load the checked-in SIL Russian Orthodox -> Original/BHS mappings."""
+    """Load reviewed SIL Russian Orthodox -> Original/BHS mappings.
+
+    Only books confirmed to use these source coordinates in the supplied TUB
+    module are admitted here. Most TUB books actually use Hebrew-style verse
+    coordinates despite the LXX base text, so applying RSO globally would
+    silently shift otherwise-correct verses.
+    """
     result=defaultdict(list)
     for line in (ROOT/'scripts/versification/rso.vrs').read_text().splitlines():
-        if '=' not in line or line.startswith('#') or line[:3] not in {'PSA','SNG'}: continue
+        if '=' not in line or line.startswith('#') or line[:3] not in {'GEN','PSA','SNG'}: continue
         left,right=line.split('=',1); source,target=refs(left.strip()),refs(right.strip())
         if not source or not target: continue
         if left.strip()=='PSA 89:2-6':
@@ -63,6 +73,36 @@ def rso_mappings():
     result['PSA',114,9]=[('PSA',116,9)]
     # TUB numbers the Psalm 142 superscription as LXX 141:1, not verse zero.
     for v in range(1,9): result['PSA',141,v]=[('PSA',142,v)]
+
+    # Genesis keeps the Orthodox 31/32 chapter boundary but also folds two
+    # short Hebrew verses into the preceding TUB verse.
+    result['GEN',33,6]=[('GEN',33,6),('GEN',33,7)]
+    result['GEN',33,19]=[('GEN',33,19),('GEN',33,20)]
+
+    # Deuteronomy's TUB numbering is Hebrew-style except that the four short
+    # commandments are separate source verses. Three other Hebrew verses are
+    # folded into the preceding TUB verse.
+    result['DEU',2,13]=[('DEU',2,13),('DEU',2,14)]
+    result['DEU',3,16]=[('DEU',3,16),('DEU',3,17)]
+    result['DEU',14,18]=[('DEU',14,18),('DEU',14,19)]
+    for v in range(17,21): result['DEU',5,v]=[('DEU',5,17)]
+    for v in range(21,34): result['DEU',5,v]=[('DEU',5,v-3)]
+
+    # The following books use Hebrew-style coordinates in TUB. These are only
+    # local content joins/splits verified against the supplied corpus.
+    result['2KI',18,20]=[('2KI',18,20),('2KI',18,21)]
+    result['JOB',21,30]=[('JOB',21,30),('JOB',21,31)]
+    result['JOB',40,4]=[('JOB',40,4),('JOB',40,5)]
+    result['ISA',8,23]=[('ISA',8,23)]
+    result['ISA',8,24]=[('ISA',8,23)]
+    result['ISA',21,10]=[('ISA',21,10),('ISA',21,11)]
+    result['ISA',26,7]=[('ISA',26,7),('ISA',26,8)]
+    result['ISA',45,23]=[('ISA',45,23),('ISA',45,24)]
+    result['ISA',45,24]=[('ISA',45,25)]
+    result['ISA',63,19]=[('ISA',63,19)]
+    result['ISA',63,20]=[('ISA',63,19)]
+    result['HOS',5,15]=[('HOS',5,15)]
+    result['HOS',5,16]=[('HOS',5,15)]
     return result
 
 def fallback_record(oh,bid,ch,v,ref):

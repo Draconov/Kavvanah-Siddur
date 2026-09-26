@@ -94,22 +94,37 @@ test('Turkonjak bundle exposes only reviewed aligned books and falls back elsewh
    for(const record of translated.chapters[c]){ assert.ok(recordText(record)?.trim()); total++; }
   }
  }
- assert.equal(total,7353);
+ assert.equal(total,13119);
 });
 
-test('Turkonjak reviewed LXX mappings preserve Psalms, Judges and Song-of-Songs provenance',()=>{
+test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
  const d=bundle('uk-turkonjak-utt').books;
  const at=(book,ch,v)=>d[book].chapters[ch-1][v-1];
+ assert.equal(at('genesis',32,1).ref,'TUB GEN 31:55');
+ assert.equal(at('genesis',33,7).ref,'TUB GEN 33:6');
+ assert.equal(at('genesis',33,7).note,'combined');
+ assert.equal(at('genesis',31,51).edition,'uk-ohienko-1962');
+ assert.equal(at('deuteronomy',5,17).ref,'TUB DEU 5:17, TUB DEU 5:18, TUB DEU 5:19, TUB DEU 5:20');
+ assert.equal(at('deuteronomy',5,18).ref,'TUB DEU 5:21');
+ assert.equal(at('deuteronomy',2,14).ref,'TUB DEU 2:13');
  assert.equal(at('judges',4,1).ref,'TUB 5:1 → JDG 4:1');
  assert.equal(at('judges',11,1).ref,'TUB 13:1 → JDG 11:1');
+ assert.equal(at('ii-kings',18,21).ref,'TUB 2KI 18:20');
+ assert.equal(at('ii-kings',18,21).note,'combined');
+ assert.equal(at('job',21,31).ref,'TUB JOB 21:30');
+ assert.equal(at('job',40,5).ref,'TUB JOB 40:4');
  assert.equal(at('psalms',10,1).ref,'TUB PSA 9:22');
  assert.equal(at('psalms',116,9).ref,'TUB PSA 114:9');
  assert.equal(at('psalms',142,1).ref,'TUB PSA 141:1');
  assert.equal(at('song-of-songs',1,2).ref,'TUB SNG 1:1');
  assert.equal(at('song-of-songs',1,1).edition,'uk-ohienko-1962');
  assert.match(at('song-of-songs',1,1).ref,/Ohiienko fallback/);
+ assert.equal(at('isaiah',8,23).ref,'TUB ISA 8:23, TUB ISA 8:24');
+ assert.equal(at('isaiah',45,25).ref,'TUB ISA 45:24');
+ assert.equal(at('isaiah',63,19).ref,'TUB ISA 63:19, TUB ISA 63:20');
+ assert.equal(at('hosea',5,15).ref,'TUB HOS 5:15, TUB HOS 5:16');
  let fallbacks=0;
  for(const book of Object.values(d)) for(const chapter of book.chapters) for(const record of chapter)
   if(record?.edition==='uk-ohienko-1962') fallbacks++;
- assert.equal(fallbacks,23);
+ assert.equal(fallbacks,28);
 });
