@@ -37,8 +37,8 @@ test('Jewish modern is a real per-book composite preset, not one global fallback
 
  const writings=resolveEditionForBook('uk','uk-jewish-modern','psalms','Writings');
  assert.equal(writings.intended.id,'uk-turkonjak-utt');
- assert.equal(writings.effective.id,'uk-ohienko-1962');
- assert.equal(writings.usedFallback,true);
+ assert.equal(writings.effective.id,'uk-turkonjak-utt');
+ assert.equal(writings.usedFallback,false);
 });
 
 test('partial Turkonjak edition stays preferred and resolves fallback per book',()=>{
@@ -46,6 +46,8 @@ test('partial Turkonjak edition stays preferred and resolves fallback per book',
  assert.equal(resolved.preferred.id,'uk-turkonjak-utt');
  assert.equal(resolved.effective.id,'uk-turkonjak-utt');
  assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','amos','Prophets').effective.id,'uk-turkonjak-utt');
+ assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','judges','Prophets').effective.id,'uk-turkonjak-utt');
+ assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','psalms','Writings').effective.id,'uk-turkonjak-utt');
  assert.equal(resolveEditionForBook('uk','uk-turkonjak-utt','isaiah','Prophets').effective.id,'uk-ohienko-1962');
 });
 

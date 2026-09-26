@@ -79,7 +79,7 @@ test('Kulish bundle preserves the three reviewed Kavvanah omission supplements',
  }
 });
 
-test('Turkonjak user-supplied bundle exposes only structurally exact books and falls back elsewhere',()=>{
+test('Turkonjak bundle exposes only reviewed aligned books and falls back elsewhere',()=>{
  const data=bundle('uk-turkonjak-utt');
  const meta=registry.editions.find(x=>x.id==='uk-turkonjak-utt');
  assert.equal(data.edition,'uk-turkonjak-utt');
@@ -94,5 +94,22 @@ test('Turkonjak user-supplied bundle exposes only structurally exact books and f
    for(const record of translated.chapters[c]){ assert.ok(recordText(record)?.trim()); total++; }
   }
  }
- assert.equal(total,4091);
+ assert.equal(total,7353);
+});
+
+test('Turkonjak reviewed LXX mappings preserve Psalms, Judges and Song-of-Songs provenance',()=>{
+ const d=bundle('uk-turkonjak-utt').books;
+ const at=(book,ch,v)=>d[book].chapters[ch-1][v-1];
+ assert.equal(at('judges',4,1).ref,'TUB 5:1 → JDG 4:1');
+ assert.equal(at('judges',11,1).ref,'TUB 13:1 → JDG 11:1');
+ assert.equal(at('psalms',10,1).ref,'TUB PSA 9:22');
+ assert.equal(at('psalms',116,9).ref,'TUB PSA 114:9');
+ assert.equal(at('psalms',142,1).ref,'TUB PSA 141:1');
+ assert.equal(at('song-of-songs',1,2).ref,'TUB SNG 1:1');
+ assert.equal(at('song-of-songs',1,1).edition,'uk-ohienko-1962');
+ assert.match(at('song-of-songs',1,1).ref,/Ohiienko fallback/);
+ let fallbacks=0;
+ for(const book of Object.values(d)) for(const chapter of book.chapters) for(const record of chapter)
+  if(record?.edition==='uk-ohienko-1962') fallbacks++;
+ assert.equal(fallbacks,23);
 });
