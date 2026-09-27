@@ -95,6 +95,46 @@ test('Varda Torah component covers the complete supplied 386-page Pentateuch',()
  assert.equal(data.books.deuteronomy.chapters[33][11].edition,'uk-varda-torah'); // Deuteronomy 34:12
 });
 
+test('Batch 19 Varda proofreading keeps the Torah clean and source-checked',()=>{
+ const data=bundle('uk-varda-torah');
+ const torahIds=['genesis','exodus','leviticus','numbers','deuteronomy'];
+ const records=[];
+ for(const bookId of torahIds){
+  for(const chapter of data.books[bookId].chapters){
+   for(const record of chapter) records.push(record);
+  }
+ }
+ assert.equal(records.length,5846);
+ const texts=records.map(recordText);
+ for(const text of texts){
+  assert.doesNotMatch(text,/[A-Za-z]/,'Latin OCR glyph leaked into Varda Torah');
+  assert.doesNotMatch(text,/\d/,'verse/page digit leaked into Varda Torah text');
+  assert.doesNotMatch(text,/[|¦]/,'OCR bar leaked into Varda Torah text');
+  assert.doesNotMatch(text,/[а-яіїєґ][А-ЯІЇЄҐ]/u,'lowercase-uppercase OCR collision remains');
+  assert.doesNotMatch(text,/(?:^|[^А-Яа-яІіЇїЄєҐґʼ’'\-])(?:їі|ії|ІТ)(?=$|[^А-Яа-яІіЇїЄєҐґʼ’'\-])/u,'isolated OCR token remains');
+  assert.doesNotMatch(text,/[,.;:]\?/,'OCR question mark leaked after punctuation');
+  assert.doesNotMatch(text,/^!/,'OCR exclamation marker leaked at verse start');
+  assert.equal((text.match(/\[/g)??[]).length,(text.match(/\]/g)??[]).length,'unbalanced editorial brackets');
+ }
+ const corpus=texts.join('\n');
+ assert.doesNotMatch(corpus,/Дарон|Незнаю|незможуть|зкишить|володі тиму|ре тулярне|хліб-навко|святилище них|одноріяне|Шелумісля|Деусля|іп'ять|ізамість|ініж|івино|їстільки|бтільки|Ще\)|РИМІТКУ до нього|ляглаїі/,'known Batch 19 OCR residue returned');
+ const at=(book,ch,v)=>recordText(data.books[book].chapters[ch-1][v-1]);
+ assert.equal(at('genesis',7,12),'І лився дощ на землю сорок днів та сорок ночей.');
+ assert.match(at('genesis',13,14),/і на захід;$/);
+ assert.match(at('genesis',13,15),/^усю землю,/);
+ assert.equal(at('genesis',50,12),'Сини [Ізраїля] зробили з ним те, що він заповів їм:');
+ assert.match(at('genesis',50,13),/^вони віднесли його в землю Ханаанську/);
+ assert.match(at('exodus',7,25),/зіпсував річку,$/);
+ assert.match(at('exodus',7,26),/^і сказав Господь до Мойсея:/);
+ assert.match(at('exodus',16,16),/скільки йому з'їсти;/);
+ assert.equal(at('exodus',39,11),'другий ряд — бірюзи, сапфіру й аметисту;');
+ assert.match(at('leviticus',1,13),/^нутрощі та гомілки \[тварини\].*\[Це\] — запашний дар їжі/u);
+ assert.match(at('numbers',9,22),/тільки коли вона піднімалася, тоді вони піднімали свій табір\.$/);
+ assert.match(at('numbers',9,23),/^За Господнім словом вони зупинялися/);
+ assert.match(at('numbers',29,20),/^Третього дня:/);
+ assert.match(at('deuteronomy',33,18),/^Про Зевулуна \[та Іссахара\] сказав:/);
+});
+
 test('Jewish modern composite uses Varda for all Torah and Turkonjak for Neviim/Ketuvim',()=>{
  const data=bundle('uk-jewish-modern');
  assert.equal(Object.keys(data.books).length,catalog.books.length);
@@ -333,7 +373,23 @@ test('Varda proofreading removes high-confidence OCR glyph noise and stays synce
     const text=recordText(record);
     assert.doesNotMatch(text,/[A-Za-z|0-9]/);
     assert.equal(/[\u201c\u201d\u201e"]/.test(text),false);
+    let editorialDepth=0;
+    for(const ch of text){
+     if(ch==='[') editorialDepth++;
+     else if(ch===']'){
+      editorialDepth--;
+      assert.ok(editorialDepth>=0,`closing editorial bracket before opening in ${bookId}: ${text}`);
+     }
+    }
+    assert.equal(editorialDepth,0,`unbalanced editorial brackets in ${bookId}: ${text}`);
    }
   }
+
+ const at=(book,ch,v)=>recordText(varda.books[book].chapters[ch-1][v-1]);
+ assert.equal(at('genesis',32,25),'він залишився один. І боровся з ним хтось до появи зорі;');
+ assert.equal(at('exodus',16,36),'(Омер дорівнює десятій частині ейфи.)');
+ assert.equal(at('leviticus',5,1),"якщо хтось, почувши заклик з'явитися на суд, не захоче стати свідком — незважаючи на те що він може дати свідчення, бо бачив [те, що сталося], або має [непрямі] відомості, — то має понести своє покарання;");
+ assert.equal(at('leviticus',24,8),'щосуботи, регулярно, нехай [священники] розкладають їх перед Господом; це — вічно належне від народу Ізраїля.');
+ assert.equal(at('deuteronomy',31,3),'Господь, Бог твій, Сам піде перед тобою; Він вигубить народи ці, що на шляху твоїм, і ти оволодієш [землею]. — Ісус, він проведе тебе [через Йордан], як говорив Господь.');
  }
 });

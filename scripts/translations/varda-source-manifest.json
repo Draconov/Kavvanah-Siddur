@@ -11,5 +11,5 @@
   "firstVerse": "GEN 1:1",
   "lastVerse": "DEU 34:12",
   "displayedVardaVerses": 5846,
-  "note": "Complete Varda Books Ukrainian Pentateuch OCR PDF supplied by the project owner. Batch 17 adds a conservative full-corpus proofreading pass after the Batch 16 OCR cross-check: high-confidence OCR glyph substitutions, leaked superscript verse numbers, line-wrap joins, malformed brackets/bars, and manually verified verse-boundary spills are corrected while preserving canonical verse alignment, publisher wording, and PDF-page provenance."
+  "note": "Complete Varda Books Ukrainian Pentateuch OCR PDF supplied by the project owner. Batch 19 extends the conservative full-corpus proofreading pass across all 5,846 canonical Torah verse records: high-confidence lexical OCR joins/splits and glyph substitutions, malformed editorial marks, leaked punctuation/footnote text, Aaron/Israel/Divine-name OCR forms, and source-checked verse-boundary spills are corrected against the supplied 386-page PDF. Canonical verse alignment, publisher wording, and PDF-page provenance are preserved; ambiguous standalone verse-start marker glyphs are deliberately left for separate source-audited structural review rather than guessed globally."
 }
