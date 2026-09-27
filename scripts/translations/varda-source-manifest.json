@@ -1,13 +1,15 @@
 {
   "schema": 1,
-  "sourceFile": "Тора_ П’ятикнижжя Мойсеєве.pdf",
-  "sha256": "a26ecc2a8beaff333b8cdf5488234c2083c4684d8560a104a8bde3d5e6ee67a8",
-  "pageCount": 150,
-  "imageOnly": true,
+  "sourceFile": "Тора - П'ятикнижжя Мойсеєве (OCR).pdf",
+  "sha256": "41fe6811a8fbe011505b7046fe4a967cce5041ca6513ce357cbab9be33a7b686",
+  "pageCount": 386,
+  "imageOnly": false,
+  "extractableTextLayer": true,
+  "textLayerKind": "OCR",
   "scriptureStartPage": 21,
-  "scriptureEndPage": 150,
+  "scriptureEndPage": 386,
   "firstVerse": "GEN 1:1",
-  "lastVerse": "EXO 23:9",
-  "displayedVardaVerses": 2151,
-  "note": "This manifest describes the exact PDF supplied by the project owner. It is not a complete Pentateuch file; later Torah text must not be attributed to Varda unless a complete source is supplied."
+  "lastVerse": "DEU 34:12",
+  "displayedVardaVerses": 5846,
+  "note": "Complete Varda Books Ukrainian Pentateuch OCR PDF supplied by the project owner. Batch 16 cross-checks the earlier image-derived corpus against this 386-page OCR text layer, keeps canonical verse alignment and PDF-page provenance, and retains image review for ambiguous OCR boundaries."
 }

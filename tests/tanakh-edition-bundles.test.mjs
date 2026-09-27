@@ -58,16 +58,18 @@ test('registry exposes real Ohiienko and Kulish bundles and pins YouVersion meta
 
 
 
-test('Varda Torah component is limited to the supplied 150-page scan and explicitly continues with Turkonjak',()=>{
- assert.equal(vardaManifest.pageCount,150);
+test('Varda Torah component covers the complete supplied 386-page Pentateuch',()=>{
+ assert.equal(vardaManifest.pageCount,386);
+ assert.equal(vardaManifest.extractableTextLayer,true);
+ assert.equal(vardaManifest.textLayerKind,'OCR');
  assert.equal(vardaManifest.firstVerse,'GEN 1:1');
- assert.equal(vardaManifest.lastVerse,'EXO 23:9');
- assert.equal(vardaManifest.displayedVardaVerses,2151);
+ assert.equal(vardaManifest.lastVerse,'DEU 34:12');
+ assert.equal(vardaManifest.displayedVardaVerses,5846);
  const data=bundle('uk-varda-torah');
  const torahIds=['genesis','exodus','leviticus','numbers','deuteronomy'];
  assert.equal(data.edition,'uk-varda-torah');
  assert.deepEqual(Object.keys(data.books),torahIds);
- let total=0,varda=0,continuation=0,maxVardaPage=0;
+ let total=0,maxPage=0;
  for(const bookId of torahIds){
   const base=readJson(`public/texts/${bookId}.json`);
   const translated=data.books[bookId];
@@ -76,36 +78,33 @@ test('Varda Torah component is limited to the supplied 150-page scan and explici
    assert.equal(translated.chapters[c].length,base.text[c].length,`${bookId} ${c+1} verse count`);
    for(const record of translated.chapters[c]){
     assert.ok(recordText(record)?.trim());
+    assert.equal(record.edition,'uk-varda-torah');
+    assert.match(record.ref,/^Varda PDF (?:p\.|pp\.)\d+(?:–\d+)? · /);
+    const match=record.ref.match(/^Varda PDF (?:p\.|pp\.)(\d+)(?:–(\d+))?/);
+    maxPage=Math.max(maxPage,Number(match?.[2]??match?.[1]??0));
     total++;
-    if(record.edition==='uk-varda-torah'){
-     varda++;
-     assert.match(record.ref,/^Varda PDF (?:p\.|pp\.)\d+(?:–\d+)? · /);
-     const match=record.ref.match(/^Varda PDF (?:p\.|pp\.)(\d+)(?:–(\d+))?/);
-     maxVardaPage=Math.max(maxVardaPage,Number(match?.[2]??match?.[1]??0));
-    }else{
-     continuation++;
-     assert.ok(['uk-turkonjak-utt','uk-ohienko-1962'].includes(record.edition),`unexpected continuation edition ${record.edition}`);
-    }
    }
   }
  }
  assert.equal(total,5846);
- assert.equal(varda,2151);
- assert.equal(continuation,3695);
- assert.equal(maxVardaPage,150);
- assert.equal(data.books.exodus.chapters[22][8].edition,'uk-varda-torah'); // Exodus 23:9
- assert.notEqual(data.books.exodus.chapters[22][9].edition,'uk-varda-torah'); // Exodus 23:10
- assert.notEqual(data.books.leviticus.chapters[0][0].edition,'uk-varda-torah');
+ assert.equal(maxPage,386);
+ assert.equal(data.books.genesis.chapters[0][0].edition,'uk-varda-torah');
+ assert.equal(data.books.exodus.chapters[22][9].edition,'uk-varda-torah'); // Exodus 23:10
+ assert.equal(data.books.leviticus.chapters[0][0].edition,'uk-varda-torah');
+ assert.equal(data.books.numbers.chapters[0][0].edition,'uk-varda-torah');
+ assert.equal(data.books.deuteronomy.chapters[33][11].edition,'uk-varda-torah'); // Deuteronomy 34:12
 });
 
-test('Jewish modern composite is complete and never labels post-scan text as Varda',()=>{
+test('Jewish modern composite uses Varda for all Torah and Turkonjak for Neviim/Ketuvim',()=>{
  const data=bundle('uk-jewish-modern');
  assert.equal(Object.keys(data.books).length,catalog.books.length);
  assert.equal(data.books.genesis.chapters[0][0].edition,'uk-varda-torah');
- assert.equal(data.books.exodus.chapters[22][8].edition,'uk-varda-torah');
- assert.notEqual(data.books.exodus.chapters[22][9].edition,'uk-varda-torah');
- assert.notEqual(data.books.leviticus.chapters[0][0].edition,'uk-varda-torah');
- assert.match(data.books.isaiah.chapters[0][0].ref,/^(TUB|Ohiienko fallback)/);
+ assert.equal(data.books.exodus.chapters[39][37].edition,'uk-varda-torah');
+ assert.equal(data.books.leviticus.chapters[0][0].edition,'uk-varda-torah');
+ assert.equal(data.books.numbers.chapters[0][0].edition,'uk-varda-torah');
+ assert.equal(data.books.deuteronomy.chapters[33][11].edition,'uk-varda-torah');
+ assert.ok(['uk-turkonjak-utt','uk-ohienko-1962'].includes(data.books.joshua.chapters[0][0].edition));
+ assert.ok(['uk-turkonjak-utt','uk-ohienko-1962'].includes(data.books.isaiah.chapters[0][0].edition));
 });
 
 test('reviewed Ohiienko versification joins/splits are recorded explicitly',()=>{

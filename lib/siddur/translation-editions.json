@@ -32,13 +32,13 @@
       "id": "uk-jewish-modern",
       "language": "uk",
       "label": "Jewish modern · Varda Torah + Turkonjak UTT",
-      "description": "Preferred Ukrainian composite edition. The supplied Varda Books scan physically contains Genesis 1:1 through Exodus 23:9 (2,151 displayed verses); those verses use Varda. The remainder of Torah plus Nevi’im and Ketuvim use the reviewed Turkonjak UTT bundle, including its explicitly tagged Ohiienko fallbacks where LXX has no safe Hebrew-verse equivalent.",
+      "description": "Preferred Ukrainian composite edition: the complete Varda Ukrainian Torah for Genesis through Deuteronomy, with the reviewed Turkonjak UTT bundle for Nevi’im and Ketuvim. Turkonjak retains explicitly tagged Ohiienko per-verse fallbacks only where its LXX source lacks a safe Hebrew-verse equivalent.",
       "builtin": false,
       "available": true,
-      "fallback": "uk-turkonjak-utt",
+      "fallback": "uk-ohienko-1962",
       "path": "/texts/translations/tanakh/uk-jewish-modern.json",
       "source": [
-        "user-supplied PDF: Тора_ П’ятикнижжя Мойсеєве.pdf (150-page supplied scan; Genesis 1:1–Exodus 23:9)",
+        "user-supplied PDF: Тора - П’ятикнижжя Мойсеєве.pdf (complete 386-page Torah)",
         "user-supplied 4205_TUB.zip",
         "user-supplied Turkonjak XAPK",
         "https://www.bible.com/uk/versions/1755"
@@ -62,17 +62,15 @@
     {
       "id": "uk-varda-torah",
       "language": "uk",
-      "label": "Varda PDF + Turkonjak continuation",
-      "description": "Hidden Torah component for the Jewish-modern preset. The supplied 150-page Varda scan covers Genesis 1:1 through Exodus 23:9 (2,151 displayed verses). Remaining Torah verses are explicitly continued with Turkonjak UTT; they are not labelled as Varda.",
+      "label": "Varda Ukrainian Torah",
+      "description": "Ukrainian Jewish Torah component extracted from the complete user-supplied 386-page Varda Books PDF, covering Genesis through Deuteronomy (5,846 displayed verses).",
       "builtin": false,
       "available": true,
       "selectable": false,
-      "fallback": "uk-turkonjak-utt",
+      "fallback": "uk-ohienko-1962",
       "path": "/texts/translations/tanakh/uk-varda-torah.json",
       "source": [
-        "user-supplied PDF: Тора_ П’ятикнижжя Мойсеєве.pdf (150 pages; Genesis 1:1–Exodus 23:9)",
-        "user-supplied 4205_TUB.zip",
-        "user-supplied Turkonjak XAPK"
+        "user-supplied PDF: Тора - П’ятикнижжя Мойсеєве.pdf (386 pages; Genesis 1:1–Deuteronomy 34:12)"
       ],
       "availableBooks": [
         "genesis",
