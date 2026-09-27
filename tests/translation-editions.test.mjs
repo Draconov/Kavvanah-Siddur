@@ -19,12 +19,12 @@ test('Jewish modern is a real per-book composite preset, not one global fallback
  const settingsResolution=effectiveEdition('uk','uk-jewish-modern');
  assert.equal(settingsResolution.preferred.id,'uk-jewish-modern');
  assert.equal(settingsResolution.effective.id,'uk-jewish-modern');
- assert.equal(editionHasMissingComponents(settingsResolution.preferred),true);
+ assert.equal(editionHasMissingComponents(settingsResolution.preferred),false);
 
  const torah=resolveEditionForBook('uk','uk-jewish-modern','genesis','Torah');
  assert.equal(torah.intended.id,'uk-varda-torah');
- assert.equal(torah.effective.id,'uk-ohienko-1962');
- assert.equal(torah.usedFallback,true);
+ assert.equal(torah.effective.id,'uk-varda-torah');
+ assert.equal(torah.usedFallback,false);
 
  const prophets=resolveEditionForBook('uk','uk-jewish-modern','isaiah','Prophets');
  assert.equal(prophets.intended.id,'uk-turkonjak-utt');

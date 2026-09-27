@@ -47,12 +47,43 @@ test('registry exposes real Ohiienko and Kulish bundles and pins YouVersion meta
  assert.equal(byId['uk-kulish-puluj-1905'].available,true);
  assert.equal(byId['uk-kulish-puluj-1905'].path,'/texts/translations/tanakh/uk-kulish-puluj-1905.json');
  assert.equal(byId['uk-turkonjak-utt'].available,true);
- assert.equal(byId['uk-varda-torah'].available,false);
+ assert.equal(byId['uk-varda-torah'].available,true);
  assert.equal(byId['uk-varda-torah'].selectable,false);
  assert.deepEqual(byId['uk-jewish-modern'].composite,[
   {edition:'uk-varda-torah',categories:['Torah']},
   {edition:'uk-turkonjak-utt',categories:['Prophets','Writings']}
  ]);
+});
+
+
+
+test('Varda Torah bundle covers the complete five-book Torah structure',()=>{
+ const data=bundle('uk-varda-torah');
+ const torahIds=['genesis','exodus','leviticus','numbers','deuteronomy'];
+ assert.equal(data.edition,'uk-varda-torah');
+ assert.deepEqual(Object.keys(data.books),torahIds);
+ let total=0;
+ for(const bookId of torahIds){
+  const base=readJson(`public/texts/${bookId}.json`);
+  const translated=data.books[bookId];
+  assert.equal(translated.chapters.length,base.text.length,`${bookId} chapter count`);
+  for(let c=0;c<base.text.length;c++){
+   assert.equal(translated.chapters[c].length,base.text[c].length,`${bookId} ${c+1} verse count`);
+   for(const record of translated.chapters[c]){
+    assert.ok(recordText(record)?.trim());
+    assert.match(record.ref,/^Varda PDF p(?:\.|p\.)\d+(?:–\d+)? · /);
+    total++;
+   }
+  }
+ }
+ assert.equal(total,5846);
+});
+
+test('Jewish modern composite bundle is complete and uses Varda for Torah',()=>{
+ const data=bundle('uk-jewish-modern');
+ assert.equal(Object.keys(data.books).length,catalog.books.length);
+ assert.match(data.books.genesis.chapters[0][0].ref,/^Varda PDF/);
+ assert.match(data.books.isaiah.chapters[0][0].ref,/^(TUB|Ohiienko fallback)/);
 });
 
 test('reviewed Ohiienko versification joins/splits are recorded explicitly',()=>{
