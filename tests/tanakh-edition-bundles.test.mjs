@@ -322,3 +322,18 @@ test('Turkonjak reviewed LXX mappings preserve per-book provenance',()=>{
   if(record?.edition==='uk-ohienko-1962') fallbacks++;
  assert.equal(fallbacks,286);
 });
+
+test('Varda proofreading removes high-confidence OCR glyph noise and stays synced into Jewish modern',()=>{
+ const varda=bundle('uk-varda-torah');
+ const modern=bundle('uk-jewish-modern');
+ for(const [bookId,book] of Object.entries(varda.books)){
+  assert.deepEqual(modern.books[bookId],book,`${bookId} differs in Jewish modern`);
+  for(const chapter of book.chapters){
+   for(const record of chapter){
+    const text=recordText(record);
+    assert.doesNotMatch(text,/[A-Za-z|0-9]/);
+    assert.equal(/[\u201c\u201d\u201e"]/.test(text),false);
+   }
+  }
+ }
+});
