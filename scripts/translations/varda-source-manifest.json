@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "sourceFile": "Тора_ П’ятикнижжя Мойсеєве.pdf",
+  "sha256": "a26ecc2a8beaff333b8cdf5488234c2083c4684d8560a104a8bde3d5e6ee67a8",
+  "pageCount": 150,
+  "imageOnly": true,
+  "scriptureStartPage": 21,
+  "scriptureEndPage": 150,
+  "firstVerse": "GEN 1:1",
+  "lastVerse": "EXO 23:9",
+  "displayedVardaVerses": 2151,
+  "note": "This manifest describes the exact PDF supplied by the project owner. It is not a complete Pentateuch file; later Torah text must not be attributed to Varda unless a complete source is supplied."
+}

@@ -6,6 +6,7 @@ const root=new URL('../',import.meta.url);
 const readJson=path=>JSON.parse(fs.readFileSync(new URL(path,root),'utf8'));
 const catalog=readJson('public/texts/catalog.json');
 const registry=readJson('lib/siddur/translation-editions.json');
+const vardaManifest=readJson('scripts/translations/varda-source-manifest.json');
 const bundle=id=>readJson(`public/texts/translations/tanakh/${id}.json`);
 
 function recordText(record){return typeof record==='string'?record:record?.text;}
@@ -57,12 +58,16 @@ test('registry exposes real Ohiienko and Kulish bundles and pins YouVersion meta
 
 
 
-test('Varda Torah bundle covers the complete five-book Torah structure',()=>{
+test('Varda Torah component is limited to the supplied 150-page scan and explicitly continues with Turkonjak',()=>{
+ assert.equal(vardaManifest.pageCount,150);
+ assert.equal(vardaManifest.firstVerse,'GEN 1:1');
+ assert.equal(vardaManifest.lastVerse,'EXO 23:9');
+ assert.equal(vardaManifest.displayedVardaVerses,2151);
  const data=bundle('uk-varda-torah');
  const torahIds=['genesis','exodus','leviticus','numbers','deuteronomy'];
  assert.equal(data.edition,'uk-varda-torah');
  assert.deepEqual(Object.keys(data.books),torahIds);
- let total=0;
+ let total=0,varda=0,continuation=0,maxVardaPage=0;
  for(const bookId of torahIds){
   const base=readJson(`public/texts/${bookId}.json`);
   const translated=data.books[bookId];
@@ -71,18 +76,35 @@ test('Varda Torah bundle covers the complete five-book Torah structure',()=>{
    assert.equal(translated.chapters[c].length,base.text[c].length,`${bookId} ${c+1} verse count`);
    for(const record of translated.chapters[c]){
     assert.ok(recordText(record)?.trim());
-    assert.match(record.ref,/^Varda PDF p(?:\.|p\.)\d+(?:–\d+)? · /);
     total++;
+    if(record.edition==='uk-varda-torah'){
+     varda++;
+     assert.match(record.ref,/^Varda PDF (?:p\.|pp\.)\d+(?:–\d+)? · /);
+     const match=record.ref.match(/^Varda PDF (?:p\.|pp\.)(\d+)(?:–(\d+))?/);
+     maxVardaPage=Math.max(maxVardaPage,Number(match?.[2]??match?.[1]??0));
+    }else{
+     continuation++;
+     assert.ok(['uk-turkonjak-utt','uk-ohienko-1962'].includes(record.edition),`unexpected continuation edition ${record.edition}`);
+    }
    }
   }
  }
  assert.equal(total,5846);
+ assert.equal(varda,2151);
+ assert.equal(continuation,3695);
+ assert.equal(maxVardaPage,150);
+ assert.equal(data.books.exodus.chapters[22][8].edition,'uk-varda-torah'); // Exodus 23:9
+ assert.notEqual(data.books.exodus.chapters[22][9].edition,'uk-varda-torah'); // Exodus 23:10
+ assert.notEqual(data.books.leviticus.chapters[0][0].edition,'uk-varda-torah');
 });
 
-test('Jewish modern composite bundle is complete and uses Varda for Torah',()=>{
+test('Jewish modern composite is complete and never labels post-scan text as Varda',()=>{
  const data=bundle('uk-jewish-modern');
  assert.equal(Object.keys(data.books).length,catalog.books.length);
- assert.match(data.books.genesis.chapters[0][0].ref,/^Varda PDF/);
+ assert.equal(data.books.genesis.chapters[0][0].edition,'uk-varda-torah');
+ assert.equal(data.books.exodus.chapters[22][8].edition,'uk-varda-torah');
+ assert.notEqual(data.books.exodus.chapters[22][9].edition,'uk-varda-torah');
+ assert.notEqual(data.books.leviticus.chapters[0][0].edition,'uk-varda-torah');
  assert.match(data.books.isaiah.chapters[0][0].ref,/^(TUB|Ohiienko fallback)/);
 });
 
