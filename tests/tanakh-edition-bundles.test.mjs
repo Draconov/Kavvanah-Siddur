@@ -135,6 +135,24 @@ test('Batch 19 Varda proofreading keeps the Torah clean and source-checked',()=>
  assert.match(at('deuteronomy',33,18),/^Про Зевулуна \[та Іссахара\] сказав:/);
 });
 
+test('Batch 20 semantic proofreading repairs Cyrillic OCR and verse-boundary residue',()=>{
+ const data=bundle('uk-varda-torah');
+ const at=(book,ch,v)=>recordText(data.books[book].chapters[ch-1][v-1]);
+ const corpus=['genesis','exodus','leviticus','numbers','deuteronomy']
+  .flatMap(book=>data.books[book].chapters.flat().map(recordText)).join('\n');
+ assert.doesNotMatch(corpus,/Горен-Їаатаді|Мойсеся|коліена|Зустрічії|нечите|стови вогняний|\[голіві\]|шекеліві|У«Скажіть|Йосипаї|Ввони/,'known Batch 20 semantic OCR residue returned');
+ assert.equal(at('genesis',27,15),'Взяла Ревекка найкращу одежу Ісава, свого старшого сина, що була в її домі, і дала Якову, своєму молодшому синові, щоб він одягнув її,');
+ assert.equal(at('genesis',27,16),'а його руки та його гладку шию вона обклала козлячими шкірками.');
+ assert.match(at('genesis',27,18),/^і ввійшов він до батька свого/);
+ assert.match(at('genesis',34,31),/^А ті сказали:/);
+ assert.match(at('genesis',37,14),/^— Ось я, — відповів Йосип\. І сказав Яків йому:/);
+ assert.match(at('genesis',50,11),/Горен-Гаатаді/);
+ assert.match(at('exodus',22,23),/^і спалахне гнів Мій/);
+ assert.match(at('numbers',31,12),/^і доставили .* до Мойсея,/);
+ assert.match(at('numbers',31,43),/\[голів\] дрібної худоби/);
+ assert.match(at('deuteronomy',34,1),/^Зійшов Мойсей .* і всю \[землю\]$/);
+});
+
 test('Jewish modern composite uses Varda for all Torah and Turkonjak for Neviim/Ketuvim',()=>{
  const data=bundle('uk-jewish-modern');
  assert.equal(Object.keys(data.books).length,catalog.books.length);
@@ -392,4 +410,39 @@ test('Varda proofreading removes high-confidence OCR glyph noise and stays synce
  assert.equal(at('leviticus',24,8),'щосуботи, регулярно, нехай [священники] розкладають їх перед Господом; це — вічно належне від народу Ізраїля.');
  assert.equal(at('deuteronomy',31,3),'Господь, Бог твій, Сам піде перед тобою; Він вигубить народи ці, що на шляху твоїм, і ти оволодієш [землею]. — Ісус, він проведе тебе [через Йордан], як говорив Господь.');
  }
+});
+
+test('Batch 21 repairs OCR verse-number plus initial-letter artifacts',()=>{
+ const data=bundle('uk-varda-torah');
+ const at=(book,ch,v)=>recordText(data.books[book].chapters[ch-1][v-1]);
+ const corpus=['genesis','exodus','leviticus','numbers','deuteronomy']
+  .flatMap(book=>data.books[book].chapters.flat().map(recordText)).join('\n');
+ assert.doesNotMatch(corpus,/^(?:Т|Г|М) /m,'verse-number OCR initial residue returned');
+ assert.doesNotMatch(corpus,/ЗЗЇ|Уто той|\[Священники\]\)|\[Червоного\]\)/,'known Batch 21 embedded OCR residue returned');
+ assert.match(at('genesis',11,5),/^І зійшов Господь/);
+ assert.match(at('exodus',14,19),/^І рушив ангел Бога/);
+ assert.match(at('deuteronomy',31,30),/^І промовив Мойсей/);
+});
+
+test('Batch 22 repairs embedded verse-marker spills and neighboring verse boundaries',()=>{
+ const data=bundle('uk-varda-torah');
+ const at=(book,ch,v)=>recordText(data.books[book].chapters[ch-1][v-1]);
+ assert.equal(at('genesis',7,10),'На сьомий день води Потопу прийшли на землю.');
+ assert.match(at('genesis',7,11),/^У шестисотий рік життя Ноя/);
+ assert.match(at('genesis',19,24),/^І напустив Господь/);
+ assert.match(at('genesis',43,14),/Веніаміна\. А я\? Якщо/);
+ assert.match(at('genesis',48,16),/батьків моїх; І нехай буде/);
+ assert.equal(at('exodus',15,3),"Господь — Чоловік лайки, יהוה — ім'я Йому!");
+ assert.match(at('exodus',16,7),/Славу יהוה.+на יהוה;/);
+ assert.match(at('exodus',33,7),/^Це тоді Мойсей взяв свій намет/);
+ assert.match(at('leviticus',18,23),/^Не лягай із худобою/);
+ assert.match(at('numbers',18,11),/^І це для тебе:/);
+ assert.equal(at('numbers',28,22),'і одного козла, як очисну жертву, щоб очистити вас;');
+ assert.match(at('numbers',31,1),/^І сказав Господь до Мойсея/);
+ assert.match(at('deuteronomy',2,12),/^А на Сеїрі жили раніше Хорреї/);
+ assert.match(at('deuteronomy',9,22),/^І біля Тавери, і біля Масси, і в Ківрот-Гаттааві/);
+ assert.match(at('deuteronomy',14,22),/^Із року в рік відокремлюй/);
+ const corpus=['genesis','exodus','leviticus','numbers','deuteronomy']
+  .flatMap(book=>data.books[book].chapters.flat().map(recordText)).join('\n');
+ assert.doesNotMatch(corpus,/І Але |І Якщо |І Повісь |І Довжина |І Насадиш |І Так /);
 });
