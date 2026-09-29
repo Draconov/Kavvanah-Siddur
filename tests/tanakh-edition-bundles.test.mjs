@@ -446,3 +446,36 @@ test('Batch 22 repairs embedded verse-marker spills and neighboring verse bounda
   .flatMap(book=>data.books[book].chapters.flat().map(recordText)).join('\n');
  assert.doesNotMatch(corpus,/І Але |І Якщо |І Повісь |І Довжина |І Насадиш |І Так /);
 });
+
+
+test('Batch 23 final Varda Torah audit closes OCR, marker and boundary regressions',()=>{
+ const data=bundle('uk-varda-torah');
+ const modern=bundle('uk-jewish-modern');
+ const books=['genesis','exodus','leviticus','numbers','deuteronomy'];
+ const records=books.flatMap(book=>data.books[book].chapters.flat());
+ assert.equal(records.length,5846);
+ for(const book of books) assert.deepEqual(modern.books[book],data.books[book],`${book} differs in Jewish modern`);
+ const corpus=records.map(recordText).join('\n');
+ assert.doesNotMatch(corpus,/[A-Za-z0-9|¦]/);
+ assert.doesNotMatch(corpus,/Буквстаршого|Заперечування|прутіві|Ємена|Іщгара|не-припустиму|на-пала|вкра-дене|вісо-та|опо-ганив|могут-нім|Узакінчи|Дле|\b[зЗ]у\s|І Д|з: й Р|Д І|м«Ревекка|Азв'язавши|з'якщо|Чні|з«Слухай|Потовий\)|незаперечить|Гу руки|\(чле/);
+ for(const record of records){
+  const text=recordText(record);
+  let depth=0;
+  for(const ch of text){
+   if(ch==='[') depth++;
+   else if(ch===']') { depth--; assert.ok(depth>=0,`closing editorial bracket before opening: ${text}`); }
+  }
+  assert.equal(depth,0,`unbalanced editorial brackets: ${text}`);
+ }
+ const at=(book,ch,v)=>recordText(data.books[book].chapters[ch-1][v-1]);
+ assert.equal(at('genesis',5,5),"Усіх днів життя Адама було дев'ятсот тридцять літ; і він помер.");
+ assert.equal(at('genesis',20,2),'Авраам сказав про свою дружину Сару: «Вона сестра моя». І послав Авімелех, цар Герарський, щоб взяти Сару.');
+ assert.match(at('genesis',41,1),/стояв на березі Нілу\.$/);
+ assert.equal(at('exodus',6,3),"Я був Авраамові, Ісаакові та Якову як Ель-Шаддай, але не відкрився їм ім'ям Моїм יהוה.");
+ assert.equal(at('leviticus',14,1),'І сказав Господь до Мойсея: —');
+ assert.equal(at('leviticus',18,22),'Не лягай із чоловіком, як із жінкою: це гидь.');
+ assert.equal(at('numbers',26,8),'Син Паллу: Еліав.');
+ assert.match(at('numbers',26,58),/рід Кораха\. Від Кегата народився Амрам\.$/);
+ assert.equal(at('deuteronomy',10,1),"Тоді Господь сказав мені: «Витеши собі дві дошки кам'яні, подібні до перших, і підійди до Мене на гору, і зроби собі дерев'яний ковчег; і накреслю Я");
+ assert.match(at('deuteronomy',33,20),/\[Готовий\] терзати долоню і тім'я;/);
+});
