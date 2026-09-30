@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const root=new URL('../',import.meta.url);
 const readJson=path=>JSON.parse(fs.readFileSync(new URL(path,root),'utf8'));
 const catalog=readJson('public/texts/catalog.json');
-const registry=readJson('lib/siddur/translation-editions.json');
+const {TRANSLATION_EDITIONS:registry}=await import('../lib/siddur/translation-editions.ts');
 const vardaManifest=readJson('scripts/translations/varda-source-manifest.json');
 const bundle=id=>readJson(`public/texts/translations/tanakh/${id}.json`);
 
@@ -163,6 +163,16 @@ test('Jewish modern composite uses Varda for all Torah and Turkonjak for Neviim/
  assert.equal(data.books.deuteronomy.chapters[33][11].edition,'uk-varda-torah');
  assert.ok(['uk-turkonjak-utt','uk-ohienko-1962'].includes(data.books.joshua.chapters[0][0].edition));
  assert.ok(['uk-turkonjak-utt','uk-ohienko-1962'].includes(data.books.isaiah.chapters[0][0].edition));
+});
+
+test('Jewish modern composite keeps the reviewed source provenance counts',()=>{
+ const data=bundle('uk-jewish-modern');
+ const counts={};
+ for(const book of Object.values(data.books))for(const chapter of book.chapters)for(const record of chapter){
+  const edition=typeof record==='object'&&record?.edition?record.edition:data.edition;
+  counts[edition]=(counts[edition]??0)+1;
+ }
+ assert.deepEqual(counts,{'uk-varda-torah':5846,'uk-turkonjak-utt':17145,'uk-ohienko-1962':215});
 });
 
 test('reviewed Ohiienko versification joins/splits are recorded explicitly',()=>{

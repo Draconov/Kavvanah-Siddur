@@ -45,7 +45,7 @@ There are five supplementary language entries across four Tanakh verses: Russian
 
 ## Preferred Tanakh editions
 
-Kavvanah stores a preferred translation edition independently for English, Russian, and Ukrainian. The edition registry lives in `lib/siddur/translation-editions.json`; adding another Tanakh edition later requires one registry entry and, for a bundled external edition, one edition file at the configured path. Existing users keep a separate preference for each language.
+Kavvanah stores a preferred translation edition independently for English, Russian, and Ukrainian. The edition registry lives in `lib/siddur/translation-editions.ts`; adding another Tanakh edition later requires one registry entry and, for a bundled external edition, one edition file at the configured path. Existing users keep a separate preference for each language.
 
 Current edition choices are:
 
@@ -81,7 +81,7 @@ Seasonal inserts and alternatives follow the source; this release does not autom
 
 ## Software and fonts
 
-Kavvanah application code is distributed under GNU GPL version 2; see `LICENSE`. The bundled text editions and fonts retain their independent licenses. Dependency versions are pinned by `pnpm-lock.yaml`.
+Kavvanah application code is distributed under GNU GPL version 2; see `LICENSE`. The bundled text editions and fonts retain their independent licenses. Dependency versions are pinned by `pnpm-lock.yaml`. Offline license texts and third-party notices are consolidated in `public/licenses/NOTICES.txt`.
 
 - [Hebcal core](https://github.com/hebcal/hebcal-es6), version 6.9.2, GPL-2.0: Hebrew calendar and zmanim. Its notices are retained in production JavaScript. [Documentation](https://hebcal.github.io/api/core/).
 - [hebrew-transliteration](https://github.com/charlesLoder/hebrew-transliteration), version 2.11.0, MIT, and [havarotjs](https://github.com/charlesLoder/havarotjs), version 0.25.4, MIT: transliteration and Hebrew syllable analysis.

@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {readingCorrectionKey,restorePointing,ukrainianIotation} from '../lib/siddur/pointing.ts';
-import {wordCorrections as corrections} from '../lib/siddur/reading-corrections.ts';
+import {wordCorrections as corrections,contextCorrections} from '../lib/siddur/reading-corrections.ts';
 const marks=s=>s.normalize('NFKD').match(/[\u0591-\u05AF\u05BD\u05BF\u05C4\u05C5]/gu)??[];
 test('restores Shema omissions with original cantillation/stress retained',()=>{
  for(const [from,to] of [['משֶׁה','מֹשֶׁה'],['קְדשִׁים','קְדֹשִׁים'],['וְתִירשְׁ֒ךָ','וְתִירֹשְׁ֒ךָ'],['אֱלֽהֵינוּ','אֱלֹֽהֵינוּ']]){
@@ -38,3 +38,8 @@ test('every restored form exists in the bundled Hebrew source corpus',()=>{
  }
  for(const word of Object.values(corrections))assert.ok(forms.has(readingCorrectionKey(word)),word);
 });
+test('corpus-backed correction tables retain reviewed coverage',()=>{
+ assert.ok(Object.keys(corrections).length>=1400);
+ assert.ok(Object.keys(contextCorrections).length>=264);
+});
+

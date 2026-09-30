@@ -102,7 +102,7 @@ def main():
         'explicitTurkonjakFallbackCount':len(fallback_refs),
         'explicitTurkonjakFallbacks':fallback_refs,
     }
-    out=ROOT/'scripts'/'translations'/'ukrainian-edition-audit.json'
+    out=ROOT/'.text-cache'/'audits'/'ukrainian-edition-audit.json';out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({
         'books':39,'verses':23206,

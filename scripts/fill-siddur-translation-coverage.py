@@ -177,7 +177,7 @@ def main():
             report['after'][lang][n]=sum(bool((p.get(lang) or '').strip()) for p in ps)
             row=report['filled'][lang][n];row['total']=row['identicalHebrew']+row['exactTanakh']+row['exactSiddurSequence']
     for n,data in hydrated.items():save_siddur(ROOT,n,data,languages=LANGS)
-    out=ROOT/'scripts/translations/siddur-coverage-audit.json';out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    out=ROOT/'.text-cache'/'audits'/'siddur-coverage-audit.json';out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     print(json.dumps(report,ensure_ascii=False,indent=2))
 
 if __name__=='__main__':main()

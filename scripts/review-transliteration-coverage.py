@@ -71,6 +71,17 @@ def load_evidence():
                 if tokens:rows.append((f'{path.stem} {ci}:{vi}',tokens,False))
     return rows
 
+
+def write_runtime_corrections(data):
+    words={r['word']:r['to'] for r in data['words']}
+    contexts={r['word']+'|'+r['context']:r['to'] for r in data['contexts']}
+    code=(
+        '// Corpus-backed additions for reading only; evidence in scripts/reading-corrections.json.\n'
+        + 'export const wordCorrections:Readonly<Record<string,string>>=' + json.dumps(words,ensure_ascii=False,separators=(',',':')) + ';\n'
+        + 'export const contextCorrections:Readonly<Record<string,string>>=' + json.dumps(contexts,ensure_ascii=False,separators=(',',':')) + ';\n'
+    )
+    (ROOT/'lib/siddur/reading-corrections.ts').write_text(code,encoding='utf8')
+
 def main():
     corr_path=ROOT/'scripts/reading-corrections.json'; data=json.loads(corr_path.read_text(encoding='utf8'))
     words={r['word']:r['to'] for r in data['words']}; contexts={r['word']+'|'+r['context']:r['to'] for r in data['contexts']}
@@ -105,6 +116,7 @@ def main():
     if additions:
         data['contexts'].extend(additions)
         corr_path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    write_runtime_corrections(data)
     # Re-audit Siddur prayer tokens with all corrections applied.
     words={r['word']:r['to'] for r in data['words']}; contexts={r['word']+'|'+r['context']:r['to'] for r in data['contexts']}
     per_file=defaultdict(lambda:Counter(paragraphs=0,tokens=0,unresolvedTokens=0,paragraphsWithUnresolved=0))
@@ -120,7 +132,7 @@ def main():
             st['paragraphsWithUnresolved']+=1;st['unresolvedTokens']+=len(bad)
             if len(examples)<80:examples.append({'ref':ref,'words':list(dict.fromkeys(bad))[:12]})
     report={'schema':1,'newExactContextCorrections':len(additions),'wordCorrections':len(data['words']),'contextCorrections':len(data['contexts']),'siddurPrayerAudit':{k:dict(v) for k,v in per_file.items()},'unresolvedExamples':examples}
-    (ROOT/'scripts/translations/transliteration-audit.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    out=ROOT/'.text-cache'/'audits'/'transliteration-audit.json';out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     print(json.dumps({k:v for k,v in report.items() if k!='unresolvedExamples'},ensure_ascii=False,indent=2))
 
 if __name__=='__main__':main()

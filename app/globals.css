@@ -1,7 +1,66 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "../vendor/shadcn-tailwind-4.13.0.css";
-@import url('/fonts/fonts.css');
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/font-0.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/fonts/font-1.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/fonts/font-2.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/font-3.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Hebrew';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(/fonts/font-4.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Hebrew';
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(/fonts/font-5.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Hebrew';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(/fonts/font-6.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Hebrew';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: normal;
+  font-display: swap;
+  src: url(/fonts/font-7.ttf) format('truetype');
+}
 /* Every themed surface shares this hue, including the navigation rail. */
 :root{--brand-hue:220;--brand-saturation:56%;--radius:.65rem;--background:hsl(var(--brand-hue) 24% 97%);--foreground:hsl(var(--brand-hue) 28% 19%);--card:hsl(var(--brand-hue) 20% 100%);--card-foreground:var(--foreground);--popover:var(--card);--popover-foreground:var(--foreground);--primary:hsl(var(--brand-hue) var(--brand-saturation) 37%);--primary-foreground:#fff;--secondary:hsl(var(--brand-hue) 37% 94%);--secondary-foreground:hsl(var(--brand-hue) 40% 31%);--muted:hsl(var(--brand-hue) 22% 94%);--muted-foreground:hsl(var(--brand-hue) 15% 44%);--accent:hsl(var(--brand-hue) 50% 94%);--accent-foreground:var(--primary);--border:hsl(var(--brand-hue) 23% 88%);--input:hsl(var(--brand-hue) 24% 84%);--ring:hsl(var(--brand-hue) 52% 61%);--destructive:#bd3946;--quiet:hsl(var(--brand-hue) 28% 98%);--sidebar:hsl(var(--brand-hue) 43% 17%);--sidebar-foreground:hsl(var(--brand-hue) 45% 91%);--sidebar-muted:hsl(var(--brand-hue) 29% 73%);--sidebar-primary:hsl(var(--brand-hue) 72% 80%);--sidebar-primary-foreground:var(--sidebar);--sidebar-accent:hsl(var(--brand-hue) 37% 28%);--sidebar-accent-foreground:#fff;--sidebar-border:hsl(var(--brand-hue) 30% 31%);--sidebar-ring:var(--sidebar-primary);--gold:var(--sidebar-primary);--shadow:0 5px 28px hsl(var(--brand-hue) 35% 15% / .025);--active-rail:3px}
 :root[data-accent=gold]{--brand-hue:39;--brand-saturation:66%}

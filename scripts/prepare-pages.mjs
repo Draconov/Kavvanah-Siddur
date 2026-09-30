@@ -19,7 +19,7 @@ async function walk(folder) {
 
 const builtFiles = await walk(root);
 // Match only known application assets, never external URLs or downloaded texts.
-const assets = /(?<![\w/])\/(?:_next|texts|assets|fonts|icons|licenses)(?=\/)|(?<![\w/])\/(?:manifest\.webmanifest|favicon\.svg|sw\.js|offline-manifest\.json)(?=["'?#/)\\]|$)/g;
+const assets = /(?<![\w/])\/(?:_next|texts|assets|fonts|icons|licenses)(?=\/)|(?<![\w/])\/(?:manifest\.webmanifest|sw\.js|offline-manifest\.json)(?=["'?#/)\\]|$)/g;
 for (const file of builtFiles) {
   const name = path.relative(root, file).replaceAll(path.sep, '/');
   if (!/\.(?:html|js|css|rsc)$/.test(name)) continue;
