@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "before": {
+    "en": {
+      "ashkenaz": 1704,
+      "edot": 920
+    },
+    "ru": {
+      "ashkenaz": 3689,
+      "edot": 666
+    },
+    "uk": {
+      "ashkenaz": 1068,
+      "edot": 532
+    }
+  },
+  "filled": {
+    "en": {
+      "ashkenaz": {
+        "identicalHebrew": 0,
+        "exactTanakh": 0,
+        "exactSiddurSequence": 0,
+        "total": 0
+      },
+      "edot": {
+        "identicalHebrew": 0,
+        "exactTanakh": 0,
+        "exactSiddurSequence": 0,
+        "total": 0
+      }
+    },
+    "ru": {
+      "ashkenaz": {
+        "identicalHebrew": 0,
+        "exactTanakh": 0,
+        "exactSiddurSequence": 0,
+        "total": 0
+      },
+      "edot": {
+        "identicalHebrew": 0,
+        "exactTanakh": 0,
+        "exactSiddurSequence": 0,
+        "total": 0
+      }
+    },
+    "uk": {
+      "ashkenaz": {
+        "identicalHebrew": 0,
+        "exactTanakh": 0,
+        "exactSiddurSequence": 0,
+        "total": 0
+      },
+      "edot": {
+        "identicalHebrew": 0,
+        "exactTanakh": 0,
+        "exactSiddurSequence": 0,
+        "total": 0
+      }
+    }
+  },
+  "after": {
+    "en": {
+      "ashkenaz": 1704,
+      "edot": 920
+    },
+    "ru": {
+      "ashkenaz": 3689,
+      "edot": 666
+    },
+    "uk": {
+      "ashkenaz": 1068,
+      "edot": 532
+    }
+  },
+  "ambiguousRepeatedHebrew": {
+    "en": 102,
+    "ru": 10,
+    "uk": 1
+  }
+}

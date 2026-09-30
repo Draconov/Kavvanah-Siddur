@@ -13726,6 +13726,330 @@
       "to": "מֵימֵי",
       "context": "את|שיניהם|מימי|רגליהם|עמכם",
       "evidence": "Isaiah 36:12"
+    },
+    {
+      "word": "כּל",
+      "to": "כֹּל",
+      "context": "נעשה|בחפצו|כל|אזי|מלך",
+      "evidence": "ashkenaz:30269a7a5366:2, ashkenaz:e1a005689e03:29, ashkenaz:57fbe4a9a320:3, ashkenaz:baee5db27a52:2"
+    },
+    {
+      "word": "לו",
+      "to": "לוֹ",
+      "context": "שני|להמשיל|לו|להחבירה|",
+      "evidence": "ashkenaz:30269a7a5366:5, ashkenaz:e1a005689e03:32, ashkenaz:57fbe4a9a320:6, ashkenaz:baee5db27a52:5"
+    },
+    {
+      "word": "גואֲלִי",
+      "to": "גּוֹאֲלִי",
+      "context": "אלי|וחי|גואלי|וצור|חבלי",
+      "evidence": "ashkenaz:30269a7a5366:7, ashkenaz:e1a005689e03:34, ashkenaz:57fbe4a9a320:8, ashkenaz:baee5db27a52:7"
+    },
+    {
+      "word": "שרָף",
+      "to": "שְׂרָף",
+      "context": "אינו|אלא|שרף|הנוטף|מעצי",
+      "evidence": "ashkenaz:cf12f5f08a9e:5, ashkenaz:1617a8dff62c:2, ashkenaz:b19402b403d5:11"
+    },
+    {
+      "word": "בּו",
+      "to": "בּוֹ",
+      "context": "כדי|לשרות|בו|את|הצפרן",
+      "evidence": "ashkenaz:cf12f5f08a9e:5, ashkenaz:1617a8dff62c:2, ashkenaz:b19402b403d5:11"
+    },
+    {
+      "word": "אמן",
+      "to": "אָמֵן",
+      "context": "שמה|רבא|אמן||",
+      "evidence": "ashkenaz:aee0ff195a66:2, ashkenaz:5e0e67641634:1, ashkenaz:fb8a4940e636:2, ashkenaz:a91a71aac839:1"
+    },
+    {
+      "word": "כּל",
+      "to": "כֹּל",
+      "context": "בצלצלי|תרועה|כל|הנשמה|תהלל",
+      "evidence": "ashkenaz:14f8609ae525:1, ashkenaz:6acd3145f0b8:1"
+    },
+    {
+      "word": "כּל",
+      "to": "כֹּל",
+      "context": "יה|הללויה|כל|הנשמה|תהלל",
+      "evidence": "ashkenaz:14f8609ae525:1, ashkenaz:6acd3145f0b8:1"
+    },
+    {
+      "word": "יום",
+      "to": "יוֹם",
+      "context": "וקדושים|בכל|יום|יהללוך|סלה",
+      "evidence": "ashkenaz:8d4d67ce1657:1, ashkenaz:52c2c717a4d4:1, ashkenaz:82fac07dc118:2, ashkenaz:2befc954f2b2:1"
+    },
+    {
+      "word": "אותו",
+      "to": "אוֹתוֹ",
+      "context": "כשם|שמקדישים|אותו|בשמי|מרום",
+      "evidence": "ashkenaz:5a14ee8b70be:2, ashkenaz:0937dd5a45c6:2, ashkenaz:942ca7688fa1:2"
+    },
+    {
+      "word": "הודו",
+      "to": "הוֹדוֹ",
+      "context": "|קהל|הודו|על|ארץ",
+      "evidence": "ashkenaz:4a65f7d68d0d:3, ashkenaz:077f0e4187d2:3"
+    },
+    {
+      "word": "יום",
+      "to": "יוֹם",
+      "context": "הלכות|בכל|יום|מבטח|לו",
+      "evidence": "ashkenaz:1617a8dff62c:3, ashkenaz:b82eccce0472:4"
+    },
+    {
+      "word": "לו",
+      "to": "לוֹ",
+      "context": "יום|מבטח|לו|שהוא|בן",
+      "evidence": "ashkenaz:1617a8dff62c:3, ashkenaz:b82eccce0472:4"
+    },
+    {
+      "word": "לו",
+      "to": "לוֹ",
+      "context": "הליכות|עולם|לו|אל|תקרי",
+      "evidence": "ashkenaz:1617a8dff62c:3, ashkenaz:b82eccce0472:4"
+    },
+    {
+      "word": "אור",
+      "to": "אוֹר",
+      "context": "באורך|נראה|אור||",
+      "evidence": "psalms 36:10, ashkenaz:1d85b398e83c:9"
+    },
+    {
+      "word": "לו",
+      "to": "לוֹ",
+      "context": "אשר|אמר|לו|האלהים|",
+      "evidence": "genesis 22:3, ashkenaz:8534a42fa42f:3"
+    },
+    {
+      "word": "פּה",
+      "to": "פֹּה",
+      "context": "שבו|לכם|פה|עם|החמור",
+      "evidence": "genesis 22:5, ashkenaz:8534a42fa42f:5"
+    },
+    {
+      "word": "כּה",
+      "to": "כֹּה",
+      "context": "נלכה|עד|כה|ונשתחוה|ונשובה",
+      "evidence": "genesis 22:5, ashkenaz:8534a42fa42f:5"
+    },
+    {
+      "word": "לּו",
+      "to": "לּוֹ",
+      "context": "אלהים|יראה|לו|השה|לעלה",
+      "evidence": "genesis 22:8, ashkenaz:8534a42fa42f:8"
+    },
+    {
+      "word": "לו",
+      "to": "לוֹ",
+      "context": "אשר|אמר|לו|האלהים|ויבן",
+      "evidence": "genesis 22:9, ashkenaz:8534a42fa42f:9"
+    },
+    {
+      "word": "אתו",
+      "to": "אֹתוֹ",
+      "context": "בנו|וישם|אתו|על|המזבח",
+      "evidence": "genesis 22:9, ashkenaz:8534a42fa42f:9"
+    },
+    {
+      "word": "לו",
+      "to": "לוֹ",
+      "context": "ואל|תעש|לו|מאומה|כי",
+      "evidence": "genesis 22:12, ashkenaz:8534a42fa42f:12"
+    },
+    {
+      "word": "כּל",
+      "to": "כֹּל",
+      "context": "והתברכו|בזרעך|כל|גויי|הארץ",
+      "evidence": "genesis 22:18, ashkenaz:8534a42fa42f:18"
+    },
+    {
+      "word": "אתו",
+      "to": "אֹתוֹ",
+      "context": "לרחצה|ונתת|אתו|בין|אהל",
+      "evidence": "exodus 30:18, ashkenaz:174e41a639b3:2"
+    },
+    {
+      "word": "לו",
+      "to": "לוֹ",
+      "context": "חק|עולם|לו|ולזרעו|לדרתם",
+      "evidence": "exodus 30:21, ashkenaz:174e41a639b3:5"
+    },
+    {
+      "word": "זאת",
+      "to": "זֹאת",
+      "context": "בניו|לאמר|זאת|תורת|העלה",
+      "evidence": "leviticus 6:2, ashkenaz:16d6258c9753:2"
+    },
+    {
+      "word": "בּו",
+      "to": "בּוֹ",
+      "context": "המזבח|תוקד|בו||",
+      "evidence": "leviticus 6:2, ashkenaz:16d6258c9753:2"
+    },
+    {
+      "word": "בּו",
+      "to": "בּוֹ",
+      "context": "המזבח|תוקד|בו|לא|תכבה",
+      "evidence": "leviticus 6:5, ashkenaz:16d6258c9753:5"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "תוקד|בו|לא|תכבה|ובער",
+      "evidence": "leviticus 6:5, ashkenaz:16d6258c9753:5"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "על|המזבח|לא|תכבה|",
+      "evidence": "leviticus 6:6, ashkenaz:16d6258c9753:6"
+    },
+    {
+      "word": "מַעֲשה",
+      "to": "מַעֲשֵׂה",
+      "context": "קטרת|רקח|מעשה|רוקח|ממלח",
+      "evidence": "exodus 30:35, ashkenaz:b19402b403d5:3"
+    },
+    {
+      "word": "זאת",
+      "to": "זֹאת",
+      "context": "לכבש|יין|זאת|עלת|חדש",
+      "evidence": "numbers 28:14, ashkenaz:d9c040952093:15"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "החיצון|אם|לא|נתן|לא",
+      "evidence": "edot:b9e7ef3e1086:22, ashkenaz:04572baae217:2"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "לא|נתן|לא|עכב|אלו",
+      "evidence": "edot:b9e7ef3e1086:22, ashkenaz:04572baae217:2"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "הטוב|כי|לא|כלו|רחמיך",
+      "evidence": "ashkenaz:63cc0e9b28b9:5, ashkenaz:496817c3fdbe:3"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "והמרחם|כי|לא|תמו|חסדיך",
+      "evidence": "ashkenaz:63cc0e9b28b9:5, ashkenaz:496817c3fdbe:3"
+    },
+    {
+      "word": "לּו",
+      "to": "לּוֹ",
+      "context": "מחשבתו|והשבות|לו|גמולו|בראשו",
+      "evidence": "ashkenaz:0eb8b584fc7a:3, ashkenaz:496817c3fdbe:14"
+    },
+    {
+      "word": "אותו",
+      "to": "אוֹתוֹ",
+      "context": "בראשו|ותלו|אותו|ואת|בניו",
+      "evidence": "ashkenaz:0eb8b584fc7a:3, ashkenaz:496817c3fdbe:14"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "לבב|אשר|לא|נשא|לשוא",
+      "evidence": "psalms 24:4, ashkenaz:33a3220a5c51:4"
+    },
+    {
+      "word": "טוב",
+      "to": "טוֹב",
+      "context": "כי|לקח|טוב|נתתי|לכם",
+      "evidence": "proverbs 4:2, ashkenaz:84cf25b3c80e:6"
+    },
+    {
+      "word": "אור",
+      "to": "אוֹר",
+      "context": "|עטה|אור|כשלמה|נוטה",
+      "evidence": "psalms 104:2, ashkenaz:331a3c37b406:2"
+    },
+    {
+      "word": "עשה",
+      "to": "עֹשֶׂה",
+      "context": "||עשה|מלאכיו|רוחות",
+      "evidence": "psalms 104:4, ashkenaz:331a3c37b406:4"
+    },
+    {
+      "word": "קול",
+      "to": "קוֹל",
+      "context": "ינוסון|מן|קול|רעמך|יחפזון",
+      "evidence": "psalms 104:7, ashkenaz:331a3c37b406:7"
+    },
+    {
+      "word": "עוף",
+      "to": "עוֹף",
+      "context": "|עליהם|עוף|השמים|ישכון",
+      "evidence": "psalms 104:12, ashkenaz:331a3c37b406:12"
+    },
+    {
+      "word": "קול",
+      "to": "קוֹל",
+      "context": "עפאים|יתנו|קול||",
+      "evidence": "psalms 104:12, ashkenaz:331a3c37b406:12"
+    },
+    {
+      "word": "בּו",
+      "to": "בּוֹ",
+      "context": "ויהי|לילה|בו|תרמש|כל",
+      "evidence": "psalms 104:20, ashkenaz:331a3c37b406:20"
+    },
+    {
+      "word": "בּו",
+      "to": "בּוֹ",
+      "context": "יצרת|לשחק|בו||",
+      "evidence": "psalms 104:26, ashkenaz:331a3c37b406:26"
+    },
+    {
+      "word": "טוב",
+      "to": "טוֹב",
+      "context": "ידך|ישבעון|טוב||",
+      "evidence": "psalms 104:28, ashkenaz:331a3c37b406:28"
+    },
+    {
+      "word": "לפסח",
+      "to": "לְפֶסַח",
+      "context": "||לפסח|חג|המצות",
+      "evidence": "ashkenaz:b0d4e1ec7766:39, ashkenaz:4c099e94821b:13"
+    },
+    {
+      "word": "יום",
+      "to": "יוֹם",
+      "context": "ובחמשה|עשר|יום|לחדש|הזה",
+      "evidence": "numbers 28:17, ashkenaz:4c099e94821b:22"
+    },
+    {
+      "word": "לא",
+      "to": "לֹא",
+      "context": "מלאכת|עבדה|לא|תעשו|",
+      "evidence": "numbers 28:18, leviticus 23:35, ashkenaz:4c099e94821b:23"
+    },
+    {
+      "word": "כּל",
+      "to": "כָּל",
+      "context": "|ואמונה|כל|זאת|וקים",
+      "evidence": "edot:b2a7b87b53c5:11, edot:7bd62690e4c5:10"
+    },
+    {
+      "word": "השלום",
+      "to": "הַשָּׁלוֹם",
+      "context": "שובה|אומר|השלום|במרומיו|הוא",
+      "evidence": "edot:1c3990912daa:52, edot:f6a25eb01c2c:33, edot:773543a1a6d1:32"
+    },
+    {
+      "word": "ו",
+      "to": "וְ",
+      "context": "בשבת|השבת|ו|ישראל|והזמנים",
+      "evidence": "edot:3c0f53b43c9c:32, edot:73731af90728:31"
     }
   ]
 }

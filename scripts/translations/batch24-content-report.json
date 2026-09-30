@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "batch": 24,
+  "scope": [
+    "Ukrainian Tanakh edition completeness and provenance",
+    "Ukrainian Tanakh structural/composite alignment",
+    "source-safe Siddur translation coverage recovery",
+    "source-safe transliteration/pointing review"
+  ],
+  "ukrainianTanakh": {
+    "status": "complete-structural-audit-passed",
+    "books": 39,
+    "versesPerEdition": 23206,
+    "selectableEditions": [
+      "uk-jewish-modern",
+      "uk-ohienko-1962",
+      "uk-turkonjak-utt",
+      "uk-kulish-puluj-1905"
+    ],
+    "emptyVerses": 0,
+    "jewishModernExactComposite": true,
+    "jewishModernProvenance": {
+      "uk-varda-torah": 5846,
+      "uk-turkonjak-utt": 17145,
+      "uk-ohienko-1962": 215
+    },
+    "turkonjakExplicitOhiienkoFallbacks": 286,
+    "jewishModernEffectiveOhiienkoFallbacks": 215
+  },
+  "siddurTranslationCoverage": {
+    "note": "Only exact, source-preserving reuse was applied. No machine-generated prayer translation was invented.",
+    "beforeBatch24": {
+      "en": {"ashkenaz": 1687, "edot": 389},
+      "ru": {"ashkenaz": 3689, "edot": 647},
+      "uk": {"ashkenaz": 1051, "edot": 515}
+    },
+    "afterBatch24": {
+      "en": {"ashkenaz": 1704, "edot": 920},
+      "ru": {"ashkenaz": 3689, "edot": 666},
+      "uk": {"ashkenaz": 1068, "edot": 532}
+    },
+    "added": {
+      "en": {"ashkenaz": 17, "edot": 531},
+      "ru": {"ashkenaz": 0, "edot": 19},
+      "uk": {"ashkenaz": 17, "edot": 17}
+    },
+    "totalParagraphs": {"ashkenaz": 3689, "edot": 2924},
+    "remainingUntranslated": {
+      "en": {"ashkenaz": 1985, "edot": 2004},
+      "ru": {"ashkenaz": 0, "edot": 2258},
+      "uk": {"ashkenaz": 2621, "edot": 2392}
+    }
+  },
+  "transliteration": {
+    "newExactContextPointingCorrections": 54,
+    "wordCorrections": 1424,
+    "contextCorrectionsBeforeBatch24": 210,
+    "contextCorrectionsAfterBatch24": 264,
+    "sourceHebrewModified": false,
+    "unresolvedPrayerAudit": {
+      "ashkenaz": {"paragraphs": 3399, "tokens": 67666, "unresolvedTokens": 3835, "paragraphsWithUnresolved": 1099},
+      "edot": {"paragraphs": 2194, "tokens": 81623, "unresolvedTokens": 5826, "paragraphsWithUnresolved": 1167}
+    },
+    "policy": "Unresolved words remain Hebrew rather than receiving guessed pronunciation."
+  },
+  "validation": {
+    "safeFillIdempotent": true,
+    "transliterationReviewIdempotent": true,
+    "targetedNodeTests": {"passed": 25, "failed": 0},
+    "siddurBundleValidator": "passed"
+  }
+}

@@ -1,0 +1,1742 @@
+{
+  "schema": 1,
+  "expected": {
+    "books": 39,
+    "verses": 23206
+  },
+  "editions": {
+    "uk-jewish-modern": {
+      "verses": 23206,
+      "empty": 0,
+      "metadata": {
+        "ref": 23206,
+        "edition": 23206,
+        "note": 5976
+      },
+      "embeddedEditions": {
+        "uk-varda-torah": 5846,
+        "uk-turkonjak-utt": 17145,
+        "uk-ohienko-1962": 215
+      },
+      "books": {
+        "genesis": 1533,
+        "exodus": 1210,
+        "leviticus": 859,
+        "numbers": 1288,
+        "deuteronomy": 956,
+        "joshua": 658,
+        "judges": 618,
+        "i-samuel": 811,
+        "ii-samuel": 695,
+        "i-kings": 817,
+        "ii-kings": 719,
+        "isaiah": 1291,
+        "jeremiah": 1364,
+        "ezekiel": 1273,
+        "hosea": 197,
+        "joel": 73,
+        "amos": 146,
+        "obadiah": 21,
+        "jonah": 48,
+        "micah": 105,
+        "nahum": 47,
+        "habakkuk": 56,
+        "zephaniah": 53,
+        "haggai": 38,
+        "zechariah": 211,
+        "malachi": 55,
+        "psalms": 2527,
+        "proverbs": 915,
+        "job": 1070,
+        "song-of-songs": 117,
+        "ruth": 85,
+        "lamentations": 154,
+        "ecclesiastes": 222,
+        "esther": 167,
+        "daniel": 357,
+        "ezra": 280,
+        "nehemiah": 405,
+        "i-chronicles": 943,
+        "ii-chronicles": 822
+      },
+      "problems": []
+    },
+    "uk-ohienko-1962": {
+      "verses": 23206,
+      "empty": 0,
+      "metadata": {
+        "ref": 23206,
+        "note": 6
+      },
+      "embeddedEditions": {},
+      "books": {
+        "genesis": 1533,
+        "exodus": 1210,
+        "leviticus": 859,
+        "numbers": 1288,
+        "deuteronomy": 956,
+        "joshua": 658,
+        "judges": 618,
+        "i-samuel": 811,
+        "ii-samuel": 695,
+        "i-kings": 817,
+        "ii-kings": 719,
+        "isaiah": 1291,
+        "jeremiah": 1364,
+        "ezekiel": 1273,
+        "hosea": 197,
+        "joel": 73,
+        "amos": 146,
+        "obadiah": 21,
+        "jonah": 48,
+        "micah": 105,
+        "nahum": 47,
+        "habakkuk": 56,
+        "zephaniah": 53,
+        "haggai": 38,
+        "zechariah": 211,
+        "malachi": 55,
+        "psalms": 2527,
+        "proverbs": 915,
+        "job": 1070,
+        "song-of-songs": 117,
+        "ruth": 85,
+        "lamentations": 154,
+        "ecclesiastes": 222,
+        "esther": 167,
+        "daniel": 357,
+        "ezra": 280,
+        "nehemiah": 405,
+        "i-chronicles": 943,
+        "ii-chronicles": 822
+      },
+      "problems": []
+    },
+    "uk-turkonjak-utt": {
+      "verses": 23206,
+      "empty": 0,
+      "metadata": {
+        "ref": 23206,
+        "note": 168,
+        "edition": 286
+      },
+      "embeddedEditions": {
+        "uk-ohienko-1962": 286
+      },
+      "books": {
+        "genesis": 1533,
+        "exodus": 1210,
+        "leviticus": 859,
+        "numbers": 1288,
+        "deuteronomy": 956,
+        "joshua": 658,
+        "judges": 618,
+        "i-samuel": 811,
+        "ii-samuel": 695,
+        "i-kings": 817,
+        "ii-kings": 719,
+        "isaiah": 1291,
+        "jeremiah": 1364,
+        "ezekiel": 1273,
+        "hosea": 197,
+        "joel": 73,
+        "amos": 146,
+        "obadiah": 21,
+        "jonah": 48,
+        "micah": 105,
+        "nahum": 47,
+        "habakkuk": 56,
+        "zephaniah": 53,
+        "haggai": 38,
+        "zechariah": 211,
+        "malachi": 55,
+        "psalms": 2527,
+        "proverbs": 915,
+        "job": 1070,
+        "song-of-songs": 117,
+        "ruth": 85,
+        "lamentations": 154,
+        "ecclesiastes": 222,
+        "esther": 167,
+        "daniel": 357,
+        "ezra": 280,
+        "nehemiah": 405,
+        "i-chronicles": 943,
+        "ii-chronicles": 822
+      },
+      "problems": []
+    },
+    "uk-kulish-puluj-1905": {
+      "verses": 23206,
+      "empty": 0,
+      "metadata": {
+        "ref": 23206,
+        "note": 176,
+        "edition": 3
+      },
+      "embeddedEditions": {
+        "kavvanah-supplement-2026": 3
+      },
+      "books": {
+        "genesis": 1533,
+        "exodus": 1210,
+        "leviticus": 859,
+        "numbers": 1288,
+        "deuteronomy": 956,
+        "joshua": 658,
+        "judges": 618,
+        "i-samuel": 811,
+        "ii-samuel": 695,
+        "i-kings": 817,
+        "ii-kings": 719,
+        "isaiah": 1291,
+        "jeremiah": 1364,
+        "ezekiel": 1273,
+        "hosea": 197,
+        "joel": 73,
+        "amos": 146,
+        "obadiah": 21,
+        "jonah": 48,
+        "micah": 105,
+        "nahum": 47,
+        "habakkuk": 56,
+        "zephaniah": 53,
+        "haggai": 38,
+        "zechariah": 211,
+        "malachi": 55,
+        "psalms": 2527,
+        "proverbs": 915,
+        "job": 1070,
+        "song-of-songs": 117,
+        "ruth": 85,
+        "lamentations": 154,
+        "ecclesiastes": 222,
+        "esther": 167,
+        "daniel": 357,
+        "ezra": 280,
+        "nehemiah": 405,
+        "i-chronicles": 943,
+        "ii-chronicles": 822
+      },
+      "problems": []
+    }
+  },
+  "jewishModern": {
+    "exactComposite": true,
+    "torahComponent": "uk-varda-torah",
+    "neviimKetuvimComponent": "uk-turkonjak-utt",
+    "effectiveVerseProvenance": {
+      "uk-varda-torah": 5846,
+      "uk-turkonjak-utt": 17145,
+      "uk-ohienko-1962": 215
+    },
+    "explicitTurkonjakFallbackCount": 215,
+    "explicitTurkonjakFallbacks": [
+      {
+        "book": "joshua",
+        "chapter": 6,
+        "verse": 4,
+        "ref": "No reviewed TUB mapping for JOS 6:4; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 8,
+        "verse": 13,
+        "ref": "No reviewed TUB equivalent for JOS 8:13; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 8,
+        "verse": 26,
+        "ref": "No reviewed TUB equivalent for JOS 8:26; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 10,
+        "verse": 15,
+        "ref": "No reviewed TUB equivalent for JOS 10:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 10,
+        "verse": 43,
+        "ref": "No reviewed TUB equivalent for JOS 10:43; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 13,
+        "verse": 33,
+        "ref": "No reviewed TUB equivalent for JOS 13:33; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 20,
+        "verse": 4,
+        "ref": "No reviewed TUB equivalent for JOS 20:4; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 20,
+        "verse": 5,
+        "ref": "No reviewed TUB equivalent for JOS 20:5; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "joshua",
+        "chapter": 20,
+        "verse": 6,
+        "ref": "No reviewed TUB equivalent for JOS 20:6; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 12,
+        "ref": "No reviewed TUB equivalent for 1SA 17:12; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 13,
+        "ref": "No reviewed TUB equivalent for 1SA 17:13; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 14,
+        "ref": "No reviewed TUB equivalent for 1SA 17:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 15,
+        "ref": "No reviewed TUB equivalent for 1SA 17:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 16,
+        "ref": "No reviewed TUB equivalent for 1SA 17:16; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 17,
+        "ref": "No reviewed TUB equivalent for 1SA 17:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 18,
+        "ref": "No reviewed TUB equivalent for 1SA 17:18; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 19,
+        "ref": "No reviewed TUB equivalent for 1SA 17:19; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 20,
+        "ref": "No reviewed TUB equivalent for 1SA 17:20; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 21,
+        "ref": "No reviewed TUB equivalent for 1SA 17:21; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 22,
+        "ref": "No reviewed TUB equivalent for 1SA 17:22; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 23,
+        "ref": "No reviewed TUB equivalent for 1SA 17:23; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 24,
+        "ref": "No reviewed TUB equivalent for 1SA 17:24; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 25,
+        "ref": "No reviewed TUB equivalent for 1SA 17:25; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 26,
+        "ref": "No reviewed TUB equivalent for 1SA 17:26; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 27,
+        "ref": "No reviewed TUB equivalent for 1SA 17:27; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 28,
+        "ref": "No reviewed TUB equivalent for 1SA 17:28; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 29,
+        "ref": "No reviewed TUB equivalent for 1SA 17:29; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 30,
+        "ref": "No reviewed TUB equivalent for 1SA 17:30; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 31,
+        "ref": "No reviewed TUB equivalent for 1SA 17:31; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 41,
+        "ref": "No reviewed TUB equivalent for 1SA 17:41; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 50,
+        "ref": "No reviewed TUB equivalent for 1SA 17:50; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 55,
+        "ref": "No reviewed TUB equivalent for 1SA 17:55; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 56,
+        "ref": "No reviewed TUB equivalent for 1SA 17:56; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 57,
+        "ref": "No reviewed TUB equivalent for 1SA 17:57; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 17,
+        "verse": 58,
+        "ref": "No reviewed TUB equivalent for 1SA 17:58; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 1,
+        "ref": "No reviewed TUB equivalent for 1SA 18:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 2,
+        "ref": "No reviewed TUB equivalent for 1SA 18:2; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 3,
+        "ref": "No reviewed TUB equivalent for 1SA 18:3; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 4,
+        "ref": "No reviewed TUB equivalent for 1SA 18:4; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 5,
+        "ref": "No reviewed TUB equivalent for 1SA 18:5; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 10,
+        "ref": "No reviewed TUB equivalent for 1SA 18:10; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 11,
+        "ref": "No reviewed TUB equivalent for 1SA 18:11; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 17,
+        "ref": "No reviewed TUB equivalent for 1SA 18:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 18,
+        "ref": "No reviewed TUB equivalent for 1SA 18:18; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 19,
+        "ref": "No reviewed TUB equivalent for 1SA 18:19; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 18,
+        "verse": 30,
+        "ref": "No reviewed TUB equivalent for 1SA 18:30; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-samuel",
+        "chapter": 23,
+        "verse": 12,
+        "ref": "No reviewed TUB mapping for 1SA 23:12; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 5,
+        "verse": 8,
+        "ref": "No reviewed TUB equivalent for 1KI 5:8; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 6,
+        "verse": 11,
+        "ref": "No reviewed TUB equivalent for 1KI 6:11; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 6,
+        "verse": 12,
+        "ref": "No reviewed TUB equivalent for 1KI 6:12; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 6,
+        "verse": 13,
+        "ref": "No reviewed TUB equivalent for 1KI 6:13; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 6,
+        "verse": 14,
+        "ref": "No reviewed TUB equivalent for 1KI 6:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 7,
+        "verse": 22,
+        "ref": "No reviewed TUB equivalent for 1KI 7:22; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 7,
+        "verse": 31,
+        "ref": "No reviewed TUB equivalent for 1KI 7:31; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 15,
+        "ref": "No reviewed TUB equivalent for 1KI 9:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 16,
+        "ref": "No reviewed TUB equivalent for 1KI 9:16; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 17,
+        "ref": "No reviewed TUB equivalent for 1KI 9:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 18,
+        "ref": "No reviewed TUB equivalent for 1KI 9:18; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 19,
+        "ref": "No reviewed TUB equivalent for 1KI 9:19; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 20,
+        "ref": "No reviewed TUB equivalent for 1KI 9:20; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 21,
+        "ref": "No reviewed TUB equivalent for 1KI 9:21; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 22,
+        "ref": "No reviewed TUB equivalent for 1KI 9:22; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 9,
+        "verse": 23,
+        "ref": "No reviewed TUB equivalent for 1KI 9:23; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 11,
+        "verse": 23,
+        "ref": "No reviewed TUB mapping for 1KI 11:23; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 11,
+        "verse": 24,
+        "ref": "No reviewed TUB mapping for 1KI 11:24; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 11,
+        "verse": 39,
+        "ref": "No reviewed TUB mapping for 1KI 11:39; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 12,
+        "verse": 17,
+        "ref": "No reviewed TUB mapping for 1KI 12:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 2,
+        "ref": "No reviewed TUB equivalent for 1KI 14:2; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 3,
+        "ref": "No reviewed TUB equivalent for 1KI 14:3; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 4,
+        "ref": "No reviewed TUB equivalent for 1KI 14:4; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 5,
+        "ref": "No reviewed TUB equivalent for 1KI 14:5; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 6,
+        "ref": "No reviewed TUB equivalent for 1KI 14:6; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 7,
+        "ref": "No reviewed TUB equivalent for 1KI 14:7; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 8,
+        "ref": "No reviewed TUB equivalent for 1KI 14:8; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 9,
+        "ref": "No reviewed TUB equivalent for 1KI 14:9; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 10,
+        "ref": "No reviewed TUB equivalent for 1KI 14:10; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 14,
+        "ref": "No reviewed TUB equivalent for 1KI 14:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 15,
+        "ref": "No reviewed TUB equivalent for 1KI 14:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 16,
+        "ref": "No reviewed TUB equivalent for 1KI 14:16; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 18,
+        "ref": "No reviewed TUB equivalent for 1KI 14:18; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 19,
+        "ref": "No reviewed TUB equivalent for 1KI 14:19; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 14,
+        "verse": 20,
+        "ref": "No reviewed TUB equivalent for 1KI 14:20; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 22,
+        "verse": 47,
+        "ref": "No reviewed TUB equivalent for 1KI 22:47; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 22,
+        "verse": 48,
+        "ref": "No reviewed TUB equivalent for 1KI 22:48; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 22,
+        "verse": 49,
+        "ref": "No reviewed TUB equivalent for 1KI 22:49; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-kings",
+        "chapter": 22,
+        "verse": 50,
+        "ref": "No reviewed TUB equivalent for 1KI 22:50; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "isaiah",
+        "chapter": 2,
+        "verse": 22,
+        "ref": "No reviewed TUB mapping for ISA 2:22; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "isaiah",
+        "chapter": 56,
+        "verse": 12,
+        "ref": "No reviewed TUB mapping for ISA 56:12; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 2,
+        "verse": 1,
+        "ref": "No reviewed TUB equivalent for JER 2:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 7,
+        "verse": 1,
+        "ref": "No reviewed TUB equivalent for JER 7:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 7,
+        "verse": 27,
+        "ref": "No reviewed TUB equivalent for JER 7:27; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 10,
+        "verse": 7,
+        "ref": "No reviewed TUB mapping for JER 10:7; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 10,
+        "verse": 8,
+        "ref": "No reviewed TUB mapping for JER 10:8; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 10,
+        "verse": 9,
+        "ref": "No reviewed TUB mapping for JER 10:9; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 10,
+        "verse": 10,
+        "ref": "No reviewed TUB mapping for JER 10:10; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 11,
+        "verse": 7,
+        "ref": "No reviewed TUB mapping for JER 11:7; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 17,
+        "verse": 1,
+        "ref": "No reviewed TUB equivalent for JER 17:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 17,
+        "verse": 2,
+        "ref": "No reviewed TUB equivalent for JER 17:2; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 17,
+        "verse": 3,
+        "ref": "No reviewed TUB equivalent for JER 17:3; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 17,
+        "verse": 4,
+        "ref": "No reviewed TUB equivalent for JER 17:4; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 25,
+        "verse": 14,
+        "ref": "No reviewed TUB mapping for JER 25:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 27,
+        "verse": 1,
+        "ref": "No reviewed TUB equivalent for JER 27:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 27,
+        "verse": 7,
+        "ref": "No reviewed TUB equivalent for JER 27:7; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 27,
+        "verse": 13,
+        "ref": "No reviewed TUB equivalent for JER 27:13; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 27,
+        "verse": 17,
+        "ref": "No reviewed TUB equivalent for JER 27:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 27,
+        "verse": 20,
+        "ref": "No reviewed TUB equivalent for JER 27:20; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 29,
+        "verse": 16,
+        "ref": "No reviewed TUB mapping for JER 29:16; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 29,
+        "verse": 17,
+        "ref": "No reviewed TUB mapping for JER 29:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 29,
+        "verse": 18,
+        "ref": "No reviewed TUB mapping for JER 29:18; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 29,
+        "verse": 19,
+        "ref": "No reviewed TUB mapping for JER 29:19; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 29,
+        "verse": 20,
+        "ref": "No reviewed TUB mapping for JER 29:20; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 30,
+        "verse": 15,
+        "ref": "No reviewed TUB mapping for JER 30:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 14,
+        "ref": "No reviewed TUB equivalent for JER 33:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 15,
+        "ref": "No reviewed TUB equivalent for JER 33:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 16,
+        "ref": "No reviewed TUB equivalent for JER 33:16; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 17,
+        "ref": "No reviewed TUB equivalent for JER 33:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 18,
+        "ref": "No reviewed TUB equivalent for JER 33:18; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 19,
+        "ref": "No reviewed TUB equivalent for JER 33:19; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 20,
+        "ref": "No reviewed TUB equivalent for JER 33:20; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 21,
+        "ref": "No reviewed TUB equivalent for JER 33:21; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 22,
+        "ref": "No reviewed TUB equivalent for JER 33:22; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 23,
+        "ref": "No reviewed TUB equivalent for JER 33:23; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 24,
+        "ref": "No reviewed TUB equivalent for JER 33:24; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 25,
+        "ref": "No reviewed TUB equivalent for JER 33:25; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 33,
+        "verse": 26,
+        "ref": "No reviewed TUB equivalent for JER 33:26; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 39,
+        "verse": 9,
+        "ref": "No reviewed TUB equivalent for JER 39:9; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 39,
+        "verse": 11,
+        "ref": "No reviewed TUB equivalent for JER 39:11; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 39,
+        "verse": 12,
+        "ref": "No reviewed TUB equivalent for JER 39:12; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 39,
+        "verse": 13,
+        "ref": "No reviewed TUB equivalent for JER 39:13; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 46,
+        "verse": 26,
+        "ref": "No reviewed TUB mapping for JER 46:26; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 48,
+        "verse": 45,
+        "ref": "No reviewed TUB equivalent for JER 48:45; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 48,
+        "verse": 46,
+        "ref": "No reviewed TUB equivalent for JER 48:46; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 48,
+        "verse": 47,
+        "ref": "No reviewed TUB equivalent for JER 48:47; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 49,
+        "verse": 6,
+        "ref": "No reviewed TUB equivalent for JER 49:6; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 51,
+        "verse": 45,
+        "ref": "No reviewed TUB mapping for JER 51:45; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 51,
+        "verse": 46,
+        "ref": "No reviewed TUB mapping for JER 51:46; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 51,
+        "verse": 47,
+        "ref": "No reviewed TUB mapping for JER 51:47; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 51,
+        "verse": 48,
+        "ref": "No reviewed TUB mapping for JER 51:48; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 52,
+        "verse": 2,
+        "ref": "No reviewed TUB mapping for JER 52:2; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 52,
+        "verse": 3,
+        "ref": "No reviewed TUB mapping for JER 52:3; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 52,
+        "verse": 15,
+        "ref": "No reviewed TUB mapping for JER 52:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 52,
+        "verse": 28,
+        "ref": "No reviewed TUB mapping for JER 52:28; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 52,
+        "verse": 29,
+        "ref": "No reviewed TUB mapping for JER 52:29; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "jeremiah",
+        "chapter": 52,
+        "verse": 30,
+        "ref": "No reviewed TUB mapping for JER 52:30; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "ezekiel",
+        "chapter": 1,
+        "verse": 14,
+        "ref": "No reviewed TUB equivalent for EZK 1:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "ezekiel",
+        "chapter": 7,
+        "verse": 5,
+        "ref": "No reviewed TUB equivalent for EZK 7:5; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "ezekiel",
+        "chapter": 10,
+        "verse": 14,
+        "ref": "No reviewed TUB mapping for EZK 10:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "ezekiel",
+        "chapter": 27,
+        "verse": 31,
+        "ref": "No reviewed TUB mapping for EZK 27:31; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "ezekiel",
+        "chapter": 32,
+        "verse": 25,
+        "ref": "No reviewed TUB equivalent for EZK 32:25; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "ezekiel",
+        "chapter": 33,
+        "verse": 26,
+        "ref": "No reviewed TUB mapping for EZK 33:26; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "ezekiel",
+        "chapter": 40,
+        "verse": 30,
+        "ref": "No reviewed TUB mapping for EZK 40:30; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 4,
+        "verse": 7,
+        "ref": "No reviewed TUB mapping for PRO 4:7; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 8,
+        "verse": 33,
+        "ref": "No reviewed TUB mapping for PRO 8:33; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 11,
+        "verse": 4,
+        "ref": "No reviewed TUB mapping for PRO 11:4; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 15,
+        "verse": 31,
+        "ref": "No reviewed TUB mapping for PRO 15:31; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 16,
+        "verse": 1,
+        "ref": "No reviewed TUB mapping for PRO 16:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 16,
+        "verse": 2,
+        "ref": "No reviewed TUB mapping for PRO 16:2; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 16,
+        "verse": 3,
+        "ref": "No reviewed TUB mapping for PRO 16:3; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 16,
+        "verse": 6,
+        "ref": "No reviewed TUB mapping for PRO 16:6; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 16,
+        "verse": 7,
+        "ref": "No reviewed TUB mapping for PRO 16:7; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 16,
+        "verse": 8,
+        "ref": "No reviewed TUB mapping for PRO 16:8; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 16,
+        "verse": 9,
+        "ref": "No reviewed TUB mapping for PRO 16:9; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 18,
+        "verse": 23,
+        "ref": "No reviewed TUB mapping for PRO 18:23; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 18,
+        "verse": 24,
+        "ref": "No reviewed TUB mapping for PRO 18:24; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 19,
+        "verse": 1,
+        "ref": "No reviewed TUB mapping for PRO 19:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 19,
+        "verse": 2,
+        "ref": "No reviewed TUB mapping for PRO 19:2; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 19,
+        "verse": 3,
+        "ref": "No reviewed TUB mapping for PRO 19:3; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 20,
+        "verse": 14,
+        "ref": "No reviewed TUB mapping for PRO 20:14; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 20,
+        "verse": 15,
+        "ref": "No reviewed TUB mapping for PRO 20:15; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 20,
+        "verse": 16,
+        "ref": "No reviewed TUB mapping for PRO 20:16; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 20,
+        "verse": 17,
+        "ref": "No reviewed TUB mapping for PRO 20:17; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 20,
+        "verse": 18,
+        "ref": "No reviewed TUB mapping for PRO 20:18; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 20,
+        "verse": 19,
+        "ref": "No reviewed TUB mapping for PRO 20:19; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 21,
+        "verse": 5,
+        "ref": "No reviewed TUB mapping for PRO 21:5; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 22,
+        "verse": 6,
+        "ref": "No reviewed TUB mapping for PRO 22:6; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "proverbs",
+        "chapter": 23,
+        "verse": 23,
+        "ref": "No reviewed TUB mapping for PRO 23:23; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "song-of-songs",
+        "chapter": 1,
+        "verse": 1,
+        "ref": "No reviewed TUB mapping for SNG 1:1; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "lamentations",
+        "chapter": 3,
+        "verse": 22,
+        "ref": "TUB 3:22 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "lamentations",
+        "chapter": 3,
+        "verse": 23,
+        "ref": "TUB 3:23 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "lamentations",
+        "chapter": 3,
+        "verse": 24,
+        "ref": "TUB 3:24 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "lamentations",
+        "chapter": 3,
+        "verse": 29,
+        "ref": "TUB 3:29 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "esther",
+        "chapter": 4,
+        "verse": 6,
+        "ref": "No reviewed TUB equivalent for EST 4:6; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "esther",
+        "chapter": 9,
+        "verse": 5,
+        "ref": "No reviewed TUB equivalent for EST 9:5; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "esther",
+        "chapter": 9,
+        "verse": 30,
+        "ref": "No reviewed TUB mapping for EST 9:30; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 3,
+        "verse": 38,
+        "ref": "No reviewed TUB equivalent for NEH 3:38; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 16,
+        "ref": "No reviewed TUB equivalent for NEH 11:16; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 20,
+        "ref": "No reviewed TUB equivalent for NEH 11:20; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 21,
+        "ref": "No reviewed TUB equivalent for NEH 11:21; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 25,
+        "ref": "No reviewed TUB equivalent for NEH 11:25; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 26,
+        "ref": "No reviewed TUB equivalent for NEH 11:26; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 27,
+        "ref": "No reviewed TUB equivalent for NEH 11:27; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 28,
+        "ref": "No reviewed TUB equivalent for NEH 11:28; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 29,
+        "ref": "No reviewed TUB equivalent for NEH 11:29; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 30,
+        "ref": "No reviewed TUB equivalent for NEH 11:30; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 31,
+        "ref": "No reviewed TUB equivalent for NEH 11:31; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 32,
+        "ref": "No reviewed TUB equivalent for NEH 11:32; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 33,
+        "ref": "No reviewed TUB equivalent for NEH 11:33; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 34,
+        "ref": "No reviewed TUB equivalent for NEH 11:34; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 11,
+        "verse": 35,
+        "ref": "No reviewed TUB equivalent for NEH 11:35; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 12,
+        "verse": 4,
+        "ref": "No reviewed TUB mapping for NEH 12:4; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 12,
+        "verse": 5,
+        "ref": "No reviewed TUB mapping for NEH 12:5; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "nehemiah",
+        "chapter": 12,
+        "verse": 6,
+        "ref": "No reviewed TUB mapping for NEH 12:6; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 11,
+        "ref": "TUB 1:11 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 12,
+        "ref": "TUB 1:12 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 13,
+        "ref": "TUB 1:13 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 14,
+        "ref": "TUB 1:14 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 15,
+        "ref": "TUB 1:15 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 16,
+        "ref": "TUB 1:16 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 18,
+        "ref": "TUB 1:18 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 19,
+        "ref": "TUB 1:19 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 20,
+        "ref": "TUB 1:20 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 21,
+        "ref": "TUB 1:21 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 22,
+        "ref": "TUB 1:22 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 1,
+        "verse": 23,
+        "ref": "TUB 1:23 [empty]; Ohiienko fallback",
+        "note": ""
+      },
+      {
+        "book": "i-chronicles",
+        "chapter": 16,
+        "verse": 24,
+        "ref": "TUB 16:24 [empty]; Ohiienko fallback",
+        "note": ""
+      }
+    ]
+  }
+}
