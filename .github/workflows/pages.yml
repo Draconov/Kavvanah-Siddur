@@ -24,6 +24,10 @@ jobs:
           runtime: node@22.13.0
           cache: true
           install: false
+      - name: Release metadata preflight
+        run: |
+          node scripts/sync-version.mjs
+          node --test tests/version.test.mjs
       - name: Install and build
         run: |
           pnpm install --frozen-lockfile
