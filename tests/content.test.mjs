@@ -30,8 +30,8 @@ function hydrateSiddur(name,languages=['en','ru','uk']){
  return data;
 }
 
-test('Siddur translation bundles retain current reviewed coverage and real text',()=>{
- const expected={en:{ashkenaz:1704,edot:920},ru:{ashkenaz:3689,edot:666},uk:{ashkenaz:1068,edot:532}};
+test('Siddur translation bundles retain measured field coverage and real text',()=>{
+ const expected={en:{ashkenaz:1779,edot:1732},ru:{ashkenaz:3689,edot:1700},uk:{ashkenaz:3689,edot:2924}};
  for(const [language,corpora] of Object.entries(expected)){
   const bundle=readTranslations(language);
   for(const [nusach,total] of Object.entries(corpora)){
@@ -45,7 +45,7 @@ test('Siddur translation bundles retain current reviewed coverage and real text'
      count++;
     }
    }
-   assert.equal(count,total,`${language}/${nusach} reviewed coverage`);
+   assert.equal(count,total,`${language}/${nusach} filled field count`);
   }
  }
 });
@@ -71,8 +71,35 @@ test('Siddur Hebrew structure and translations are stored separately',()=>{
  const paragraphs=ashkenaz.sections.flatMap(section=>section.paragraphs);
  assert.equal(paragraphs.length,3689);
  assert.equal(paragraphs.filter(p=>p.ru?.trim()).length,3689,'Russian Ashkenaz must remain complete');
+ assert.equal(hydrateSiddur('ashkenaz',['uk']).sections.flatMap(section=>section.paragraphs).filter(p=>p.uk?.trim()).length,3689,'Ukrainian Ashkenaz must remain complete');
  const edot=hydrateSiddur('edot',['ru']);
- assert.equal(edot.sections.flatMap(section=>section.paragraphs).filter(p=>p.ru?.trim()).length,666,'Russian Edot reviewed coverage regressed');
+ assert.equal(edot.sections.flatMap(section=>section.paragraphs).filter(p=>p.ru?.trim()).length,1700,'Russian Edot reviewed coverage regressed');
+});
+
+test('priority Siddur sections remain complete after the coverage pass',()=>{
+ const ashkenaz=hydrateSiddur('ashkenaz');
+ const edot=hydrateSiddur('edot');
+ const complete=(data,id)=>{
+  const section=data.sections.find(section=>section.id===id);assert.ok(section,`missing section ${id}`);
+  for(const language of ['en','ru','uk'])assert.equal(section.paragraphs.filter(p=>p[language]?.trim()).length,section.paragraphs.length,`${id}/${language} incomplete`);
+ };
+ for(const id of ['925b2928fc1a','79118c1c7484','fdf9944b505d','af2654ff3a9f','382266a2cd4c','a7b4c8bf3812'])complete(ashkenaz,id);
+ for(const id of ['45ae15c00009','fb96ac93cd35','31e255cacf84','dbfbff3b8f8f','389aa97864f3','faae6b52dfbe'])complete(edot,id);
+ const avot=edot.sections.find(section=>section.id==='2aefd3750074');assert.ok(avot);
+ for(const language of ['en','ru','uk'])assert.ok(avot.paragraphs.every(p=>p[language]?.trim()),`Pirkei Avot/${language} incomplete`);
+ for(const id of ['fe63aa25fd03','a88ea7d1ace5','188759d707dd','36909ca82057','6e6610f277b9','7e91a487fdae'])complete(edot,id);
+ const ukComplete=id=>{
+  const section=ashkenaz.sections.find(section=>section.id===id);assert.ok(section,`missing section ${id}`);
+  assert.equal(section.paragraphs.filter(p=>p.uk?.trim()).length,section.paragraphs.length,`${id}/uk incomplete`);
+ };
+ for(const id of [
+  '074162d6f4dd','f41d97b34fba','9e122da436cc',
+  '46e390a5e6e9','919c7d3d9ab6','1fc74c8ccf4b','0ce40f19e440',
+  '8b672758d5bb','53019ea5944b','3a2897d0b929','8d3c5347ffbf','d5dacae42c75'
+ ])ukComplete(id);
+ // Ukrainian Ashkenaz festival corpus is now complete end-to-end.
+ for(const section of ashkenaz.sections.filter(section=>section.path?.[0]==='Festivals'))
+  assert.ok(section.paragraphs.every(p=>p.uk?.trim()),`Festival ${section.id}/uk incomplete`);
 });
 
 test('Kavvanah additions have their own edition attribution and no empty text',()=>{
@@ -140,7 +167,7 @@ for(const [language,totals] of Object.entries({ru:{ashkenaz:213,edot:187},uk:{as
  const normalized=s=>s.replace(/[^א-ת]/g,'');
  const tanakh=read('catalog').books.map(b=>read(b.id));
  for(const [nusach,total] of Object.entries(totals)){
-  const additions=hydrateSiddur(nusach,[language]).sections.flatMap(s=>s.paragraphs).filter(p=>p.kind!=='instruction'&&p[language]&&!p.translationEditions?.[language]);
+  const additions=hydrateSiddur(nusach,[language]).sections.flatMap(s=>s.paragraphs).filter(p=>p.kind!=='instruction'&&p[language]&&!p.translationEditions?.[language]&&!p.translationNotes?.[language]);
   assert.equal(additions.length,total);
   for(const p of additions){
    assert.notEqual(p.kind,'instruction');const wanted=normalized(p.he);

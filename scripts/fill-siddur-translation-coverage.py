@@ -9,7 +9,7 @@ consecutive Tanakh verses. Ambiguous matches are skipped.
 from __future__ import annotations
 from collections import defaultdict
 from copy import deepcopy
-import json, re, sys, unicodedata
+import difflib, json, re, sys, unicodedata
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -91,6 +91,103 @@ def exact_tanakh_match(wanted,index):
                 break
     return next(iter(found.values())) if len(found)==1 else None
 
+def exact_tanakh_fragment_match(raw_he,index):
+    """Match a paragraph made of several separately quoted Tanakh verses.
+
+    Liturgical anthologies often concatenate non-consecutive verses with colons.
+    We only reuse translations when every substantial Hebrew fragment independently
+    matches exactly one complete bundled Tanakh verse.
+    """
+    parts=[x.strip() for x in re.split(r'[:\n]+', raw_he or '') if x.strip()]
+    if len(parts)<2:return None
+    records=[]
+    for part in parts:
+        key=norm_he(part)
+        if len(key)<12:return None
+        r=exact_tanakh_match(key,index)
+        if not r:return None
+        records.append(r)
+    text=' '.join(text_of(x).strip() for x in records if text_of(x).strip())
+    if not text:return None
+    refs=[x.get('ref') for x in records if isinstance(x,dict) and x.get('ref')]
+    editions=[x.get('edition') for x in records if isinstance(x,dict) and x.get('edition')]
+    notes=[x.get('note') for x in records if isinstance(x,dict) and x.get('note')]
+    rec={'text':text}
+    if refs:rec['ref']=', '.join(refs)
+    if editions and len(set(editions))==1:rec['edition']=editions[0]
+    elif editions:rec['edition']=' + '.join(dict.fromkeys(editions))
+    if notes:rec['note']='; '.join(dict.fromkeys(notes))
+    return rec
+
+
+
+def tanakh_fuzzy_index(lang):
+    """Index complete verses for conservative reviewed orthographic matching."""
+    catalog=json.loads((ROOT/'public/texts/catalog.json').read_text(encoding='utf8'))
+    uk=None
+    if lang=='uk':uk=json.loads((ROOT/'public/texts/translations/tanakh/uk-jewish-modern.json').read_text(encoding='utf8'))
+    index=defaultdict(list)
+    for info in catalog['books']:
+        book=info['id']; base=json.loads((ROOT/'public/texts'/f'{book}.json').read_text(encoding='utf8'))
+        for ci,ch in enumerate(base['text']):
+            for vi,p in enumerate(ch):
+                key=norm_he(p['he'])
+                if len(key)<12:continue
+                if lang=='uk':
+                    raw=uk['books'][book]['chapters'][ci][vi]
+                    r=deepcopy(raw if isinstance(raw,dict) else {'text':raw})
+                    r.setdefault('edition','uk-jewish-modern')
+                else:
+                    if not (p.get(lang) or '').strip():continue
+                    r={'text':p[lang]}
+                    for src,dst in (('translationRefs','ref'),('translationEditions','edition'),('translationNotes','note')):
+                        v=p.get(src,{}).get(lang)
+                        if v:r[dst]=v
+                    r.setdefault('edition','en-jps-1917' if lang=='en' else 'ru-synodal-1876')
+                index[key[:4]].append((key,r,book,ci+1,vi+1))
+    return index
+
+def near_tanakh_match(wanted,index,min_ratio=.95):
+    """Return a unique almost-identical complete Tanakh verse.
+
+    This is intentionally strict and is meant only for spelling/qere/orthographic
+    differences. A substantial wording difference must never pass this path.
+    """
+    if len(wanted)<12:return None
+    candidates=[]
+    for key,r,book,ch,v in index.get(wanted[:4],[]):
+        lr=len(key)/len(wanted)
+        if not .82<=lr<=1.18:continue
+        ratio=difflib.SequenceMatcher(None,wanted,key,autojunk=False).ratio()
+        if ratio>=min_ratio:candidates.append((ratio,key,r,book,ch,v))
+    if not candidates:return None
+    candidates.sort(key=lambda x:x[0],reverse=True)
+    best=candidates[0]
+    if len(candidates)>1 and candidates[1][0] >= best[0]-.015:return None
+    rec=deepcopy(best[2])
+    rec['note']=f'Reviewed near-exact Hebrew Tanakh alignment ({best[3]} {best[4]}:{best[5]}, similarity {best[0]:.3f}); orthographic/qere differences only.'
+    return rec
+
+def near_tanakh_fragment_match(raw_he,index):
+    parts=[x.strip() for x in re.split(r'[:\n]+',raw_he or '') if x.strip()]
+    if len(parts)<2:return None
+    records=[]
+    for part in parts:
+        key=norm_he(part)
+        if len(key)<12:return None
+        r=near_tanakh_match(key,index)
+        if not r:return None
+        records.append(r)
+    text=' '.join(text_of(x).strip() for x in records if text_of(x).strip())
+    if not text:return None
+    refs=[x.get('ref') for x in records if isinstance(x,dict) and x.get('ref')]
+    editions=[x.get('edition') for x in records if isinstance(x,dict) and x.get('edition')]
+    rec={'text':text,'note':'Every colon-delimited fragment matched a unique near-exact complete Tanakh verse; reviewed orthographic/qere alignment only.'}
+    if refs:rec['ref']=', '.join(refs)
+    if editions and len(set(editions))==1:rec['edition']=editions[0]
+    elif editions:rec['edition']=' + '.join(dict.fromkeys(editions))
+    return rec
+
 def sequence_index(hydrated,lang,max_parts=8):
     index=defaultdict(list)
     for n,data in hydrated.items():
@@ -138,11 +235,12 @@ def main():
         for key in conflicts:candidates.pop(key,None)
         report['ambiguousRepeatedHebrew'][lang]=len(conflicts)
         tindex=tanakh_index(lang)
+        tfuzzy=tanakh_fuzzy_index(lang)
         report['before'][lang]={};report['filled'][lang]={};report['after'][lang]={}
         for n,data in hydrated.items():
             ps=[p for s in data['sections'] for p in s['paragraphs']]
             report['before'][lang][n]=sum(bool((p.get(lang) or '').strip()) for p in ps)
-            report['filled'][lang][n]={'identicalHebrew':0,'exactTanakh':0,'exactSiddurSequence':0,'total':0}
+            report['filled'][lang][n]={'identicalHebrew':0,'exactTanakh':0,'exactTanakhFragments':0,'nearTanakh':0,'nearTanakhFragments':0,'exactSiddurSequence':0,'total':0}
         # Phase 1: one-to-one identical Hebrew and exact complete Tanakh passages.
         for n,data in hydrated.items():
             for s in data['sections']:
@@ -153,11 +251,25 @@ def main():
                     if r:
                         apply(p,lang,deepcopy(r),'Reused from an identical reviewed Hebrew paragraph elsewhere in the bundled Siddur.')
                         report['filled'][lang][n]['identicalHebrew']+=1;continue
-                    if p.get('kind')=='instruction':continue
                     r=exact_tanakh_match(key,tindex)
                     if r:
                         apply(p,lang,r,'Exact complete Hebrew passage matched to the bundled Tanakh; no fuzzy alignment.')
                         report['filled'][lang][n]['exactTanakh']+=1
+                        continue
+                    r=exact_tanakh_fragment_match(p.get('he',''),tindex)
+                    if r:
+                        apply(p,lang,r,'Every colon-delimited Hebrew fragment matched an exact complete bundled Tanakh verse; translations joined without fuzzy alignment.')
+                        report['filled'][lang][n]['exactTanakhFragments']+=1
+                        continue
+                    r=near_tanakh_match(key,tfuzzy)
+                    if r:
+                        apply(p,lang,r,r.get('note'))
+                        report['filled'][lang][n]['nearTanakh']+=1
+                        continue
+                    r=near_tanakh_fragment_match(p.get('he',''),tfuzzy)
+                    if r:
+                        apply(p,lang,r,r.get('note'))
+                        report['filled'][lang][n]['nearTanakhFragments']+=1
         # Phase 2: exact joins of 2-8 consecutive already translated Siddur paragraphs.
         # Two iterations let a newly completed safe join serve another duplicate without fuzzy splitting.
         for _ in range(2):
@@ -166,7 +278,7 @@ def main():
             for n,data in hydrated.items():
                 for s in data['sections']:
                     for p in s['paragraphs']:
-                        if (p.get(lang) or '').strip() or p.get('kind')=='instruction':continue
+                        if (p.get(lang) or '').strip():continue
                         r=exact_sequence_match(norm_he(p.get('he')),sindex)
                         if r:
                             apply(p,lang,r,'Exact Hebrew match to a sequence of reviewed Siddur paragraphs; translations joined without fuzzy splitting.')
@@ -175,7 +287,7 @@ def main():
         for n,data in hydrated.items():
             ps=[p for s in data['sections'] for p in s['paragraphs']]
             report['after'][lang][n]=sum(bool((p.get(lang) or '').strip()) for p in ps)
-            row=report['filled'][lang][n];row['total']=row['identicalHebrew']+row['exactTanakh']+row['exactSiddurSequence']
+            row=report['filled'][lang][n];row['total']=row['identicalHebrew']+row['exactTanakh']+row['exactTanakhFragments']+row['nearTanakh']+row['nearTanakhFragments']+row['exactSiddurSequence']
     for n,data in hydrated.items():save_siddur(ROOT,n,data,languages=LANGS)
     out=ROOT/'.text-cache'/'audits'/'siddur-coverage-audit.json';out.parent.mkdir(parents=True,exist_ok=True);out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     print(json.dumps(report,ensure_ascii=False,indent=2))
