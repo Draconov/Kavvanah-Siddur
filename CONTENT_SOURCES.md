@@ -116,6 +116,12 @@ Complete biblical passages taken from the bundled Russian Synodal source retain 
 
 The project-owner supplied **Hitas 3.8.0** Android APK (SHA-256 `4da6c2ea0b3039791d3ae064095252748617b93a59a19afc2ee8d0c6d5904245`) contains two bundled Russian Siddur HTML excerpts: **Avinu Malkeinu** and **Mincha / Aleinu**. Kavvanah does not treat that APK as a complete Siddur. In the current corpus only the complete bundled Aleinu wording is used, and only for the seven Edot Aleinu sections whose corresponding Russian fields were empty. The three Aleinu records (title plus the two prayer paragraphs) are reused across those occurrences, adding 21 paragraph translations. They carry the `hitas-siddur-3.8.0` edition identifier and APK digest reference in `public/texts/translations/ru.json`; the APK itself is not committed.
 
-Together with the 109 conservative Ashkenaz-to-Edot exact-Hebrew reuses above, this source pass raises Russian Edot coverage from **517 to 647 of 2,924 paragraphs** without adding another translation manifest or batch file.
+Together with the 109 conservative Ashkenaz-to-Edot exact-Hebrew reuses above, that earlier source pass raised Russian Edot coverage from **517 to 647 of 2,924 paragraphs**. A later Russian translation pass expanded this to 1,700 populated paragraphs, before the editorial work described below.
+
+### Russian Edot translation continuation (October 2026)
+
+Russian Edot coverage now stands at **2,110 of 2,924 paragraphs (72.16%)**; **814** remain untranslated. The canonical `public/texts/translations/ru.json` includes 369 newly populated entries written as original Kavvanah Russian translations (primarily precise instructions, rubrics, short blessings and verses), plus 41 reviewed near-identical Hebrew parallel passages already translated elsewhere in the app. Source labels retain the underlying translation's provenance, and all new project-authored translations use the existing `kavvanah-russian-2026` edition identifier. These additions are not separate manifests, patch lists, or bundled text sources.
+
+**Verification scope:** these additions are not certified by an independent native Hebrew/Aramaic liturgical editor. Close Hebrew source matches were reviewed rather than transferred merely because a similarity threshold was met. Long Zohar, Mishnah, piyyutim and other untranslated material remain explicitly empty, not replaced by summaries, transliterations or reused unrelated text. See `tests/test_russian_edot.py` and run `python3 scripts/validate-siddur-translations.py` for the live coverage report.
 
 The Paper and Dark paper texture is the replacement image supplied by the user on 2026-09-23. Its native proportions are preserved with automatic background height.

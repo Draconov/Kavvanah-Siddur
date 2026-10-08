@@ -750,5 +750,16 @@ export function translate(language:UiLanguage,key:string,values:Record<string,st
  }
  return value.replace(/\{(\w+)\}/g,(all,k)=>String(values[k]??all));
 }
-export function getUI(language:UiLanguage){return {language,isRtl:language==='he',locale:LOCALES[language],t:(key:string,values?:Record<string,string|number>)=>translate(language,key,values)};}
+// Keep the translator stable between React renders. TanakhView uses `t` in a
+// data-loading effect dependency; recreating it each render aborts and restarts
+// the active fetch, leaving the book indefinitely in its loading state.
+const uiCache=new Map<UiLanguage,{language:UiLanguage;isRtl:boolean;locale:string;t:(key:string,values?:Record<string,string|number>)=>string}>();
+export function getUI(language:UiLanguage){
+ let ui=uiCache.get(language);
+ if(!ui){
+  ui={language,isRtl:language==='he',locale:LOCALES[language],t:(key:string,values?:Record<string,string|number>)=>translate(language,key,values)};
+  uiCache.set(language,ui);
+ }
+ return ui;
+}
 export function hebrewDateLabel(hd:{getMonthName:()=>string;getDate:()=>number;getFullYear:()=>number},language:UiLanguage,year=false){return language==='he'?`${hd.getDate()} ${translate(language,hd.getMonthName())}${year?` ${hd.getFullYear()}`:''}`:`${translate(language,hd.getMonthName())} ${hd.getDate()}${year?`, ${hd.getFullYear()}`:''}`;}

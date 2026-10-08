@@ -82,7 +82,7 @@ class UkrainianSiddurTests(unittest.TestCase):
 
     def test_other_language_coverage_unchanged(self):
         totals=validate(ROOT)
-        self.assertEqual(totals['ru'],{'ashkenaz':3689,'edot':1700})
+        self.assertEqual(totals['ru'],{'ashkenaz':3689,'edot':2110})
         self.assertEqual(totals['en'],{'ashkenaz':1779,'edot':1732})
 
     def test_part_provenance_source_pins_remain_valid(self):
