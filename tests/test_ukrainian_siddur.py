@@ -80,9 +80,9 @@ class UkrainianSiddurTests(unittest.TestCase):
                         self.assertNotIn('[TODO]',p['uk'])
                         self.assertNotIn('переклад відсутній',p['uk'].lower())
 
-    def test_other_language_coverage_unchanged(self):
+    def test_other_language_coverage(self):
         totals=validate(ROOT)
-        self.assertEqual(totals['ru'],{'ashkenaz':3689,'edot':2110})
+        self.assertEqual(totals['ru'],{'ashkenaz':3689,'edot':2924})
         self.assertEqual(totals['en'],{'ashkenaz':1779,'edot':1732})
 
     def test_part_provenance_source_pins_remain_valid(self):

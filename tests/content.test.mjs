@@ -31,7 +31,7 @@ function hydrateSiddur(name,languages=['en','ru','uk']){
 }
 
 test('Siddur translation bundles retain measured field coverage and real text',()=>{
- const expected={en:{ashkenaz:1779,edot:1732},ru:{ashkenaz:3689,edot:1700},uk:{ashkenaz:3689,edot:2924}};
+ const expected={en:{ashkenaz:1779,edot:1732},ru:{ashkenaz:3689,edot:2924},uk:{ashkenaz:3689,edot:2924}};
  for(const [language,corpora] of Object.entries(expected)){
   const bundle=readTranslations(language);
   for(const [nusach,total] of Object.entries(corpora)){
@@ -73,7 +73,7 @@ test('Siddur Hebrew structure and translations are stored separately',()=>{
  assert.equal(paragraphs.filter(p=>p.ru?.trim()).length,3689,'Russian Ashkenaz must remain complete');
  assert.equal(hydrateSiddur('ashkenaz',['uk']).sections.flatMap(section=>section.paragraphs).filter(p=>p.uk?.trim()).length,3689,'Ukrainian Ashkenaz must remain complete');
  const edot=hydrateSiddur('edot',['ru']);
- assert.equal(edot.sections.flatMap(section=>section.paragraphs).filter(p=>p.ru?.trim()).length,1700,'Russian Edot reviewed coverage regressed');
+ assert.equal(edot.sections.flatMap(section=>section.paragraphs).filter(p=>p.ru?.trim()).length,2924,'Russian Edot reviewed coverage regressed');
 });
 
 test('priority Siddur sections remain complete after the coverage pass',()=>{

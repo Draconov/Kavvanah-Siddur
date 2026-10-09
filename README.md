@@ -34,7 +34,7 @@ Read Hebrew prayers alongside transliteration and translation, explore the Tanak
 | **Make it yours** | Adjust your themes, accent colors, and text preferences. |
 | **Take it offline** | Install the web app and download the included texts, or use a native app with its web resources bundled locally. |
 
-> **Content note:** Ukrainian Siddur translations are populated for both Ashkenaz and Edot HaMizrach; English and Russian still have gaps. Field coverage does not guarantee professional linguistic proofreading. See [Content sources](CONTENT_SOURCES.md) for attribution and coverage.
+> **Content note:** Ukrainian and Russian Siddur translations are populated for both Ashkenaz and Edot HaMizrach; English remains partially translated. Field coverage does not guarantee professional linguistic proofreading. See [Content sources](CONTENT_SOURCES.md) for attribution and coverage.
 
 ## Open or install
 
