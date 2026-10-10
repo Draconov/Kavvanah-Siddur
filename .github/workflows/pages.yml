@@ -27,16 +27,21 @@ jobs:
       - name: Release metadata preflight
         run: |
           node scripts/sync-version.mjs
-          node --test tests/version.test.mjs
+          npm run test:smoke
       - name: Install and build
         run: |
           pnpm install --frozen-lockfile
           pnpm build
           test -f dist/client/index.html
           test -f dist/client/texts/ashkenaz.json
-          test -f dist/client/texts/translations/en.json
-          test -f dist/client/texts/translations/ru.json
-          test -f dist/client/texts/translations/uk.json
+          test -f dist/client/texts/translations/optimized/tanakh/uk-varda-torah/genesis.json
+          test -f dist/client/texts/translations/optimized/tanakh/uk-turkonjak-utt/isaiah.json
+          test -f dist/client/texts/translations/optimized/siddur/en-ashkenaz.json
+          test -f dist/client/texts/translations/optimized/siddur/en-edot.json
+          test -f dist/client/texts/translations/optimized/siddur/ru-ashkenaz.json
+          test -f dist/client/texts/translations/optimized/siddur/ru-edot.json
+          test -f dist/client/texts/translations/optimized/siddur/uk-ashkenaz.json
+          test -f dist/client/texts/translations/optimized/siddur/uk-edot.json
       - name: Share offline-capable website with native build jobs
         uses: actions/upload-artifact@v7
         with:

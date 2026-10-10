@@ -79,30 +79,49 @@ pnpm dev
 To check and build the project:
 
 ```sh
+pnpm run test:smoke # dependency-free version, reader, offline and edition smoke tests
 pnpm check
 pnpm test
 pnpm build
 ```
 
-### Release validation
+### Fast reader assets and validation
 
-Before a GitHub Actions deployment or native release, the shared website job now
-checks all 19,839 Siddur translation fields and their Hebrew section hashes,
-all 39 Tanakh books and 23,206 base verses per language, and the full alignment
-of the four selectable Ukrainian Tanakh editions (plus the internal Varda Torah
-source). Run the same source-only check locally without installing Node packages:
+The Hebrew books and the **canonical** translation bundles remain in
+`public/texts/`. On `pnpm dev` and `pnpm build`, the build automatically runs
+`scripts/prepare-reader-assets.mjs` to generate reader-only files:
+
+- Siddur downloads just one language and tradition (for example, `en-ashkenaz.json`), not both traditions.
+- Tanakh downloads one book of the selected translation edition, not all 39 books.
+- The Ukrainian Jewish Modern preset is already resolved into Varda/Turkonjak components, so no duplicate composite payload is shipped.
+- Loaded JSON is reused in a bounded memory cache. Failed requests are retried and changing the active prayer does not reload the Siddur.
+
+The generated `public/texts/translations/optimized/` directory is ignored by
+Git and should never be committed. The release packager removes redundant
+full-translation JSON **only from `dist/client`**; the canonical originals
+remain untouched for imports, editorial work, full-corpus regression tests,
+and translation attribution. The installable offline library includes the
+optimized per-book assets. The initial offline shell includes both Ashkenaz
+and Edot Hebrew texts and English translations; additional books and
+translation languages can be saved for offline use from Settings.
+
+To run optional validation locally:
 
 ```sh
-python3 scripts/verify-release-content.py
 python3 scripts/validate-siddur-translations.py
 python3 -m unittest discover -s tests -p 'test_*.py'
+pnpm test
+pnpm check
 ```
 
-CI then runs the complete Node test suite and the TypeScript check after a
-frozen-lockfile install, before building any release artifact. Failure blocks
-website deployment and the dependent native release jobs. A successful content
-count confirms coverage and file structure, not translation accuracy; the
-manual editorial review remains a separate process.
+The main release workflow deliberately avoids an extra audit job:
+it runs one dependency-free release smoke suite, installs the pinned dependencies, builds the
+website, and checks the reader assets before handing the same build to
+GitHub Pages and native-platform jobs. The offline finalizer compares generated
+reader JSON against every canonical source **before** removing any redundant
+translation bundles from the distribution. Run the full tests above before
+publishing large content changes. A complete field count confirms coverage and file
+structure, not independent linguistic certification.
 
 The static build is generated in `dist/client/`; generated website output is not committed to the repository. Serve `dist/client/` over HTTP(S) when testing a production build locally.
 
@@ -116,6 +135,6 @@ python3 -m http.server 8080 --directory dist/client
 
 ## Maintenance and licenses
 
-Hebrew Siddur structure lives in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Siddur translations are stored once per language in `public/texts/translations/en.json`, `ru.json`, and `uk.json`; the app joins the selected language at runtime. Tanakh edition preferences are data-driven by `lib/siddur/translation-editions.ts`, so additional edition files can be added without redesigning Settings. Ukrainian Ohiienko 1962 and Kulish–Puluj are bundled as complete standalone edition files. The Jewish-modern default is a composite preset: the complete supplied Varda Books PDF provides Genesis through Deuteronomy (5,846 Torah verses), while Turkonjak UTT supplies Nevi’im/Ketuvim. Per-record edition metadata preserves the real source and keeps any explicit Turkonjak/Ohiienko fallback provenance distinct from Varda. Run `python3 scripts/validate-siddur-translations.py` after text maintenance, or add `--audit-uk` for a live Ukrainian translation-quality report. Tanakh importers and the small Tanakh-only supplement remain in `scripts/`. Keep section and paragraph order stable: personal translations depend on those identities.
+Hebrew Siddur structure lives in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Siddur translations are stored once per language in `public/texts/translations/en.json`, `ru.json`, and `uk.json`; the build creates smaller per-tradition runtime bundles from these sources. Tanakh edition preferences are data-driven by `lib/siddur/translation-editions.ts`, so additional edition files can be added without redesigning Settings. Ukrainian Ohiienko 1962 and Kulish–Puluj are bundled as complete standalone edition files. The Jewish-modern default is a composite preset: the complete supplied Varda Books PDF provides Genesis through Deuteronomy (5,846 Torah verses), while Turkonjak UTT supplies Nevi’im/Ketuvim. Per-record edition metadata preserves the real source and keeps any explicit Turkonjak/Ohiienko fallback provenance distinct from Varda. Run `python3 scripts/validate-siddur-translations.py` after text maintenance, or add `--audit-uk` for a live Ukrainian translation-quality report. Tanakh importers and the small Tanakh-only supplement remain in `scripts/`. Keep section and paragraph order stable: personal translations depend on those identities.
 
 Application code is licensed under **GPL-2.0-only**. Text editions, fonts, and third-party dependencies have their own terms. Preserve [LICENSE](LICENSE), [CONTENT_SOURCES.md](CONTENT_SOURCES.md), and the bundled notices when redistributing.

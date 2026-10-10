@@ -14,3 +14,7 @@ public/sw.js
 public/offline-manifest.json
 
 .text-cache/
+
+# Derived, per-book/per-tradition reader assets; regenerate with pnpm build/dev
+public/texts/translations/optimized/
+public/texts/translations/optimized.staging/

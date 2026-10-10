@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const read=name=>JSON.parse(readFileSync(new URL(`../public/texts/${name}.json`,import.meta.url),'utf8'));
-const readTranslations=language=>JSON.parse(readFileSync(new URL(`../public/texts/translations/${language}.json`,import.meta.url),'utf8'));
+const fileCache=new Map();
+const cachedJson=path=>{if(!fileCache.has(path))fileCache.set(path,JSON.parse(readFileSync(new URL(path,import.meta.url),'utf8')));return fileCache.get(path);};
+const read=name=>cachedJson(`../public/texts/${name}.json`);
+const readTranslations=language=>cachedJson(`../public/texts/translations/${language}.json`);
 
 function hydrateSiddur(name,languages=['en','ru','uk']){
  const data=structuredClone(read(name));

@@ -6,30 +6,42 @@ import { Reader } from './Reader';
 import { Choice,EmptyState } from './Controls';
 import { safeRead,safeWrite } from '@/lib/siddur/storage';
 import { applyTanakhTranslation,resolveEditionForBook } from '@/lib/siddur/translation-editions';
+import { loadReaderJson,tanakhReaderPath } from '@/lib/siddur/text-loading';
 import type { TanakhTranslationFile } from '@/lib/siddur/translation-editions';
 import type { BookData,BookInfo,Settings,PersonalTranslations } from '@/lib/siddur/types';
 
 export function TanakhView({settings,patch,personal,setPersonal}:{settings:Settings;patch:(v:Partial<Settings>)=>void;personal:PersonalTranslations;setPersonal:(p:PersonalTranslations)=>void}){
  const {t}=useUI();
  const [catalog,setCatalog]=useState<BookInfo[]>([]),[bookId,setBookId]=useState('genesis'),[chapter,setChapter]=useState(1),[book,setBook]=useState<BookData|null>(null),[error,setError]=useState(''),[saved,setSaved]=useState(false),[retry,setRetry]=useState(0),[editionNotice,setEditionNotice]=useState(''),[activeEdition,setActiveEdition]=useState('');
- useEffect(()=>{const ac=new AbortController();const old=safeRead<{book:string;chapter:number}>('kavvanah.tanakh',{book:'genesis',chapter:1});fetch('/texts/catalog.json',{signal:ac.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<{books:BookInfo[]}>;}).then(data=>{setCatalog(data.books);const info=data.books.find((b:BookInfo)=>b.id===old.book);if(info){setBookId(info.id);setChapter(Math.min(info.chapters,Math.max(1,old.chapter||1)));}}).catch(e=>{if(e.name!=='AbortError')setError('The book catalog could not be loaded. Please reconnect and try again.');});return()=>ac.abort();},[retry]);
  useEffect(()=>{
-  const ac=new AbortController();setBook(null);setError('');setSaved(false);setEditionNotice('');
+  let active=true;
+  const old=safeRead<{book:string;chapter:number}>('kavvanah.tanakh',{book:'genesis',chapter:1});
+  loadReaderJson<{books:BookInfo[]}>('/texts/catalog.json').then(data=>{
+   if(!active)return;
+   setCatalog(data.books);
+   const info=data.books.find(b=>b.id===old.book);
+   if(info){setBookId(info.id);setChapter(Math.min(info.chapters,Math.max(1,old.chapter||1)));}
+  }).catch(()=>{if(active)setError('The book catalog could not be loaded. Please reconnect and try again.');});
+  return()=>{active=false;};
+ },[retry]);
+ useEffect(()=>{
+  let active=true;
+  setBook(null);setError('');setSaved(false);setEditionNotice('');
   const language=settings.translationLanguage;
   const requested=settings.translationEditions[language];
-  fetch(`/texts/${bookId}.json`,{signal:ac.signal}).then(r=>{if(!r.ok)throw Error();return r.json() as Promise<BookData>;}).then(async(data:BookData)=>{
-   const resolution=resolveEditionForBook(language,requested,data.id,data.category);
-   const {preferred,intended,effective,usedFallback}=resolution;
-   setActiveEdition(preferred.composite?.length&&!usedFallback?`${preferred.label} · ${effective.label}`:effective.label);
-   if(usedFallback)setEditionNotice(t('{preferred} is selected. This book temporarily uses {effective} because {intended} is not bundled yet.',{preferred:preferred.label,effective:effective.label,intended:intended.label}));
+  loadReaderJson<BookData>(`/texts/${bookId}.json`).then(async data=>{
+   const {preferred,intended,effective,usedFallback}=resolveEditionForBook(language,requested,data.id,data.category);
+   if(active){
+    setActiveEdition(preferred.composite?.length&&!usedFallback?`${preferred.label} · ${effective.label}`:effective.label);
+    if(usedFallback)setEditionNotice(t('{preferred} is selected. This book temporarily uses {effective} because {intended} is not bundled yet.',{preferred:preferred.label,effective:effective.label,intended:intended.label}));
+   }
    if(effective.builtin||!effective.path)return data;
-   const response=await fetch(effective.path,{signal:ac.signal});
-   if(!response.ok)throw Error();
-   const bundle=await response.json() as TanakhTranslationFile;
+   const bundle=await loadReaderJson<TanakhTranslationFile>(tanakhReaderPath(effective.id, data.id));
    if(bundle.language!==language||bundle.edition!==effective.id)throw Error('Translation edition metadata mismatch');
    return applyTanakhTranslation(data,bundle);
-  }).then((data:BookData)=>{setBook(data);setChapter(c=>Math.min(c,data.chapters));}).catch(e=>{if(e.name!=='AbortError')setError('This book could not be opened. Connect to the internet, or download all texts for offline reading.');});
-  return()=>ac.abort();
+  }).then(data=>{if(active){setBook(data);setChapter(c=>Math.min(c,data.chapters));}})
+   .catch(()=>{if(active)setError('This book could not be opened. Connect to the internet, or download all texts for offline reading.');});
+  return()=>{active=false;};
  },[bookId,retry,settings.translationLanguage,settings.translationEditions,t]);
  const selected=catalog.find(b=>b.id===bookId),index=catalog.findIndex(b=>b.id===bookId);
  function navigate(delta:number){setSaved(false);if(chapter+delta>=1&&chapter+delta<=(book?.chapters??1))setChapter(c=>c+delta);else{const next=catalog[index+delta];if(next){setBookId(next.id);setChapter(delta>0?1:next.chapters);}}}

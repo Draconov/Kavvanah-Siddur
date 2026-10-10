@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const root=new URL('../',import.meta.url);
-const readJson=path=>JSON.parse(fs.readFileSync(new URL(path,root),'utf8'));
+const jsonCache=new Map();
+const readJson=path=>{if(!jsonCache.has(path))jsonCache.set(path,JSON.parse(fs.readFileSync(new URL(path,root),'utf8')));return jsonCache.get(path);};
 const catalog=readJson('public/texts/catalog.json');
 const {TRANSLATION_EDITIONS:registry}=await import('../lib/siddur/translation-editions.ts');
 const vardaManifest=readJson('scripts/translations/varda-source-manifest.json');
