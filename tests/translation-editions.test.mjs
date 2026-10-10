@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {TRANSLATION_EDITIONS,applyTanakhTranslation,effectiveEdition,editionsForLanguage,resolveEditionForBook,translationEdition,editionHasMissingComponents} from '../lib/siddur/translation-editions.ts';
+import {TRANSLATION_EDITIONS,applyTanakhTranslation,effectiveEdition,editionsForLanguage,resolveEditionForBook,translationEdition,preferredEdition,editionHasMissingComponents} from '../lib/siddur/translation-editions.ts';
 
 test('edition registry has independent defaults and four Ukrainian choices',()=>{
  assert.equal(TRANSLATION_EDITIONS.schema,1);
@@ -68,4 +68,13 @@ test('future edition files override only their language',()=>{
  assert.equal(merged.text[0][1].uk,'Second UK');
  assert.equal(merged.text[0][0].translationEditions.uk,'uk-future');
  assert.equal(merged.sources.at(-1).version,'F');
+});
+
+test('invalid or absent translation edition selection falls back safely',()=>{
+ for (const [language, expected] of Object.entries(TRANSLATION_EDITIONS.defaults)) {
+  assert.equal(preferredEdition(language).id, expected);
+  assert.equal(preferredEdition(language, 'missing-edition').id, expected);
+  assert.equal(effectiveEdition(language, 'missing-edition').effective.id, expected);
+ }
+ assert.equal(preferredEdition('uk', 'uk-varda-torah').id, TRANSLATION_EDITIONS.defaults.uk);
 });

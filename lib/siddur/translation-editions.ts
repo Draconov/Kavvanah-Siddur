@@ -244,9 +244,9 @@ export function translationEdition(id: string | undefined, language?: Language):
 
 export function preferredEdition(language: Language, id?: string): TranslationEdition {
   const requested = translationEdition(id, language);
-  if (requested?.selectable !== false) return requested;
+  if (requested && requested.selectable !== false) return requested;
   const fallbackDefault = translationEdition(TRANSLATION_EDITIONS.defaults[language], language);
-  if (fallbackDefault?.selectable !== false) return fallbackDefault;
+  if (fallbackDefault && fallbackDefault.selectable !== false) return fallbackDefault;
   return editionsForLanguage(language)[0]!;
 }
 
