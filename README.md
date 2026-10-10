@@ -34,7 +34,7 @@ Read Hebrew prayers alongside transliteration and translation, explore the Tanak
 | **Make it yours** | Adjust your themes, accent colors, and text preferences. |
 | **Take it offline** | Install the web app and download the included texts, or use a native app with its web resources bundled locally. |
 
-> **Content note:** Ukrainian and Russian Siddur translations are populated for both Ashkenaz and Edot HaMizrach; English remains partially translated. Field coverage does not guarantee professional linguistic proofreading. See [Content sources](CONTENT_SOURCES.md) for attribution and coverage.
+> **Content note:** Ukrainian, Russian and English Siddur translations are fully populated for both traditions (19,839 / 19,839 fields). The project owner reports completing manual proofreading. Field coverage and owner review are not independent specialist certification.
 
 ## Open or install
 
@@ -83,6 +83,26 @@ pnpm check
 pnpm test
 pnpm build
 ```
+
+### Release validation
+
+Before a GitHub Actions deployment or native release, the shared website job now
+checks all 19,839 Siddur translation fields and their Hebrew section hashes,
+all 39 Tanakh books and 23,206 base verses per language, and the full alignment
+of the four selectable Ukrainian Tanakh editions (plus the internal Varda Torah
+source). Run the same source-only check locally without installing Node packages:
+
+```sh
+python3 scripts/verify-release-content.py
+python3 scripts/validate-siddur-translations.py
+python3 -m unittest discover -s tests -p 'test_*.py'
+```
+
+CI then runs the complete Node test suite and the TypeScript check after a
+frozen-lockfile install, before building any release artifact. Failure blocks
+website deployment and the dependent native release jobs. A successful content
+count confirms coverage and file structure, not translation accuracy; the
+manual editorial review remains a separate process.
 
 The static build is generated in `dist/client/`; generated website output is not committed to the repository. Serve `dist/client/` over HTTP(S) when testing a production build locally.
 

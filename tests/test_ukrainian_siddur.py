@@ -83,7 +83,108 @@ class UkrainianSiddurTests(unittest.TestCase):
     def test_other_language_coverage(self):
         totals=validate(ROOT)
         self.assertEqual(totals['ru'],{'ashkenaz':3689,'edot':2924})
-        self.assertEqual(totals['en'],{'ashkenaz':1779,'edot':1732})
+        self.assertEqual(totals['en'],{'ashkenaz':3689,'edot':2924})
+
+    def test_english_part8_source_indexed_passages(self):
+        # Anchor the new passages in the canonical bundle; no dated duplicate files.
+        english = {name: load_siddur(ROOT, name, languages=('en',))
+                   for name in ('ashkenaz', 'edot')}
+        selected = (
+            ('ashkenaz', 'ef80c53d1803', 2, 'I arrange my plea'),
+            ('ashkenaz', '8d3c5347ffbf', 83, 'covenant of Abraham'),
+            ('edot', '50dbbfffe13b', 1, 'My foot stands'),
+            ('edot', '925d0a9078df', 38, 'this child'),
+            ('edot', '74be45bff3e8', 8, 'soldiers of Israel'),
+            ('edot', '86089dfccd2e', 53, 'May His great name'),
+            ('edot', 'b9e7ef3e1086', 28, 'thirteen rules'),
+        )
+        for nusach, section_id, index, text in selected:
+            with self.subTest(nusach=nusach, section=section_id, index=index):
+                section = next(s for s in english[nusach]['sections'] if s['id'] == section_id)
+                paragraph = section['paragraphs'][index]
+                self.assertIn(text, paragraph['en'])
+                self.assertEqual(paragraph['translationEditions']['en'], 'kavvanah-english-2026')
+                self.assertTrue(paragraph['he'])
+
+    def test_english_part3_source_anchors(self):
+        checks = [
+            ('ashkenaz', 'a6d45ada59d7', 6, 'angels of the heavenly hosts'),
+            ('ashkenaz', 'b3692ed358bb', 1, 'brings forth bread'),
+            ('ashkenaz', '255c702d121e', 13, 'reconciles them'),
+            ('edot', '773543a1a6d1', 2, 'Shield of Abraham'),
+            ('edot', '925d0a9078df', 29, 'concerning circumcision'),
+            ('edot', '37e2bf9d4a6e', 19, 'fourth-year produce'),
+        ]
+        english = {name: load_siddur(ROOT, name, languages=('en',))
+                   for name in ('ashkenaz', 'edot')}
+        by_id = {name: {section['id']: section for section in data['sections']}
+                 for name, data in english.items()}
+        for tradition, section_id, paragraph, expected in checks:
+            with self.subTest(tradition=tradition, section_id=section_id, paragraph=paragraph):
+                record = by_id[tradition][section_id]['paragraphs'][paragraph]
+                self.assertIn(expected, record['en'])
+                self.assertTrue(record['translationRefs']['en'])
+
+    def test_english_part4_anchor_and_source_count(self):
+        from collections import Counter
+        checks = [
+            ('ashkenaz', '9e122da436cc', 0, 'Rock, stronghold of my salvation'),
+            ('ashkenaz', '9e122da436cc', 19, 'eight days'),
+            ('ashkenaz', '0b9289c046ee', 15, 'Remember the father'),
+            ('ashkenaz', '919c7d3d9ab6', 5, 'Abraham'),
+            ('edot', '4cf12ce50197', 33, 'He cast the pur'),
+            ('edot', 'fd6a1392831b', 7, 'groom and bride'),
+        ]
+        data={n:load_siddur(ROOT,n,languages=('en',)) for n in ('ashkenaz','edot')}
+        for n,sid,i,phrase in checks:
+            sec=next(s for s in data[n]['sections'] if s['id']==sid)
+            self.assertIn(phrase, sec['paragraphs'][i]['en'])
+            self.assertTrue(sec['paragraphs'][i]['translationRefs']['en'])
+        for i in range(24):
+            hymn=next(s for s in data['ashkenaz']['sections'] if s['id']=='9e122da436cc')
+            self.assertTrue(hymn['paragraphs'][i]['en'])
+        for n,expected in (('ashkenaz',3689),('edot',2924)):
+            self.assertEqual(sum(bool(p.get('en')) for s in data[n]['sections'] for p in s['paragraphs']),expected)
+
+    def test_english_part9_complete_coverage_and_long_readings(self):
+        """Prevent the final English additions from silently disappearing."""
+        from collections import Counter
+        for nusach, expected in [('ashkenaz', 3689), ('edot', 2924)]:
+            data=load_siddur(ROOT, nusach, languages=('en',))
+            all_paragraphs=[p for sec in data['sections'] for p in sec['paragraphs']]
+            self.assertEqual(len(all_paragraphs), expected)
+            self.assertTrue(all(p.get('en','').strip() for p in all_paragraphs))
+        checks=(
+            ('ashkenaz','53019ea5944b',12,'When a man rose against us'),
+            ('ashkenaz','8d3c5347ffbf',89,'Master of the universe'),
+            ('edot','191e107e3365',25,'Your abundant compassion'),
+            ('edot','ac7acba7ca15',4,'descendant of Agag'),
+            ('edot','5905aec9d951',2,'Chapter 1.'),
+            ('edot','a9188ee88126',8,'Chapter 16.'),
+            ('edot','88e3a3d97143',7,'Chapter 23.'),
+        )
+        for nusach,sid,index,excerpt in checks:
+            data=load_siddur(ROOT,nusach,languages=('en',))
+            section=next(s for s in data['sections'] if s['id']==sid)
+            paragraph=section['paragraphs'][index]
+            self.assertIn(excerpt,paragraph['en'])
+            self.assertEqual(paragraph['translationEditions']['en'],'kavvanah-english-2026')
+            self.assertIn('proofreading',paragraph['translationNotes']['en'])
+
+    def test_english_part7_complete_passages_have_source_alignment(self):
+        checks = (
+            ('ashkenaz', 'Order of the Temple Service', 8, 'the continual offering'),
+            ('ashkenaz', 'First Blessing before Shema', 2, 'God, Master over all works'),
+            ('edot', 'Tikkun Leah', 13, 'the Levites to their stations'),
+            ('edot', 'Daytime Meal', 5, 'Wooden utensils'),
+        )
+        for nusach,title,index,phrase in checks:
+            data=load_siddur(ROOT,nusach,languages=('en',))
+            found=[sec['paragraphs'][index] for sec in data['sections']
+                   if sec['title']==title and len(sec['paragraphs'])>index
+                   and phrase in sec['paragraphs'][index].get('en','')]
+            self.assertEqual(len(found),1,(nusach,title,index))
+            self.assertTrue(found[0]['translationRefs']['en'])
 
     def test_part_provenance_source_pins_remain_valid(self):
         """Provenance remains inside canonical records, not duplicated manifests."""

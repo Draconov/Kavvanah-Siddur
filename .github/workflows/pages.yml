@@ -28,15 +28,29 @@ jobs:
         run: |
           node scripts/sync-version.mjs
           node --test tests/version.test.mjs
-      - name: Install and build
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify complete Siddur and Tanakh content
         run: |
-          pnpm install --frozen-lockfile
+          python3 scripts/verify-release-content.py
+          python3 scripts/validate-siddur-translations.py
+          python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Run JavaScript regression tests
+        run: pnpm test
+      - name: Check TypeScript
+        run: pnpm check
+      - name: Build validated website
+        run: |
           pnpm build
           test -f dist/client/index.html
           test -f dist/client/texts/ashkenaz.json
+          test -f dist/client/texts/edot.json
           test -f dist/client/texts/translations/en.json
           test -f dist/client/texts/translations/ru.json
           test -f dist/client/texts/translations/uk.json
+          for edition in uk-jewish-modern uk-turkonjak-utt uk-ohienko-1962 uk-kulish-puluj-1905 uk-varda-torah; do
+            test -f "dist/client/texts/translations/tanakh/$edition.json"
+          done
       - name: Share offline-capable website with native build jobs
         uses: actions/upload-artifact@v7
         with:

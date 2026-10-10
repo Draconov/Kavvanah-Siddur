@@ -31,7 +31,7 @@ function hydrateSiddur(name,languages=['en','ru','uk']){
 }
 
 test('Siddur translation bundles retain measured field coverage and real text',()=>{
- const expected={en:{ashkenaz:1779,edot:1732},ru:{ashkenaz:3689,edot:2924},uk:{ashkenaz:3689,edot:2924}};
+ const expected={en:{ashkenaz:3689,edot:2924},ru:{ashkenaz:3689,edot:2924},uk:{ashkenaz:3689,edot:2924}};
  for(const [language,corpora] of Object.entries(expected)){
   const bundle=readTranslations(language);
   for(const [nusach,total] of Object.entries(corpora)){
@@ -47,6 +47,56 @@ test('Siddur translation bundles retain measured field coverage and real text',(
    }
    assert.equal(count,total,`${language}/${nusach} filled field count`);
   }
+ }
+});
+
+test('second English Siddur pass preserves Hebrew alignment, authorship, and complete Shabbat hymns',()=>{
+ const original=read('ashkenaz');
+ const translated=hydrateSiddur('ashkenaz',['en']);
+ for(const title of ['Shimru Shabtotai','Ki Eshmera','Dror Yikrah','Yom Shabbaton','Yom Zeh Mechubad','Baruch Kel Elyon','Kol Mekadesh','Ma Yedidut',"Yom zeh L'yisrael",'Tzamah Nafshi']){
+  const base=original.sections.find(s=>s.title===title),en=translated.sections.find(s=>s.id===base?.id);
+  assert.ok(en,`missing English Shabbat hymn ${title}`);
+  assert.ok(en.paragraphs.every(p=>p.en?.trim()),`incomplete English hymn ${title}`);
+ }
+ const prayers=['Prayer for Israeli Soldiers','Prayer of the State of Israel'];
+ for(const title of prayers){
+  const section=translated.sections.find(s=>s.title===title);
+  assert.ok(section?.paragraphs.every(p=>p.en?.trim()),`English prayer incomplete: ${title}`);
+ }
+ const shabbat=translated.sections.find(s=>s.title==='Shimru Shabtotai');
+ assert.equal(shabbat.paragraphs[0].translationEditions.en,'kavvanah-supplement-2026');
+ assert.match(shabbat.paragraphs[0].translationRefs.en,/^KAV EN ashkenaz:/);
+ const edot=hydrateSiddur('edot',['en']);
+ const brit=edot.sections.find(s=>s.title==='Brit Mila');
+ assert.match(brit.paragraphs[28].en,/circumciser/i);
+});
+
+test('new English Siddur translations are present in the canonical bundle',()=>{
+ const entries=[
+  ['ashkenaz','a6d45ada59d7',3,/Ani va-Ho, save us/],
+  ['ashkenaz','8b672758d5bb',14,/throne of mercy/],
+  ['ashkenaz','037d4af3d145',2,/Salvation belongeth/],
+  ['edot','cb674100f9cc',0,/HaGomel Blessing/],
+  ['edot','ad4207902bb8',5,/prayers and supplications/],
+  ['ashkenaz','a6d45ada59d7',6,/angels of the heavenly hosts/],
+  ['ashkenaz','255c702d121e',13,/reconciles them/],
+  ['edot','773543a1a6d1',2,/Shield of Abraham/],
+  ['edot','37e2bf9d4a6e',19,/fourth-year produce/],
+  ['ashkenaz','9e122da436cc',0,/Rock, stronghold of my salvation/],
+  ['ashkenaz','9e122da436cc',19,/eight days/],
+  ['edot','4cf12ce50197',33,/He cast the pur/],
+  ['edot','fd6a1392831b',7,/groom and bride/],
+ ];
+ for(const [nusach,sectionId,index,expected] of entries){
+  const section=hydrateSiddur(nusach,['en']).sections.find(item=>item.id===sectionId);
+  assert.ok(section,`${nusach}/${sectionId} missing`);
+  assert.match(section.paragraphs[index].en,expected);
+  assert.ok(section.paragraphs[index].translationRefs.en);
+ }
+ // Full Russian/Ukrainian translation coverage remains unaffected.
+ for(const language of ['ru','uk'])for(const nusach of ['ashkenaz','edot']){
+  const all=hydrateSiddur(nusach,[language]).sections.flatMap(s=>s.paragraphs);
+  assert.ok(all.every(p=>p[language]?.trim()),`${nusach}/${language} regressed`);
  }
 });
 
@@ -182,7 +232,22 @@ test('prayer corpora have unique sections, no literal placeholders, and no unsaf
  assert.ok(kaveh);
  const reused=kaveh.paragraphs.filter(p=>p.en);
  assert.ok(reused.length>0);
- assert.ok(reused.every(p=>p.translationNotes?.en==='Reused from an identical reviewed Hebrew paragraph elsewhere in the bundled Siddur.'),'Kaveh may only receive exact reviewed Hebrew reuse, never positional pairing');
+ // Earlier exact-Hebrew reuses retain their note; Part 3 source-anchored original
+ // translations are recognized only at reviewed paragraph positions.
+ const reviewed = new Map([
+  [0,/^Kaveh — Hope in the LORD\./],
+  [2,/^There is none like our God/],
+  [11,/^It was taught in the school of Elijah/],
+ ]);
+ kaveh.paragraphs.forEach((p,i)=>{
+  if(!p.en)return;
+  if(reviewed.has(i)){
+   assert.match(p.en,reviewed.get(i));
+   assert.equal(p.translationRefs?.en,`KAV EN edot:${kaveh.id}:${i}`);
+  }else{
+   assert.equal(p.translationNotes?.en,'Reused from an identical reviewed Hebrew paragraph elsewhere in the bundled Siddur.',`Kaveh ${i}: unexpected unreviewed translation`);
+  }
+ });
 });
 
 test('Toldot attribution remains attached to the Russian translation file',()=>{
