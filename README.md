@@ -132,6 +132,8 @@ pnpm test
 pnpm check
 ```
 
+**Desktop build dependencies:** `src-tauri/Cargo.toml` uses Tauri runtime `2.12` and the separately versioned `tauri-build` helper `2.7.2`. These crate versions must **not** be matched by their minor numbers. The shared release preflight runs `cargo generate-lockfile` to check dependency resolution before launching the four desktop package jobs. Keep the Rust helper pinned to a published compatible version when upgrading Tauri; a successful resolution is not a substitute for a native build on each target.
+
 The main release workflow deliberately avoids an extra audit job:
 it runs one dependency-free release smoke suite, installs the pinned dependencies, builds the
 website, and checks the reader assets before handing the same build to

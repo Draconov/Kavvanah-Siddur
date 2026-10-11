@@ -78,3 +78,16 @@ test('Release workflow applies and checks permissions on generated platform pack
   assert.match(workflow, /aapt" dump permissions release\/Kavvanah-Android-universal\.apk/);
   assert.match(workflow, /PlistBuddy -c 'Print :NSLocationUsageDescription'/);
 });
+
+test('Desktop Cargo helper uses a published Tauri 2 build-helper release', () => {
+  const cargo = read('../src-tauri/Cargo.toml');
+  // Runtime and tauri-build are independently versioned. The invalid
+  // tauri-build ^2.12 previously blocked all four desktop release jobs.
+  assert.match(cargo, /^tauri = \{ version = "2\.12", features = \[\] \}$/m);
+  assert.match(cargo, /^tauri-build = \{ version = "=2\.7\.2", features = \[\] \}$/m);
+  const workflow = read('../.github/workflows/pages.yml');
+  assert.match(workflow, /cargo generate-lockfile --manifest-path src-tauri\/Cargo\.toml/);
+  assert.ok(workflow.indexOf('cargo generate-lockfile') < workflow.indexOf('name: Windows · portable EXE'),
+    'Cargo resolution belongs in shared release preflight, before desktop matrix fan-out');
+});
+

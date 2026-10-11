@@ -28,6 +28,11 @@ jobs:
         run: |
           node scripts/sync-version.mjs
           npm run test:smoke
+      # Fail once, before fan-out to four native desktop jobs, if Cargo dependencies
+      # cannot be resolved. This does not compile the desktop application.
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Verify desktop Cargo dependencies resolve
+        run: cargo generate-lockfile --manifest-path src-tauri/Cargo.toml
       - name: Install and build
         run: |
           pnpm install --frozen-lockfile
