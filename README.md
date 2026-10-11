@@ -65,6 +65,24 @@ Every update to `main` builds the website and native packages. GitHub publishes 
 | macOS Apple Silicon | `Kavvanah-macOS-arm64.zip` | Unzip to obtain one `Kavvanah.app`. Unsigned and not notarized. |
 | Android | `Kavvanah-Android-universal.apk` | Release-mode universal APK. CI signs it for direct installation; the CI key is not a store-distribution signing key. |
 
+### Device permissions and privacy
+
+Kavvanah only requests **foreground location** after you press **Find my location** in Settings. It uses your coordinates for zmanim and the direction to Jerusalem; the reading library itself does not require location. Location may be denied, and selecting a city or entering coordinates manually remains supported.
+
+| Platform | Permissions and user action |
+| :-- | :-- |
+| Android APK | The generated APK declares `INTERNET`, `ACCESS_COARSE_LOCATION`, and `ACCESS_FINE_LOCATION`. Android asks for approximate/precise location when used. GPS and compass hardware are optional, so devices without those sensors can still install the app. |
+| macOS | The app bundle includes `NSLocationUsageDescription` so the OS can explain the foreground location request. macOS Location Services must be enabled for the app. |
+| Windows | Runs as a normal user without administrator rights, UAC elevation, or a broad package capability. WebView2/Windows location settings may need to allow access. |
+| Linux | The AppImage needs no root rights or extra Linux capabilities. If supported, location is provided by WebKitGTK and the system geolocation service; it may be unavailable without GeoClue/portal setup. |
+| Website / PWA | Browser origin permissions and secure HTTPS govern access to location and motion sensors. |
+
+The desktop WebView only auto-allows **in-app geolocation requests** at the WebView permission layer; other browser permission types keep their default policy. This does **not** bypass OS-level location controls. Camera, microphone, contacts, external storage, and background-location permissions are not declared. The live compass is separate: it also needs a compatible sensor and webview/browser orientation API, so location permission alone does not guarantee a working heading.
+
+CI checks the compiled Android APK's permission list and the built macOS app's `Info.plist` before publishing. The Android manifest change is reapplied after Capacitor regenerates its Android project.
+
+**Android update-signing limitation:** CI currently creates a new temporary keystore on each run, so successive APK releases cannot be installed as updates over each other without uninstalling. Stable release signing should be configured with a persistent, securely stored key before promising in-place updates. Uninstalling may remove on-device preferences or saved translations; back up user data first.
+
 Windows and macOS packages are not code-signed/notarized, so Windows SmartScreen or macOS Gatekeeper may warn or block them. The app packages bundle the static website and included texts rather than fetching the UI from GitHub Pages. Live compass support still requires an available device sensor and the necessary permissions. iPhone/iPad users can install the web app from Safari; this workflow does not create an iOS `.ipa`.
 
 ## Development

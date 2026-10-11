@@ -190,6 +190,9 @@ jobs:
           mkdir -p release
           app="src-tauri/target/${{ matrix.target }}/release/bundle/macos/Kavvanah.app"
           test -d "$app"
+          plist="$app/Contents/Info.plist"
+          plutil -lint "$plist"
+          /usr/libexec/PlistBuddy -c 'Print :NSLocationUsageDescription' "$plist" | grep -Fq 'location'
           ditto -c -k --sequesterRsrc --keepParent "$app" "release/Kavvanah-macOS-${{ matrix.suffix }}.zip"
       - uses: actions/upload-artifact@v7
         with:
@@ -232,6 +235,8 @@ jobs:
       - name: Generate Android launcher artwork
         working-directory: packaging/android
         run: npx capacitor-assets generate --android --iconBackgroundColor "#152443" --splashBackgroundColor "#152443"
+      - name: Add and validate generated Android manifest permissions
+        run: node scripts/apply-android-permissions.mjs
       - name: Compile release APK
         working-directory: packaging/android/android
         run: |
@@ -258,6 +263,23 @@ jobs:
             --ks-pass pass:changeit --key-pass pass:changeit \
             --out release/Kavvanah-Android-universal.apk "$RUNNER_TEMP/kavvanah-aligned.apk"
           "$apksigner" verify --verbose release/Kavvanah-Android-universal.apk
+          # Verify the *compiled APK*, not just the source/merged manifest.
+          aapt="$(dirname "$apksigner")/aapt"
+          test -x "$aapt"
+          "$aapt" dump permissions release/Kavvanah-Android-universal.apk > "$RUNNER_TEMP/kavvanah-apk-permissions.txt"
+          cat "$RUNNER_TEMP/kavvanah-apk-permissions.txt"
+          for permission in INTERNET ACCESS_COARSE_LOCATION ACCESS_FINE_LOCATION; do
+            grep -Fq "name='android.permission.$permission'" "$RUNNER_TEMP/kavvanah-apk-permissions.txt" || {
+              echo "Missing Android permission: $permission" >&2
+              exit 1
+            }
+          done
+          for forbidden in ACCESS_BACKGROUND_LOCATION CAMERA RECORD_AUDIO READ_CONTACTS READ_SMS; do
+            if grep -Fq "name='android.permission.$forbidden'" "$RUNNER_TEMP/kavvanah-apk-permissions.txt"; then
+              echo "Unexpected sensitive Android permission: $forbidden" >&2
+              exit 1
+            fi
+          done
       - uses: actions/upload-artifact@v7
         with:
           name: Kavvanah-package-android
