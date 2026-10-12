@@ -18,3 +18,7 @@ public/offline-manifest.json
 # Derived, per-book/per-tradition reader assets; regenerate with pnpm build/dev
 public/texts/translations/optimized/
 public/texts/translations/optimized.staging/
+
+# Derived Tanakh Hebrew chapters, generated from canonical book JSON
+public/texts/optimized/
+public/texts/optimized/tanakh.staging/

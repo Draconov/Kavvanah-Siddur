@@ -14,21 +14,29 @@ export function CompassView({settings,openSettings}:{settings:Settings;openSetti
  const [magnetic,setMagnetic]=useState(false);
  const [showSensorHelp,setShowSensorHelp]=useState(false);
  const received=useRef(false);
+ const lastHeading=useRef<{value:number;at:number}|null>(null);
  useEffect(()=>{
   if(!active)return;
-  received.current=false;
+  received.current=false;lastHeading.current=null;
   let events=0,relative=0,nullValues=0;
+  const publish=(value:number,absolute:boolean)=>{
+   received.current=true;
+   const now=performance.now(),last=lastHeading.current;
+   const delta=last?Math.abs(((value-last.value+540)%360)-180):360;
+   // 12.5 updates/second is sufficient for a readable compass. Avoid
+   // repainting the React dial on every 50–100 Hz hardware sensor event.
+   if(last&&now-last.at<80)return;
+   if(last&&delta<0.5)return;
+   lastHeading.current={value,at:now};
+   setHeading(value);setMagnetic(absolute);
+  };
   const update=(event:Event)=>{
    const e=event as DeviceOrientationEvent&{webkitCompassHeading?:number};
    events++;
    if(typeof e.webkitCompassHeading==='number'&&Number.isFinite(e.webkitCompassHeading)){
-    setHeading((e.webkitCompassHeading+360)%360);
-    setMagnetic(true);
-    received.current=true;
+    publish((e.webkitCompassHeading+360)%360,true);
    }else if((e.absolute===true||event.type==='deviceorientationabsolute')&&typeof e.alpha==='number'&&Number.isFinite(e.alpha)){
-    setHeading((360-e.alpha+(screen.orientation?.angle??0)+360)%360);
-    setMagnetic(false);
-    received.current=true;
+    publish((360-e.alpha+(screen.orientation?.angle??0)+360)%360,false);
    }else if(typeof e.alpha==='number'&&Number.isFinite(e.alpha)){
     // Relative orientation has an arbitrary zero: never represent it as true north.
     relative++;

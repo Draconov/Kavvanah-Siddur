@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_SETTINGS,validateLocation } from './core';
 import type { Language,Layer,Settings } from './types';
 import { preferredEdition } from './translation-editions';
@@ -35,5 +35,6 @@ export function useSettings(){
  useEffect(()=>{document.documentElement.lang=settings.uiLanguage==='he'?'he':settings.uiLanguage;document.documentElement.dir=settings.uiLanguage==='he'?'rtl':'ltr';},[settings.uiLanguage]);
  useEffect(()=>{document.documentElement.dataset.accent=settings.accent;},[settings.accent]);
  useEffect(()=>{const media=window.matchMedia('(prefers-color-scheme: dark)');const apply=()=>{document.documentElement.dataset.theme=settings.theme==='system'?(media.matches?'dark':'light'):settings.theme;};apply();media.addEventListener('change',apply);return()=>media.removeEventListener('change',apply);},[settings.theme]);
- return {settings,ready,storageError,patch:(value:Partial<Settings>)=>setSettings(current=>sanitizeSettings({...current,...value}))};
+ const patch=useCallback((value:Partial<Settings>)=>setSettings(current=>sanitizeSettings({...current,...value})),[]);
+ return {settings,ready,storageError,patch};
 }

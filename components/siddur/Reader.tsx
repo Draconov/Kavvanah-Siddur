@@ -1,6 +1,6 @@
 'use client';
 import { useUI } from '@/lib/siddur/i18n-context';
-import { useMemo,useState } from 'react';
+import { memo,useMemo,useState } from 'react';
 import { ArrowLeft,ArrowRight,Columns2,Rows3,SlidersHorizontal,Pencil,Check,BookOpen } from 'lucide-react';
 import { Tabs,TabsList,TabsTrigger } from '@/components/ui/tabs';
 import { Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription,DialogFooter } from '@/components/ui/dialog';
@@ -12,7 +12,7 @@ import type { Layer,Paragraph,PersonalTranslations,Settings,Source } from '@/lib
 interface Props {id:string;paragraphs:Paragraph[];settings:Settings;patch:(value:Partial<Settings>)=>void;personal:PersonalTranslations;setPersonal:(next:PersonalTranslations)=>void;sources:Source[];}
 const langOptions=Object.entries(LANGUAGES).map(([value,label])=>({value,label}));
 
-export function Reader({id,paragraphs,settings,patch,personal,setPersonal,sources}:Props){
+export const Reader=memo(function Reader({id,paragraphs,settings,patch,personal,setPersonal,sources}:Props){
  const {t}=useUI();
  const [appearance,setAppearance]=useState(false),[edit,setEdit]=useState<number|null>(null),[draft,setDraft]=useState('');
  const {layers}=settings;
@@ -47,4 +47,4 @@ export function Reader({id,paragraphs,settings,patch,personal,setPersonal,source
   <Dialog open={appearance} onOpenChange={setAppearance}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>{t("Make yourself comfortable")}</DialogTitle><DialogDescription>{t("Your reading preferences stay on this device.")}</DialogDescription></DialogHeader><div className="field"><label>{t("Hebrew text size")} <span>{settings.textSize}{t("px")}</span></label><Slider aria-label={t("Hebrew text size")} min={20} max={44} step={1} value={[settings.textSize]} onValueChange={v=>patch({textSize:v[0]})}/></div><div className="field"><label>{t("Type style")}</label><Choice label="Type style" value={settings.font} onChange={v=>patch({font:v as Settings['font']})} options={[{value:'serif',label:'Book · Hebrew serif'},{value:'sans',label:'Clean · Sans serif'}]}/></div><div className="field"><label>{t("Vowel marks")}</label><Choice label="Vowel marks" value={settings.vowels?'on':'off'} onChange={v=>patch({vowels:v==='on'})} options={[{value:'on',label:'Show nikkud'},{value:'off',label:'Hide nikkud'}]}/></div><div className="field"><label>{t("Pronunciation")}</label><Choice label="Pronunciation" value={settings.pronunciation} onChange={v=>patch({pronunciation:v as Settings['pronunciation']})} options={[{value:'sephardi',label:'Sephardi / Israeli reading aid'},{value:'ashkenazi',label:'Ashkenazi reading aid'}]}/></div></DialogContent></Dialog>
   <Dialog open={edit!==null} onOpenChange={open=>{if(!open)setEdit(null);}}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>{t('Your {language} translation',{language:t(LANGUAGES[settings.translationLanguage])})}</DialogTitle><DialogDescription>{t("Saved privately on this device. The Hebrew source stays intact.")}</DialogDescription></DialogHeader>{edit!==null&&<p className="edit-source" dir="rtl" lang="he">{paragraphs[edit]?.he}</p>}<textarea dir="ltr" aria-label={t("Personal translation")} value={draft} onChange={e=>setDraft(e.target.value)} rows={6}/><DialogFooter><button className="button subtle" onClick={()=>{if(edit!==null){const next={...personal};delete next[`${id}:${edit}:${settings.translationLanguage}`];setPersonal(next);setEdit(null);}}}>{t("Use source translation")}</button><button className="button primary" onClick={()=>{if(edit!==null){const next={...personal};if(draft.trim())next[`${id}:${edit}:${settings.translationLanguage}`]=draft.trim();else delete next[`${id}:${edit}:${settings.translationLanguage}`];setPersonal(next);setEdit(null);}}}><Check size={16}/>{t("Save translation")}</button></DialogFooter></DialogContent></Dialog>
  </section>;
-}
+});

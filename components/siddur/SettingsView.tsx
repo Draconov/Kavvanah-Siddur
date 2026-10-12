@@ -5,6 +5,7 @@ import { Download,LocateFixed,Upload,Check,LoaderCircle,Smartphone } from 'lucid
 import { Choice,ToggleRow } from './Controls';
 import { Slider } from '@/components/ui/slider';
 import { Accordion,AccordionItem,AccordionTrigger,AccordionContent } from '@/components/ui/accordion';
+import { downloadMissingOfflineAssets } from '@/lib/siddur/offline-download';
 import { useUI } from '@/lib/siddur/i18n-context';
 import { UI_LANGUAGES } from '@/lib/siddur/i18n';
 import { PLACES,validateLocation,placeFromCoordinates } from '@/lib/siddur/core';
@@ -66,7 +67,24 @@ export function SettingsView({settings,patch,personal,setPersonal,onInstall,inst
  useEffect(()=>setPlace(settings.place),[settings.place]);
  function savePlace(){const error=validateLocation(place);if(error){setNotice(error);return;}patch({place:{...place,name:place.name.trim()||'Custom location'}});setNotice('Location saved. Your calendar and prayer times have been updated.');}
  function locate(){if(!navigator.geolocation){setNotice('Location is not supported by this browser. Enter your coordinates below.');return;}setLocating(true);navigator.geolocation.getCurrentPosition(p=>{const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;setPlace(placeFromCoordinates(Number(p.coords.latitude.toFixed(5)),Number(p.coords.longitude.toFixed(5)),tz,p.coords.altitude));setNotice('Location found. Check the device time zone and Israel/diaspora setting, then save.');setLocating(false);},()=>{setNotice('Location access was unavailable. Choose a city or enter coordinates below.');setLocating(false);},{timeout:15000,maximumAge:0,enableHighAccuracy:true});}
- async function download(){setProgress(0);setOffline('Preparing your offline library…');try{if(!('caches' in window)||!('serviceWorker' in navigator))throw Error('Offline storage is not supported by this browser.');const registration=await navigator.serviceWorker.getRegistration();if(!registration?.active)throw Error('Offline mode is not ready yet. Reopen the installed app online, then try again.');const response=await fetch('/offline-manifest.json',{cache:'no-store'});if(!response.ok)throw Error('The offline file list is unavailable.');const data=await response.json() as {urls:string[];cacheName:string};const urls:string[]=data.urls;const cache=await caches.open(data.cacheName);let done=0;for(let i=0;i<urls.length;i+=4){await Promise.all(urls.slice(i,i+4).map(async url=>{const asset=await fetch(url);if(!asset.ok)throw Error('A text could not be downloaded. Reconnect and try again.');await cache.put(url,asset);done++;setProgress(Math.round(done/urls.length*100));}));}if(navigator.storage?.persist)await navigator.storage.persist();setOffline('All included texts and the app are saved for offline reading. Your browser may remove offline data if device storage runs low.');}catch(e){setOffline(e instanceof Error?e.message:'Download interrupted. Please try again.');}finally{setProgress(null);}}
+ async function download(){
+  setProgress(0);setOffline('Preparing your offline library…');
+  try{
+   if(!('caches' in window)||!('serviceWorker' in navigator))throw Error('Offline storage is not supported by this browser.');
+   const registration=await navigator.serviceWorker.getRegistration();
+   if(!registration?.active)throw Error('Offline mode is not ready yet. Reopen the installed app online, then try again.');
+   const response=await fetch('/offline-manifest.json',{cache:'no-store'});
+   if(!response.ok)throw Error('The offline file list is unavailable.');
+   const manifest=await response.json() as {urls:string[];cacheName:string;revision:string};
+   if(!/^kavvanah-[a-f0-9]{12}$/.test(manifest.cacheName))throw Error('Invalid offline library version');
+   const cache=await caches.open(manifest.cacheName);
+   const result=await downloadMissingOfflineAssets(manifest,cache,url=>fetch(url),
+    (finished,total)=>setProgress(Math.round(finished/total*100)));
+   if(navigator.storage?.persist)await navigator.storage.persist().catch(()=>false);
+   setOffline(`Offline library ready. ${result.downloaded} new files downloaded; ${result.existing} already cached. Browser storage can still be reclaimed when space is low.`);
+  }catch(e){setOffline(e instanceof Error?e.message:'Download interrupted. Restart the download to resume from completed files.');}
+  finally{setProgress(null);}
+ }
  function exportTranslations(){const blob=new Blob([JSON.stringify({format:'kavvanah-translations-v1',translations:personal},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kavvanah-translations.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  async function importTranslations(file:File){try{if(file.size>5_000_000)throw Error('This file is too large (maximum 5 MB).');const data=JSON.parse(await file.text());if(data.format!=='kavvanah-translations-v1'||!data.translations||typeof data.translations!=='object'||Array.isArray(data.translations))throw Error('Choose a Kavvanah translation export.');const pairs=Object.entries(data.translations);if(pairs.some(([k,v])=>!/(?:en|ru|uk)$/.test(k)||typeof v!=='string'||v.length>30000))throw Error('The translation file contains invalid entries.');setPersonal({...personal,...data.translations});setNotice(t('{count} personal translations imported.',{count:pairs.length}));}catch(e){setNotice(e instanceof Error?e.message:'This file could not be imported.');}if(fileInput.current)fileInput.current.value='';}
  const languageOptions=Object.entries(LANGUAGES).map(([value,label])=>({value,label}));

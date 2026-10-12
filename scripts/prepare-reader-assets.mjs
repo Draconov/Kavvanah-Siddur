@@ -19,7 +19,7 @@ const write = async (file, value) => {
   await writeFile(file, JSON.stringify(value));
 };
 await rm(staging, { recursive: true, force: true });
-let siddurCount = 0, tanakhCount = 0;
+let siddurCount = 0, tanakhCount = 0, chapterCount = 0;
 try {
 for (const lang of ['en', 'ru', 'uk']) {
   const corpus = await load(path.join(source, `${lang}.json`));
@@ -43,18 +43,22 @@ for (const file of (await readdir(directory)).filter(f => f.endsWith('.json')).s
   if (bundle.edition === 'uk-jewish-modern') continue;
   for (const [bookId, book] of Object.entries(bundle.books)) {
     if (!/^[a-z-]+$/.test(bookId) || !Array.isArray(book.chapters)) throw Error(`Invalid Tanakh book: ${file}/${bookId}`);
-    await write(path.join(staging, 'tanakh', bundle.edition, `${bookId}.json`), {
-      schema: bundle.schema, language: bundle.language, edition: bundle.edition,
-      sources: bundle.sources, books: { [bookId]: book },
-    });
     tanakhCount++;
+    for(let i=0;i<book.chapters.length;i++){
+      if(!Array.isArray(book.chapters[i]))throw Error(`Invalid Tanakh chapter: ${file}/${bookId}:${i+1}`);
+      await write(path.join(staging, 'tanakh-chapters', bundle.edition, bookId, `${i+1}.json`), {
+        schema: bundle.schema, language: bundle.language, edition: bundle.edition,
+        sources: bundle.sources, books: { [bookId]: { chapters: [book.chapters[i]] } },
+      });
+      chapterCount++;
+    }
   }
 }
   // Only replace the previous generated assets after *all* source files parsed.
   // A failed import must not leave a half-generated reader library behind.
   await rm(output, { recursive: true, force: true });
   await rename(staging, output);
-  console.log(`Reader assets: ${siddurCount} Siddur corpora and ${tanakhCount} Tanakh books (canonical sources unchanged)`);
+  console.log(`Reader assets: ${siddurCount} Siddur corpora and ${tanakhCount} Tanakh books / ${chapterCount} chapters (canonical sources unchanged)`);
 } catch (error) {
   await rm(staging, { recursive: true, force: true });
   throw error;

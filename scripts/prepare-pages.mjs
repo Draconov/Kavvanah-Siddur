@@ -44,6 +44,7 @@ await writeFile(manifestPath, JSON.stringify(manifest));
 const offlinePath = path.join(root, 'offline-manifest.json');
 const offline = JSON.parse(await readFile(offlinePath, 'utf8'));
 offline.urls = offline.urls.map(url => url === '/' ? base + '/' : url.startsWith(base + '/') ? url : base + url);
+if(offline.hashes)offline.hashes=Object.fromEntries(Object.entries(offline.hashes).map(([url,digest])=>[url.startsWith(base+'/')?url:base+url,digest]));
 await writeFile(offlinePath, JSON.stringify(offline));
 await writeFile(path.join(root, '.nojekyll'), '');
 

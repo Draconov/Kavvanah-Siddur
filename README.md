@@ -107,14 +107,17 @@ pnpm build
 
 The Hebrew books and the **canonical** translation bundles remain in
 `public/texts/`. On `pnpm dev` and `pnpm build`, the build automatically runs
-`scripts/prepare-reader-assets.mjs` to generate reader-only files:
+`scripts/prepare-reader-assets.mjs`, `scripts/prepare-tanakh-chapters.mjs`,
+and `scripts/prepare-siddur-categories.mjs` to generate reader-only files:
 
-- Siddur downloads just one language and tradition (for example, `en-ashkenaz.json`), not both traditions.
-- Tanakh downloads one book of the selected translation edition, not all 39 books.
-- The Ukrainian Jewish Modern preset is already resolved into Varda/Turkonjak components, so no duplicate composite payload is shipped.
-- Loaded JSON is reused in a bounded memory cache. Failed requests are retried and changing the active prayer does not reload the Siddur.
+- Siddur first loads a navigation index and then **only the selected prayer category** in Hebrew and the chosen translation. Other categories are fetched on demand.
+- Tanakh loads **one chapter** in Hebrew and its selected translation in parallel, with a small speculative cache for adjacent chapters.
+- The Ukrainian Jewish Modern preset resolves into Varda/Turkonjak components by book; the composite source is not duplicated in releases.
+- Loaded JSON uses a bounded memory LRU (12 MiB / 80 requests), with failed loads evicted for Retry.
+- Service-worker storage is resumable; identical cached files survive updates without activation-time network downloads. Native installers include the optimized text assets.
+- Personal translations use IndexedDB when supported, with migration from and fallback to previous localStorage saves.
 
-The generated `public/texts/translations/optimized/` directory is ignored by
+The generated `public/texts/optimized/` and `public/texts/translations/optimized/` directories are ignored by
 Git and should never be committed. The release packager removes redundant
 full-translation JSON **only from `dist/client`**; the canonical originals
 remain untouched for imports, editorial work, full-corpus regression tests,
@@ -155,6 +158,6 @@ python3 -m http.server 8080 --directory dist/client
 
 ## Maintenance and licenses
 
-Hebrew Siddur structure lives in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Siddur translations are stored once per language in `public/texts/translations/en.json`, `ru.json`, and `uk.json`; the build creates smaller per-tradition runtime bundles from these sources. Tanakh edition preferences are data-driven by `lib/siddur/translation-editions.ts`, so additional edition files can be added without redesigning Settings. Ukrainian Ohiienko 1962 and Kulish–Puluj are bundled as complete standalone edition files. The Jewish-modern default is a composite preset: the complete supplied Varda Books PDF provides Genesis through Deuteronomy (5,846 Torah verses), while Turkonjak UTT supplies Nevi’im/Ketuvim. Per-record edition metadata preserves the real source and keeps any explicit Turkonjak/Ohiienko fallback provenance distinct from Varda. Run `python3 scripts/validate-siddur-translations.py` after text maintenance, or add `--audit-uk` for a live Ukrainian translation-quality report. Tanakh importers and the small Tanakh-only supplement remain in `scripts/`. Keep section and paragraph order stable: personal translations depend on those identities.
+Hebrew Siddur structure lives in `public/texts/ashkenaz.json` and `public/texts/edot.json`. Siddur translations are stored once per language in `public/texts/translations/en.json`, `ru.json`, and `uk.json`; the build creates indexed per-category runtime assets without modifying the canonical sources. Tanakh edition preferences are data-driven by `lib/siddur/translation-editions.ts`, so additional edition files can be added without redesigning Settings. Ukrainian Ohiienko 1962 and Kulish–Puluj are bundled as complete standalone edition files. The Jewish-modern default is a composite preset: the complete supplied Varda Books PDF provides Genesis through Deuteronomy (5,846 Torah verses), while Turkonjak UTT supplies Nevi’im/Ketuvim. Per-record edition metadata preserves the real source and keeps any explicit Turkonjak/Ohiienko fallback provenance distinct from Varda. Run `python3 scripts/validate-siddur-translations.py` after text maintenance, or add `--audit-uk` for a live Ukrainian translation-quality report. Tanakh importers and the small Tanakh-only supplement remain in `scripts/`. Keep section and paragraph order stable: personal translations depend on those identities.
 
 Application code is licensed under **GPL-2.0-only**. Text editions, fonts, and third-party dependencies have their own terms. Preserve [LICENSE](LICENSE), [CONTENT_SOURCES.md](CONTENT_SOURCES.md), and the bundled notices when redistributing.

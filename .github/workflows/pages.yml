@@ -38,15 +38,15 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
           test -f dist/client/index.html
-          test -f dist/client/texts/ashkenaz.json
-          test -f dist/client/texts/translations/optimized/tanakh/uk-varda-torah/genesis.json
-          test -f dist/client/texts/translations/optimized/tanakh/uk-turkonjak-utt/isaiah.json
-          test -f dist/client/texts/translations/optimized/siddur/en-ashkenaz.json
-          test -f dist/client/texts/translations/optimized/siddur/en-edot.json
-          test -f dist/client/texts/translations/optimized/siddur/ru-ashkenaz.json
-          test -f dist/client/texts/translations/optimized/siddur/ru-edot.json
-          test -f dist/client/texts/translations/optimized/siddur/uk-ashkenaz.json
-          test -f dist/client/texts/translations/optimized/siddur/uk-edot.json
+          test -f dist/client/texts/optimized/siddur/ashkenaz/index.json
+          test -f dist/client/texts/translations/optimized/tanakh-chapters/uk-varda-torah/genesis/1.json
+          test -f dist/client/texts/translations/optimized/tanakh-chapters/uk-turkonjak-utt/isaiah/1.json
+          test -f dist/client/texts/translations/optimized/siddur-categories/en/ashkenaz/morning.json
+          test -f dist/client/texts/translations/optimized/siddur-categories/en/edot/morning.json
+          test -f dist/client/texts/translations/optimized/siddur-categories/ru/ashkenaz/morning.json
+          test -f dist/client/texts/translations/optimized/siddur-categories/ru/edot/morning.json
+          test -f dist/client/texts/translations/optimized/siddur-categories/uk/ashkenaz/morning.json
+          test -f dist/client/texts/translations/optimized/siddur-categories/uk/edot/morning.json
       - name: Share offline-capable website with native build jobs
         uses: actions/upload-artifact@v7
         with:

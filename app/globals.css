@@ -292,3 +292,9 @@ html[dir="rtl"] [data-slot="switch-thumb"][data-state="checked"] {
 /* Keep dropdown menus visually consistent with their triggers. */
 [data-slot="select-item"]:focus,[data-slot="select-item"]:hover{background:var(--secondary);color:var(--secondary-foreground)}
 @media (prefers-reduced-motion:reduce){.settings-number-field,.settings-number-steps>button{transition:none}}
+
+/* Long readings: let the engine skip rendering off-screen verses without
+   virtualizing semantic text, browser Find, selection, or keyboard navigation. */
+@supports (content-visibility: auto) {
+ .reader-body .verse-row {content-visibility:auto;contain-intrinsic-size:auto 140px}
+}

@@ -1,17 +1,18 @@
 'use client';
-import { useEffect,useMemo,useRef,useState } from 'react';
+import { lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState } from 'react';
 import { BookOpen,BookText,CalendarDays,Clock3,Compass,Download,MapPin,Moon,Settings2,Sun,Sunset } from 'lucide-react';
 import { Sidebar,SidebarContent,SidebarFooter,SidebarHeader,SidebarMenu,SidebarMenuButton,SidebarMenuItem,SidebarProvider,SidebarTrigger,useSidebar } from '@/components/ui/sidebar';
 import { Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription } from '@/components/ui/dialog';
-import { useSettings,safeRead,safeWrite } from '@/lib/siddur/storage';
+import { useSettings } from '@/lib/siddur/storage';
+import { loadPersonalTranslations,savePersonalTranslations } from '@/lib/siddur/personal-store';
 import { calculateTimes,currentHebrewDate,dateKeyInZone,formatTime } from '@/lib/siddur/core';
 import { PrayerView } from '@/components/siddur/PrayerView';
 import { HeaderClock } from '@/components/siddur/HeaderClock';
 import { TanakhView } from '@/components/siddur/TanakhView';
-import { CalendarView } from '@/components/siddur/CalendarView';
-import { TimesView } from '@/components/siddur/TimesView';
-import { CompassView } from '@/components/siddur/CompassView';
-import { SettingsView } from '@/components/siddur/SettingsView';
+const CalendarView=lazy(()=>import('@/components/siddur/CalendarView').then(module=>({default:module.CalendarView}))); 
+const TimesView=lazy(()=>import('@/components/siddur/TimesView').then(module=>({default:module.TimesView}))); 
+const CompassView=lazy(()=>import('@/components/siddur/CompassView').then(module=>({default:module.CompassView}))); 
+const SettingsView=lazy(()=>import('@/components/siddur/SettingsView').then(module=>({default:module.SettingsView}))); 
 import { I18nProvider } from '@/lib/siddur/i18n-context';
 import { getUI,hebrewDateLabel } from '@/lib/siddur/i18n';
 import type { PersonalTranslations } from '@/lib/siddur/types';
@@ -27,13 +28,18 @@ function App(){
  const [requestedTime,setRequestedTime]=useState<string|null>(null);
  const [settingsOpen,setSettingsOpen]=useState(false);
  const settingsOpener=useRef<HTMLElement|null>(null);
+ const personalEdited=useRef(false);
  const [view,setView]=useState<View>('siddur'),[now,setNow]=useState<Date|null>(null),[personal,setPersonalState]=useState<PersonalTranslations>({}),[personalError,setPersonalError]=useState(''),[installPrompt,setInstallPrompt]=useState<InstallPrompt|null>(null),[installHelp,setInstallHelp]=useState(false),[networkOnline,setNetworkOnline]=useState(true);
  const {setOpenMobile}=useSidebar();
- useEffect(()=>{setNow(new Date());const tick=setInterval(()=>setNow(new Date()),30000);const initial=safeRead<PersonalTranslations>('kavvanah.translations',{});if(initial&&typeof initial==='object'&&!Array.isArray(initial))setPersonalState(Object.fromEntries(Object.entries(initial).filter(([,v])=>typeof v==='string')));setNetworkOnline(navigator.onLine);const online=()=>setNetworkOnline(true),offline=()=>setNetworkOnline(false);window.addEventListener('online',online);window.addEventListener('offline',offline);const handle=(e:Event)=>{e.preventDefault();setInstallPrompt(e as InstallPrompt);};window.addEventListener('beforeinstallprompt',handle);if('serviceWorker' in navigator&&process.env.NODE_ENV==='production')navigator.serviceWorker.register('/sw.js').catch(()=>{});return()=>{clearInterval(tick);window.removeEventListener('online',online);window.removeEventListener('offline',offline);window.removeEventListener('beforeinstallprompt',handle);};},[]);
+ useEffect(()=>{setNow(new Date());const tick=setInterval(()=>setNow(new Date()),30000);void loadPersonalTranslations().then(loaded=>{if(!personalEdited.current)setPersonalState(loaded);});setNetworkOnline(navigator.onLine);const online=()=>setNetworkOnline(true),offline=()=>setNetworkOnline(false);window.addEventListener('online',online);window.addEventListener('offline',offline);const handle=(e:Event)=>{e.preventDefault();setInstallPrompt(e as InstallPrompt);};window.addEventListener('beforeinstallprompt',handle);if('serviceWorker' in navigator&&process.env.NODE_ENV==='production')navigator.serviceWorker.register('/sw.js').catch(()=>{});return()=>{clearInterval(tick);window.removeEventListener('online',online);window.removeEventListener('offline',offline);window.removeEventListener('beforeinstallprompt',handle);};},[]);
  function navigate(next:View){setRequestedTime(null);setView(next);setOpenMobile(false);window.scrollTo({top:0,behavior:'instant'});}
  function openSettings(){settingsOpener.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setOpenMobile(false);setSettingsOpen(true);}
  function openPrayer(timeId:string){navigate('siddur');setRequestedTime(timeId);}
- function setPersonal(value:PersonalTranslations){setPersonalState(value);setPersonalError(safeWrite('kavvanah.translations',value)?'':'Your browser could not save these translations. Export a backup in Settings before closing the app.');}
+ const setPersonal=useCallback((value:PersonalTranslations)=>{
+  personalEdited.current=true;
+  setPersonalState(value);
+  void savePersonalTranslations(value).then(ok=>{if(!ok)setPersonalError('Your browser could not save these translations. Export a backup in Settings before closing the app.');else setPersonalError('');});
+ },[]);
  async function install(){if(installPrompt){await installPrompt.prompt();await installPrompt.userChoice;setInstallPrompt(null);}else setInstallHelp(true);}
  const key=now?dateKeyInZone(now,settings.place.timeZone):'';
  const times=useMemo(()=>key?calculateTimes(key,settings.place,settings):[],[key,settings]);
@@ -52,9 +58,9 @@ function App(){
   </Sidebar>
   <div className="app-shell"><header className="app-header"><div className="header-left"><SidebarTrigger className="mobile-menu" aria-label={t('Toggle navigation')}/><span className="header-section">{t(NAV.find(n=>n.id===view)?.name??'')}</span><span className="header-divider"/><span className="header-date">{now?now.toLocaleDateString(locale,{timeZone:settings.place.timeZone,weekday:'long',month:'long',day:'numeric'}):t('A little space for prayer')}</span><HeaderClock timeZone={settings.place.timeZone} format={settings.clockFormat}/></div><button className="header-location" onClick={openSettings}><MapPin size={15}/>{t(settings.place.name)}<span>{t("Change")}</span></button></header>
   <main id="main-content"><div className="day-strip"><div><span className="day-icon"><Sun size={19}/></span><span><strong>{hd?hebrewDateLabel(hd,settings.uiLanguage,true):t('Welcome to Kavvanah')}</strong><small>{t("The Hebrew day begins at sunset")}</small></span></div><div className="day-strip-times">{sunset&&<span><Sunset size={17}/><span>{t("Sunset")}<strong>{formatTime(sunset.time,settings.place.timeZone)}</strong></span></span>}{next&&<span><Clock3 size={17}/><span>{t(next.title)}<strong>{formatTime(next.time,settings.place.timeZone)}</strong></span></span>}</div></div>{!networkOnline&&<p className="notice offline-notice">{t("You’re offline. Downloaded texts, the calendar, prayer times, and saved settings are available.")}</p>}{(storageError||personalError)&&<p className="notice" role="alert">{t(personalError||'Your browser is not saving settings. They will reset when this session ends.')}</p>}
-  {ready&&(view==='siddur'?<PrayerView requestedTime={requestedTime} settings={settings} patch={patch} personal={personal} setPersonal={setPersonal}/>:view==='tanakh'?<TanakhView settings={settings} patch={patch} personal={personal} setPersonal={setPersonal}/>:view==='calendar'?<CalendarView settings={settings} patch={patch}/>:view==='times'?<TimesView settings={settings} onOpenPrayer={openPrayer} openSettings={openSettings}/>:<CompassView settings={settings} openSettings={openSettings}/>)}
+  {ready&&<Suspense fallback={<div className="loading-state" role="status">{t('Opening…')}</div>}>{(view==='siddur'?<PrayerView requestedTime={requestedTime} settings={settings} patch={patch} personal={personal} setPersonal={setPersonal}/>:view==='tanakh'?<TanakhView settings={settings} patch={patch} personal={personal} setPersonal={setPersonal}/>:view==='calendar'?<CalendarView settings={settings} patch={patch}/>:view==='times'?<TimesView settings={settings} onOpenPrayer={openPrayer} openSettings={openSettings}/>:<CompassView settings={settings} openSettings={openSettings}/>)}</Suspense>}
   <footer className="app-footer"><span>{t('Kavvanah')}{!isHebrew&&<span lang="he">כַּוָּנָה</span>}</span><span>{t("Text from")} <a href="https://www.sefaria.org" target="_blank" rel="noreferrer">{t('Sefaria')}</a> {t("· Calendar by")} <a href="https://www.hebcal.com" target="_blank" rel="noreferrer">{t('Hebcal')}</a></span></footer></main></div>
-  <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}><DialogContent className="settings-dialog preferences-dialog" onCloseAutoFocus={e=>{e.preventDefault();const target=settingsOpener.current;if(target?.isConnected)target.focus();else document.querySelector<HTMLButtonElement>('.mobile-menu')?.focus();}}><DialogHeader><DialogTitle>{t('Settings')}</DialogTitle><DialogDescription>{t('Saved on this device')}</DialogDescription></DialogHeader><div className="preferences-scroll"><SettingsView settings={settings} patch={patch} personal={personal} setPersonal={setPersonal} onInstall={install} installable={!!installPrompt}/></div></DialogContent></Dialog>
+  <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}><DialogContent className="settings-dialog preferences-dialog" onCloseAutoFocus={e=>{e.preventDefault();const target=settingsOpener.current;if(target?.isConnected)target.focus();else document.querySelector<HTMLButtonElement>('.mobile-menu')?.focus();}}><DialogHeader><DialogTitle>{t('Settings')}</DialogTitle><DialogDescription>{t('Saved on this device')}</DialogDescription></DialogHeader><div className="preferences-scroll"><Suspense fallback={null}><SettingsView settings={settings} patch={patch} personal={personal} setPersonal={setPersonal} onInstall={install} installable={!!installPrompt}/></Suspense></div></DialogContent></Dialog>
   <Dialog open={installHelp} onOpenChange={setInstallHelp}><DialogContent className="settings-dialog"><DialogHeader><DialogTitle>{t("Your siddur, one tap away")}</DialogTitle><DialogDescription>{t("Install Kavvanah from your browser for its own app icon and window.")}</DialogDescription></DialogHeader><div className="install-instructions"><div><strong>{t("iPhone & iPad")}</strong><p>{t("Open in Safari, tap Share, then Add to Home Screen. Enable “Open as Web App” if offered.")}</p></div><div><strong>{t("Android")}</strong><p>{t("Open the browser menu and choose “Install app” or “Add to Home screen.”")}</p></div><div><strong>{t('Windows, macOS & Linux')}</strong><p>{t("Use your browser’s install icon or app menu. In Safari on Mac, choose File → Add to Dock.")}</p></div></div><p className="notice">{t("After installation, open Settings and download all texts to prepare for offline reading. Installation and live compass support depend on your browser.")}</p></DialogContent></Dialog>
  </I18nProvider>;
 }
