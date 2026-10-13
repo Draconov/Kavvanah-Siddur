@@ -1,0 +1,81 @@
+/* E Ink: a display preset, never a separate copy of the app or its content.
+   Declare this after globals.css so it overrides dark/paper/accent palettes. */
+:root[data-eink='true'] {
+  color-scheme: light;
+  --background:#fff;
+  --foreground:#080808;
+  --card:#fff;
+  --card-foreground:#080808;
+  --popover:#fff;
+  --popover-foreground:#080808;
+  --primary:#111;
+  --primary-foreground:#fff;
+  --secondary:#ededed;
+  --secondary-foreground:#111;
+  --muted:#f2f2f2;
+  --muted-foreground:#414141;
+  --accent:#e9e9e9;
+  --accent-foreground:#111;
+  --border:#4e4e4e;
+  --input:#666;
+  --ring:#000;
+  --destructive:#222;
+  --quiet:#fff;
+  --sidebar:#fff;
+  --sidebar-foreground:#080808;
+  --sidebar-muted:#414141;
+  --sidebar-primary:#111;
+  --sidebar-primary-foreground:#fff;
+  --sidebar-accent:#e8e8e8;
+  --sidebar-accent-foreground:#111;
+  --sidebar-border:#555;
+  --sidebar-ring:#000;
+  --gold:#111;
+  --shadow:none;
+  --active-rail:3px;
+}
+
+/* Avoid costly waveform refreshes caused by effects, and retain semantic SVG
+   colors and visible focus rather than disabling all CSS backgrounds. */
+html[data-eink='true'],html[data-eink='true'] * ,html[data-eink='true'] *::before,html[data-eink='true'] *::after {
+  scroll-behavior:auto !important;
+  animation:none !important;
+  transition:none !important;
+  text-shadow:none !important;
+  box-shadow:none !important;
+}
+html[data-eink='true'] body { background:#fff; color:#080808; }
+html[data-eink='true'] :is(.app-shell,.app-header,.prayer-view,.calendar-panel,.compass-panel,.settings-card,.settings-category,.preferences-dialog,.kavvanah-sidebar,.sidebar-header,.sidebar-footer,.prayer-content,.time-list) {
+  background:var(--background);
+  color:var(--foreground);
+}
+html[data-eink='true'] .app-shell::before {display:none !important;} /* no paper textures */
+html[data-eink='true'] .brand-icon :is(rect,.mark-letter,.mark-line) {opacity:1;}
+html[data-eink='true'] :is(.sidebar-brand strong,.sidebar-date-row strong,.sidebar-date-row span,.main-nav-button,.sidebar-location,.sidebar-install,.time-value,.header-date,.verse-cell,.calendar-day,.prayer-content p) {
+  color:var(--foreground) !important;
+}
+html[data-eink='true'] :is(.day-strip,.time-highlight,.daily-reading-banner,.location-banner,.settings-category,.settings-card,.category-tabs,.prayer-explorer,.reader-footnote) {
+  background:var(--card);border-color:var(--border);
+}
+html[data-eink='true'] :is(.main-nav-button[data-active=true],.category-tabs button.active,.prayer-list button.active,.button.primary) {
+  background:#111 !important;color:#fff !important;border-color:#111 !important;
+}
+html[data-eink='true'] :is(.main-nav-button[data-active=true],.category-tabs button.active) :is(svg,span) {color:inherit !important;}
+html[data-eink='true'] :is(.button,.choice,.main-nav-button,.sidebar-location,.sidebar-install,.settings-category-trigger,.category-tabs button,.prayer-list button,.reader-navigation button,.calendar-day, input,select,textarea) {
+  min-height:44px;
+}
+html[data-eink='true'] :is(input,select,textarea,.choice) {
+  background:#fff !important;color:#080808 !important;border:1px solid var(--border) !important;
+}
+html[data-eink='true'] :is(button,input,textarea,select,a,[role='button']):focus-visible {
+  outline:2px solid #000 !important;outline-offset:3px !important;
+}
+html[data-eink='true'] .translation-note,html[data-eink='true'] .field-hint,html[data-eink='true'] .muted {color:#414141;}
+html[data-eink='true'] .sidebar-date-row strong {font-weight:600;}
+html[data-eink='true'] .verse-cell.hebrew {line-height:1.9;}
+html[data-eink='true'] .verse-cell:is(.transliteration,.translation) {line-height:1.7;}
+html[data-eink='true'] .notice {border:1px solid #555;color:#111;background:#fff;}
+@media (max-width:767px){
+  html[data-eink='true'] .app-header {padding-inline:12px;}
+  html[data-eink='true'] .reader-body {padding-inline:2px;}
+}

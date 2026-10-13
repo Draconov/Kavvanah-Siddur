@@ -23,10 +23,11 @@ export function CompassView({settings,openSettings}:{settings:Settings;openSetti
    received.current=true;
    const now=performance.now(),last=lastHeading.current;
    const delta=last?Math.abs(((value-last.value+540)%360)-180):360;
-   // 12.5 updates/second is sufficient for a readable compass. Avoid
-   // repainting the React dial on every 50–100 Hz hardware sensor event.
-   if(last&&now-last.at<80)return;
-   if(last&&delta<0.5)return;
+   // E Ink readers redraw slowly: throttle to ~1 update per second,
+   // while keeping the normal 12.5 Hz cap for ordinary screens.
+   const eink=document.documentElement.dataset.eink==='true';
+   if(last&&now-last.at<(eink?1000:80))return;
+   if(last&&delta<(eink?2:0.5))return;
    lastHeading.current={value,at:now};
    setHeading(value);setMagnetic(absolute);
   };

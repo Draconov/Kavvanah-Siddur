@@ -3,13 +3,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_SETTINGS,validateLocation } from './core';
 import type { Language,Layer,Settings } from './types';
 import { preferredEdition } from './translation-editions';
+import { einkEnabled,isEinkDevice } from './eink';
 
 export function safeRead<T>(key:string,fallback:T):T {try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):fallback;}catch{return fallback;}}
 export function safeWrite(key:string,value:unknown):boolean {try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
 
 export function sanitizeSettings(raw:Partial<Settings>):Settings{
  const out={...DEFAULT_SETTINGS,...raw};
- const choices:Record<string,string[]>={uiLanguage:['en','ru','uk','he'],accent:['blue','gold','teal','plum','terracotta','green','amber','rose','violet','slate','olive','cyan'],calendarMode:['hebrew','gregorian'],clockFormat:['24h','12h'],theme:['light','dark','black','paper','dark-paper','system'],nusach:['ashkenaz','edot'],pronunciation:['sephardi','ashkenazi'],transliterationLanguage:['en','ru','uk'],translationLanguage:['en','ru','uk'],layout:['columns','stacked'],font:['serif','sans'],zmanMethod:['gra','mga'],nightfall:['8.5','7.083','72']};
+ const choices:Record<string,string[]>={uiLanguage:['en','ru','uk','he'],accent:['blue','gold','teal','plum','terracotta','green','amber','rose','violet','slate','olive','cyan'],calendarMode:['hebrew','gregorian'],clockFormat:['24h','12h'],theme:['light','dark','black','paper','dark-paper','system'],einkMode:['auto','on','off'],nusach:['ashkenaz','edot'],pronunciation:['sephardi','ashkenazi'],transliterationLanguage:['en','ru','uk'],translationLanguage:['en','ru','uk'],layout:['columns','stacked'],font:['serif','sans'],zmanMethod:['gra','mga'],nightfall:['8.5','7.083','72']};
  for(const [key,options] of Object.entries(choices))if(!options.includes(String(out[key as keyof Settings])))(out as unknown as Record<string,unknown>)[key]=DEFAULT_SETTINGS[key as keyof Settings];
  const rawEditions=raw.translationEditions&&typeof raw.translationEditions==='object'&&!Array.isArray(raw.translationEditions)?raw.translationEditions:{};
  out.translationEditions={...DEFAULT_SETTINGS.translationEditions};
@@ -30,11 +31,31 @@ export function sanitizeSettings(raw:Partial<Settings>):Settings{
 
 export function useSettings(){
  const [settings,setSettings]=useState<Settings>(DEFAULT_SETTINGS),[ready,setReady]=useState(false),[storageError,setStorageError]=useState(false);
+ const [einkDetected,setEinkDetected]=useState(()=>typeof document!=='undefined'&&document.documentElement.dataset.eink==='true');
  useEffect(()=>{const raw=safeRead<Partial<Settings>>('kavvanah.settings',{});setSettings(sanitizeSettings(raw??{}));setReady(true);},[]);
  useEffect(()=>{if(ready)setStorageError(!safeWrite('kavvanah.settings',settings));},[settings,ready]);
+ // UA/client hints may identify a reader; other E Ink devices advertise only a
+ // monochrome framebuffer. Browser limitations mean Auto is best-effort.
+ useEffect(()=>{
+  let mounted=true;
+  const monochrome=window.matchMedia('(monochrome)');
+  let model='';
+  const detect=()=>setEinkDetected(isEinkDevice({userAgent:navigator.userAgent,model,monochrome:monochrome.matches}));
+  detect();
+  monochrome.addEventListener?.('change',detect);
+  type ClientHints = Navigator & {userAgentData?:{getHighEntropyValues?:(hints:string[])=>Promise<{model?:string}>}};
+  const hints=(navigator as ClientHints).userAgentData;
+  if(hints?.getHighEntropyValues){
+   void hints.getHighEntropyValues(['model']).then(value=>{
+    if(mounted){model=value.model??'';detect();}
+   }).catch(()=>{});
+  }
+  return()=>{mounted=false;monochrome.removeEventListener?.('change',detect);};
+ },[]);
+ useEffect(()=>{document.documentElement.dataset.eink=einkEnabled(settings.einkMode,einkDetected)?'true':'false';},[settings.einkMode,einkDetected]);
  useEffect(()=>{document.documentElement.lang=settings.uiLanguage==='he'?'he':settings.uiLanguage;document.documentElement.dir=settings.uiLanguage==='he'?'rtl':'ltr';},[settings.uiLanguage]);
  useEffect(()=>{document.documentElement.dataset.accent=settings.accent;},[settings.accent]);
  useEffect(()=>{const media=window.matchMedia('(prefers-color-scheme: dark)');const apply=()=>{document.documentElement.dataset.theme=settings.theme==='system'?(media.matches?'dark':'light'):settings.theme;};apply();media.addEventListener('change',apply);return()=>media.removeEventListener('change',apply);},[settings.theme]);
  const patch=useCallback((value:Partial<Settings>)=>setSettings(current=>sanitizeSettings({...current,...value})),[]);
- return {settings,ready,storageError,patch};
+ return {settings,ready,storageError,einkDetected,patch};
 }

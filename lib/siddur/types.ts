@@ -3,12 +3,13 @@ export type Language = 'en' | 'ru' | 'uk';
 export type UiLanguage = Language | 'he';
 export type Accent = 'blue' | 'gold' | 'teal' | 'plum' | 'terracotta' | 'green' | 'amber' | 'rose' | 'violet' | 'slate' | 'olive' | 'cyan';
 export type CalendarMode = 'hebrew' | 'gregorian';
+export type EinkMode = 'auto' | 'on' | 'off';
 export type Nusach = 'ashkenaz' | 'edot';
 export interface Place { name:string; latitude:number; longitude:number; timeZone:string; elevation:number; israel:boolean }
 export interface Settings {
   uiLanguage:UiLanguage; prayerLinks:boolean;
   accent:Accent; calendarMode:CalendarMode; clockFormat:'24h'|'12h';
-  theme:'light'|'dark'|'black'|'paper'|'dark-paper'|'system'; nusach:Nusach; pronunciation:'sephardi'|'ashkenazi';
+  theme:'light'|'dark'|'black'|'paper'|'dark-paper'|'system'; einkMode:EinkMode; nusach:Nusach; pronunciation:'sephardi'|'ashkenazi';
   transliterationLanguage:Language; translationLanguage:Language; translationEditions:Record<Language,string>; layers:Layer[]; layout:'columns'|'stacked';
   textSize:number; font:'serif'|'sans'; vowels:boolean; place:Place;
   zmanMethod:'gra'|'mga'; nightfall:'8.5'|'7.083'|'72'; candleMinutes:number; useElevation:boolean;

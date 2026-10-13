@@ -737,6 +737,27 @@ const hebrewWords:Record<string,string>={
  'Your siddur, one tap away':'הסידור שלך במרחק נגיעה','Install Kavvanah from your browser for its own app icon and window.':'התקן את Kavvanah מהדפדפן לקבלת סמל וחלון ייעודיים.','iPhone & iPad':'iPhone ו־iPad','Android':'Android','You’re offline. Downloaded texts, the calendar, prayer times, and saved settings are available.':'אין חיבור. הטקסטים שהורדו, הלוח, זמני התפילה וההגדרות השמורות זמינים.',
  'Calendar presentation':'תצוגת לוח שנה','Hebrew dates first':'תאריכים עבריים תחילה','Gregorian dates first':'תאריכים גרגוריאניים תחילה','Gregorian calendar':'לוח גרגוריאני','Hebrew calendar':'לוח עברי','Main app color':'צבע ראשי','Blue':'כחול','Gold':'זהב','Teal':'טורקיז','Plum':'שזיף','Terracotta':'טרה קוטה','Green':'ירוק','px':'פיקסל'
 };
+// Display-mode copy. Keep English keys stable for all supported UI languages.
+Object.assign(words,{
+ 'E Ink display':['Экран E Ink','Екран E Ink'],
+ 'Automatic detection':['Автоматическое определение','Автоматичне визначення'],
+ 'Always on':['Всегда включено','Завжди ввімкнено'],
+ 'Always off':['Всегда выключено','Завжди вимкнено'],
+ 'E Ink display recognized. Optimized reading mode is active.':['Экран E Ink распознан. Оптимизированный режим чтения включён.','Екран E Ink розпізнано. Оптимізований режим читання ввімкнено.'],
+ 'Device not recognized as E Ink. You can enable it manually.':['Экран E Ink не распознан. Режим можно включить вручную.','Екран E Ink не розпізнано. Режим можна ввімкнути вручну.'],
+ 'E Ink reading mode is active.':['Режим чтения E Ink включён.','Режим читання E Ink ввімкнено.'],
+ 'Regular display mode is active.':['Обычный режим экрана включён.','Звичайний режим екрана ввімкнено.'],
+});
+Object.assign(hebrewWords,{
+ 'E Ink display':'תצוגת דיו אלקטרוני',
+ 'Automatic detection':'זיהוי אוטומטי',
+ 'Always on':'תמיד פעיל',
+ 'Always off':'תמיד כבוי',
+ 'E Ink display recognized. Optimized reading mode is active.':'זוהה מסך דיו אלקטרוני. מצב הקריאה המותאם פעיל.',
+ 'Device not recognized as E Ink. You can enable it manually.':'לא זוהה מסך דיו אלקטרוני. אפשר להפעיל את המצב ידנית.',
+ 'E Ink reading mode is active.':'מצב הקריאה לדיו אלקטרוני פעיל.',
+ 'Regular display mode is active.':'מצב התצוגה הרגיל פעיל.',
+});
 Object.assign(hebrewWords,hebrewExtra);
 
 export function translate(language:UiLanguage,key:string,values:Record<string,string|number>={}):string{
