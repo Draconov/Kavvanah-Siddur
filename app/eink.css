@@ -92,6 +92,42 @@ html[data-eink='true'] .search-box input {
   box-shadow:none !important;
   outline:0 !important;
 }
+/* The generic :focus-visible control style below also matches text inputs.
+   It wins over the simple selector above and creates a second outline while
+   the parent .search-box already displays its :focus-within outline.
+   Suppress only the inner search-input ring, not keyboard focus globally. */
+html[data-eink='true'] .search-box input:is(:focus,:focus-visible) {
+  outline:0 !important;
+  outline-offset:0 !important;
+  box-shadow:none !important;
+}
+html[data-eink='true'] .search-box:focus-within {
+  /* A contiguous 2px focus border, without a second surrounding outline. */
+  outline:0 !important;
+  border-color:var(--ring);
+  box-shadow:inset 0 0 0 1px var(--ring);
+}
+/* The time-zone search and numeric settings use the same parent-owned focus
+   design as the prayer search. Do not draw an additional ring on the input. */
+html[data-eink='true'] :is(.time-zone-search,.settings-number-field) > input:is(:focus,:focus-visible) {
+  outline:0 !important;
+  box-shadow:none !important;
+}
+/* The numeric field's normal 42px shell clips a child forced to 44px by
+   the generic E Ink control rule. Give the shell the larger touch target and
+   let its input flex to the shell's available height without overflow. */
+html[data-eink='true'] .settings-number-field {
+  height:44px;
+}
+html[data-eink='true'] .settings-number-field > input {
+  min-height:0 !important;
+}
+/* The number steppers already have an inset keyboard-focus indicator. A second
+   external outline adds a distracting overlapping frame to the tiny arrows. */
+html[data-eink='true'] .settings-number-steps > button:focus-visible {
+  outline:0 !important;
+  box-shadow:inset 0 0 0 2px var(--ring) !important;
+}
 /* Reader language selectors are text-like controls, not framed form inputs. */
 html[data-eink='true'] .layer-heading .language-choice {
   background:transparent !important;
@@ -100,6 +136,12 @@ html[data-eink='true'] .layer-heading .language-choice {
 }
 html[data-eink='true'] :is(button,input,textarea,select,a,[role='button']):focus-visible {
   outline:2px solid #000 !important;outline-offset:3px !important;
+}
+/* Radix/Shadcn controls add a focus box-shadow (ring) alongside the E Ink
+   outline above. Suppress the duplicate shadow only while keyboard-focused;
+   retain the single visible outline and all focus/portal behavior. */
+html[data-eink='true'] :is([data-slot='select-trigger'],[data-slot='switch'],[data-slot='slider-thumb'],[data-slot='tabs-trigger'],[data-slot='button'],[data-slot='dialog-close'],[data-slot='sheet-close']):focus-visible {
+  box-shadow:none !important;
 }
 html[data-eink='true'] .translation-note,html[data-eink='true'] .field-hint,html[data-eink='true'] .muted {color:#414141;}
 html[data-eink='true'] .sidebar-date-row strong {font-weight:600;}

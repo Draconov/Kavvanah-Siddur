@@ -100,3 +100,38 @@ test('E Ink search and reader-language controls keep only their intended border'
  assert.match(css,/html\[data-eink='true'\] \.layer-heading \.language-choice\s*\{[^}]*border:0 !important;/);
  assert.match(css,/html\[data-eink='true'\] :is\(button,input,textarea,select,a,\[role='button'\]\):focus-visible\s*\{/);
 });
+
+
+test('E Ink prayer search has only the container focus outline',()=>{
+ const css=readFileSync(new URL('../app/eink.css',import.meta.url),'utf8');
+ const base=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
+ assert.match(base,/\.search-box:focus-within\s*\{[^}]*outline:2px/);
+ // Only the parent should draw a ring: the input also matches the generic
+ // :focus-visible E Ink rule, so a stronger, focused override is required.
+ assert.match(css,/html\[data-eink='true'\] \.search-box input:is\(:focus,:focus-visible\)\s*\{[^}]*outline:0 !important;/);
+ assert.match(css,/html\[data-eink='true'\] \.search-box:focus-within\s*\{[^}]*outline:0 !important;[^}]*box-shadow:inset 0 0 0 1px var\(--ring\);/);
+ assert.match(css,/html\[data-eink='true'\] :is\(button,input,textarea,select,a,\[role='button'\]\):focus-visible\s*\{/);
+});
+
+
+test('E Ink nested settings inputs use a single parent focus ring without clipped heights',()=>{
+ const css=readFileSync(new URL('../app/eink.css',import.meta.url),'utf8');
+ const base=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
+ assert.match(base,/\.time-zone-search:focus-within\s*\{[^}]*outline:2px/);
+ assert.match(base,/\.settings-number-field:focus-within\s*\{[^}]*outline:2px/);
+ assert.match(css,/html\[data-eink='true'\] :is\(\.time-zone-search,\.settings-number-field\) > input:is\(:focus,:focus-visible\)\s*\{[^}]*outline:0 !important;[^}]*box-shadow:none !important;/);
+ assert.match(css,/html\[data-eink='true'\] \.settings-number-field\s*\{[^}]*height:44px;/);
+ assert.match(css,/html\[data-eink='true'\] \.settings-number-field > input\s*\{[^}]*min-height:0 !important;/);
+ assert.match(css,/html\[data-eink='true'\] \.settings-number-steps > button:focus-visible\s*\{[^}]*outline:0 !important;[^}]*box-shadow:inset 0 0 0 2px var\(--ring\) !important;/);
+});
+
+test('Radix E Ink keyboard focus has one ring and does not reset animations globally',()=>{
+ const css=readFileSync(new URL('../app/eink.css',import.meta.url),'utf8');
+ const sel=/html\[data-eink='true'\] :is\(\[data-slot='select-trigger'\],\[data-slot='switch'\],\[data-slot='slider-thumb'\],\[data-slot='tabs-trigger'\],\[data-slot='button'\],\[data-slot='dialog-close'\],\[data-slot='sheet-close'\]\):focus-visible\s*\{([^}]*)\}/;
+ const match=css.match(sel);
+ assert.ok(match,'Radix controls need a scoped single-ring override');
+ assert.match(match[1],/box-shadow:none !important/);
+ assert.match(css,/html\[data-eink='true'\] :is\(button,input,textarea,select,a,\[role='button'\]\):focus-visible\s*\{[^}]*outline:2px solid #000 !important;/);
+ // Essential animations are still available for menus/dialogs to close.
+ assert.doesNotMatch(css.replace(/\/\*[\s\S]*?\*\//g,''),/html\[data-eink='true'\]\s+\*\s*\{/);
+});
