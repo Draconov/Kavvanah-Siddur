@@ -33,9 +33,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Verify desktop Cargo dependencies resolve
         run: cargo generate-lockfile --manifest-path src-tauri/Cargo.toml
-      - name: Install and build
+      - name: Install project dependencies
+        run: pnpm install --frozen-lockfile
+      # UI localization scans TS/TSX syntax with the TypeScript compiler. Unlike
+      # dependency-free smoke tests, this must run AFTER pnpm install.
+      - name: Validate UI localization
+        run: pnpm run test:localization
+      - name: Build shared offline website
         run: |
-          pnpm install --frozen-lockfile
           pnpm build
           test -f dist/client/index.html
           test -f dist/client/texts/optimized/siddur/ashkenaz/index.json

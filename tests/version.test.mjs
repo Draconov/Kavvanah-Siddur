@@ -54,3 +54,16 @@ test('same VERSION replaces the existing normal GitHub release',()=>{
  assert.match(workflow,/Kavvanah-Android-universal\.apk/);
  assert.doesNotMatch(workflow,/assembleDebug|app-debug|universal-debug|--prerelease|development build|development release/i);
 });
+
+test('dependency-free release smoke checks precede dependency-backed localization checks',()=>{
+ const scripts=json('package.json').scripts;
+ const workflow=text('.github/workflows/pages.yml');
+ assert.doesNotMatch(scripts['test:smoke'],/ui-localization\.test\.mjs/,'smoke tests run before dependencies are installed');
+ assert.match(scripts['test:localization'],/ui-localization\.test\.mjs/,'localization coverage remains enforced');
+ const smoke=workflow.indexOf('npm run test:smoke');
+ const install=workflow.indexOf('pnpm install --frozen-lockfile');
+ const localization=workflow.indexOf('pnpm run test:localization');
+ const build=workflow.indexOf('pnpm build');
+ assert.ok(smoke>=0&&smoke<install&&install<localization&&localization<build,
+   'CI must run dependency-free preflight, install packages, test localization, and then build');
+});
