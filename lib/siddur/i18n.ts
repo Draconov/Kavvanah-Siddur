@@ -1,4 +1,6 @@
 import type {Language,UiLanguage} from './types.ts';
+import {prayerLabels,englishPrayerLabels} from './prayer-labels.ts';
+import {calendarLabel} from './calendar-labels.ts';
 
 // Hebrew source titles from the bundled Sefaria editions.
 export const hebrewTitles:Record<string,string> = {
@@ -758,11 +760,74 @@ Object.assign(hebrewWords,{
  'E Ink reading mode is active.':'מצב הקריאה לדיו אלקטרוני פעיל.',
  'Regular display mode is active.':'מצב התצוגה הרגיל פעיל.',
 });
+Object.assign(words,{
+ 'Opening…':['Открытие…','Відкриття…'],
+ 'Toggle navigation':['Открыть или скрыть меню','Відкрити або приховати меню'],
+ 'Jerusalem is {degrees} degrees from true north, {direction}':['Иерусалим: {degrees}° от истинного севера ({direction})','Єрусалим: {degrees}° від істинної півночі ({direction})'],
+ '{count} personal translations imported.':['Импортировано личных переводов: {count}.','Імпортовано особистих перекладів: {count}.'],
+ 'Windows, macOS & Linux':['Windows, macOS и Linux','Windows, macOS і Linux'],
+ 'px':['пкс','пкс'],
+ "Sh'vat":['Шват','Шват'],
+ 'Parashat':['Парашат','Парашат'],
+});
+Object.assign(hebrewWords,{
+ 'Opening…':'פותח…',
+});
+// Update page metadata when the selected interface language changes.
+Object.assign(words,{
+ 'Kavvanah · Your daily siddur':['Kavvanah · Сидур на каждый день','Kavvanah · Сидур на щодень'],
+ 'Your multilingual siddur, Jewish calendar, prayer times, Jerusalem compass, and complete Tanakh. Read in Hebrew, with transliteration and translation.':['Многоязычный сидур, еврейский календарь, время молитв, компас на Иерусалим и полный Танах.','Багатомовний сидур, єврейський календар, час молитов, компас на Єрусалим і повний Танах.'],
+});
+Object.assign(hebrewWords,{
+ 'Kavvanah · Your daily siddur':'כוונה · הסידור היומי שלך',
+ 'Your multilingual siddur, Jewish calendar, prayer times, Jerusalem compass, and complete Tanakh. Read in Hebrew, with transliteration and translation.':'סידור רב־לשוני, לוח השנה העברי, זמני תפילה, מצפן לירושלים ותנ״ך מלא.',
+});
+// Runtime messages that appear through t(notice) / t(error), not literal t() calls.
+Object.assign(words,{
+ 'The book catalog could not be loaded. Please reconnect and try again.':['Не удалось загрузить список книг. Проверьте интернет и повторите попытку.','Не вдалося завантажити список книг. Перевірте інтернет і повторіть спробу.'],
+ 'This chapter could not be opened. Connect to the internet, or download all texts for offline reading.':['Не удалось открыть главу. Подключитесь к интернету или скачайте тексты для чтения без сети.','Не вдалося відкрити розділ. Підключіться до інтернету або завантажте тексти для читання без мережі.'],
+ 'Your browser could not save reading progress. Free some device storage and try again.':['Не удалось сохранить прогресс чтения. Освободите место и повторите попытку.','Не вдалося зберегти поступ читання. Звільніть місце й повторіть спробу.'],
+ 'This prayer edition could not be loaded. Connect to the internet or download it for offline reading.':['Не удалось открыть этот нусах сидура. Подключитесь к интернету или скачайте тексты.','Не вдалося відкрити цей нусах сидуру. Підключіться до інтернету або завантажте тексти.'],
+ 'This prayer category or translation could not be loaded. Connect to the internet or download it for offline reading.':['Не удалось загрузить раздел молитв или перевод. Подключитесь к интернету или скачайте тексты.','Не вдалося завантажити розділ молитов або переклад. Підключіться до інтернету або завантажте тексти.'],
+ 'The offline file list is unavailable.':['Список файлов для автономного чтения недоступен.','Список файлів для читання без мережі недоступний.'],
+ 'Invalid offline library version':['Неверная версия автономной библиотеки','Недійсна версія автономної бібліотеки'],
+ 'Download interrupted. Restart the download to resume from completed files.':['Загрузка прервана. Запустите её снова: готовые файлы сохранятся.','Завантаження перервано. Запустіть його знову: готові файли збережуться.'],
+ 'This file is too large (maximum 5 MB).':['Файл слишком большой (не более 5 МБ).','Файл завеликий (не більш як 5 МБ).'],
+ 'Choose a Kavvanah translation export.':['Выберите файл экспорта переводов Kavvanah.','Виберіть файл експорту перекладів Kavvanah.'],
+ 'The translation file contains invalid entries.':['Файл переводов содержит недопустимые записи.','Файл перекладів містить недопустимі записи.'],
+ 'This file could not be imported.':['Не удалось импортировать файл.','Не вдалося імпортувати файл.'],
+ 'Offline library ready. {downloaded} new files downloaded; {existing} already cached. Browser storage can still be reclaimed when space is low.':['Библиотека готова. Новых файлов: {downloaded}, уже в кеше: {existing}. При нехватке места браузер может удалить сохранённые данные.','Бібліотека готова. Нових файлів: {downloaded}, уже в кеші: {existing}. За нестачі місця браузер може видалити збережені дані.'],
+ '8.5° below the horizon':['8,5° ниже горизонта','8,5° нижче обрію'],
+ '7.083° below the horizon':['7,083° ниже горизонта','7,083° нижче обрію'],
+ '72 minutes after sunset':['72 минуты после захода солнца','72 хвилини після заходу сонця'],
+});
+Object.assign(hebrewWords,{
+ 'The book catalog could not be loaded. Please reconnect and try again.':'לא ניתן לטעון את רשימת הספרים. בדקו את החיבור ונסו שוב.',
+ 'This chapter could not be opened. Connect to the internet, or download all texts for offline reading.':'לא ניתן לפתוח את הפרק. התחברו לרשת או הורידו את הטקסטים לקריאה ללא רשת.',
+ 'Your browser could not save reading progress. Free some device storage and try again.':'הדפדפן לא הצליח לשמור את התקדמות הקריאה. פנו שטח אחסון ונסו שוב.',
+ 'This prayer category or translation could not be loaded. Connect to the internet or download it for offline reading.':'לא ניתן לטעון את קטגוריית התפילות או את התרגום. התחברו לרשת או הורידו את הטקסטים.',
+ 'The offline file list is unavailable.':'רשימת הקבצים לקריאה ללא רשת אינה זמינה.',
+ 'Invalid offline library version':'גרסת ספרייה לא תקינה',
+ 'Download interrupted. Restart the download to resume from completed files.':'ההורדה הופסקה. הפעילו אותה שוב; הקבצים שכבר הורדו יישמרו.',
+ 'This file is too large (maximum 5 MB).':'הקובץ גדול מדי (עד 5 MB).',
+ 'Choose a Kavvanah translation export.':'יש לבחור קובץ ייצוא תרגומים של Kavvanah.',
+ 'The translation file contains invalid entries.':'קובץ התרגומים מכיל רשומות לא תקינות.',
+ 'This file could not be imported.':'לא ניתן לייבא את הקובץ.',
+ 'Offline library ready. {downloaded} new files downloaded; {existing} already cached. Browser storage can still be reclaimed when space is low.':'הספרייה מוכנה. הורדו {downloaded} קבצים חדשים, {existing} היו במטמון. הדפדפן עשוי לפנות אחסון בעת הצורך.',
+ '8.5° below the horizon':'8.5° מתחת לאופק',
+ '7.083° below the horizon':'7.083° מתחת לאופק',
+ '72 minutes after sunset':'72 דקות אחרי השקיעה',
+});
 Object.assign(hebrewWords,hebrewExtra);
+// Hebrew calendar annotation must not retain English in Hebrew mode.
+hebrewWords['Third Blessing after Shema']='ברוך ה׳ לעולם (בחוץ לארץ)';
 
 export function translate(language:UiLanguage,key:string,values:Record<string,string|number>={}):string{
- let value=language==='en'?key:language==='he'?hebrewWords[key]??key:words[key]?.[language==='ru'?0:1]??key;
- if(value===key&&language!=='en'&&language!=='he'){
+ const i=language==='ru'?0:1;
+ const prayer=language==='ru'||language==='uk'?prayerLabels[key]?.[i]:undefined;
+ const calendar=language==='ru'||language==='uk'?calendarLabel(language,key):null;
+ let value=language==='en'?englishPrayerLabels[key]??key:language==='he'?hebrewWords[key]??key:prayer??calendar??words[key]?.[i]??key;
+ if(value===key&&language!=='en'&&language!=='he'&&!prayer&&!calendar){
   const prefix=Object.keys(words).filter(k=>key.startsWith(k+':')||key.startsWith(k+' ')).sort((a,b)=>b.length-a.length)[0];
   if(prefix)value=words[prefix][language==='ru'?0:1]+key.slice(prefix.length);
  } else if(value===key&&language==='he') {

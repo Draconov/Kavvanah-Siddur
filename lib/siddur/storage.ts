@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_SETTINGS,validateLocation } from './core';
 import type { Language,Layer,Settings } from './types';
 import { preferredEdition } from './translation-editions';
+import {translate} from './i18n';
 import { einkEnabled,isEinkDevice } from './eink';
 
 export function safeRead<T>(key:string,fallback:T):T {try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):fallback;}catch{return fallback;}}
@@ -54,6 +55,16 @@ export function useSettings(){
  },[]);
  useEffect(()=>{document.documentElement.dataset.eink=einkEnabled(settings.einkMode,einkDetected)?'true':'false';},[settings.einkMode,einkDetected]);
  useEffect(()=>{document.documentElement.lang=settings.uiLanguage==='he'?'he':settings.uiLanguage;document.documentElement.dir=settings.uiLanguage==='he'?'rtl':'ltr';},[settings.uiLanguage]);
+ useEffect(()=>{
+  document.title=translate(settings.uiLanguage,'Kavvanah · Your daily siddur');
+  document.querySelector('meta[name="description"]')?.setAttribute('content',translate(settings.uiLanguage,'Your multilingual siddur, Jewish calendar, prayer times, Jerusalem compass, and complete Tanakh. Read in Hebrew, with transliteration and translation.'));
+  const manifest=document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
+  if(manifest){
+   // Resolve relative to the existing href to support GitHub project Pages and native assets.
+   const basename=settings.uiLanguage==='en'?'manifest.webmanifest':`manifest.${settings.uiLanguage}.webmanifest`;
+   manifest.href=new URL(basename,manifest.href).href;
+  }
+ },[settings.uiLanguage]);
  useEffect(()=>{document.documentElement.dataset.accent=settings.accent;},[settings.accent]);
  useEffect(()=>{const media=window.matchMedia('(prefers-color-scheme: dark)');const apply=()=>{document.documentElement.dataset.theme=settings.theme==='system'?(media.matches?'dark':'light'):settings.theme;};apply();media.addEventListener('change',apply);return()=>media.removeEventListener('change',apply);},[settings.theme]);
  const patch=useCallback((value:Partial<Settings>)=>setSettings(current=>sanitizeSettings({...current,...value})),[]);

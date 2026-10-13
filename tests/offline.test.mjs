@@ -59,12 +59,18 @@ test('offline build excludes hosting-only files and serves cached pages and text
   assert.equal((await request('/texts/missing.json')).type,'error');
   assert.equal(await request('/submit','cors','POST'),undefined);
   // The same release is deployed under /Kavvanah-Siddur on GitHub Pages.
-  await writeFile(path.join(root,'manifest.webmanifest'),JSON.stringify({id:'/',start_url:'/',scope:'/',icons:[]}));
+  for(const suffix of ['', '.ru', '.uk', '.he'])
+   await writeFile(path.join(root,`manifest${suffix}.webmanifest`),JSON.stringify({id:'/',start_url:'/',scope:'/',icons:[],lang:suffix.slice(1)||'en'}));
   await writeFile(path.join(root,'index.html'),'<html><script src="/_next/static/entry.js"></script></html>');
   execFileSync(process.execPath,[path.resolve('scripts/prepare-pages.mjs')],{cwd:fixture});
   assert.match(await readFile(path.join(root,'index.html'),'utf8'),/Kavvanah-Siddur\/_next\/static/);
   const pagesSW=await readFile(path.join(root,'sw.js'),'utf8');
   assert.match(pagesSW,/Kavvanah-Siddur\/texts\/translations\/optimized\/siddur-categories\/en\/edot\/morning/);
+  for(const suffix of ['', '.ru', '.uk', '.he']){
+   const installed=JSON.parse(await readFile(path.join(root,`manifest${suffix}.webmanifest`),'utf8'));
+   assert.equal(installed.id,'/Kavvanah-Siddur/');
+   assert.equal(installed.start_url,'/Kavvanah-Siddur/');
+  }
   const pagesManifest=JSON.parse(await readFile(path.join(root,'offline-manifest.json'),'utf8'));
   assert.ok(pagesManifest.urls.includes('/Kavvanah-Siddur/texts/optimized/siddur/edot/index.json'));
   assert.ok(pagesManifest.urls.includes('/Kavvanah-Siddur/'));

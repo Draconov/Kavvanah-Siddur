@@ -35,11 +35,13 @@ for (const file of builtFiles) {
   if (updated !== original) await writeFile(file, updated);
 }
 
-const manifestPath = path.join(root, 'manifest.webmanifest');
-const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-for (const field of ['id', 'start_url', 'scope']) manifest[field] = base + '/';
-for (const icon of manifest.icons ?? []) if (icon.src.startsWith('/') && !icon.src.startsWith(base + '/')) icon.src = base + icon.src;
-await writeFile(manifestPath, JSON.stringify(manifest));
+for (const suffix of ['', '.ru', '.uk', '.he']) {
+  const manifestPath = path.join(root, `manifest${suffix}.webmanifest`);
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  for (const field of ['id', 'start_url', 'scope']) manifest[field] = base + '/';
+  for (const icon of manifest.icons ?? []) if (icon.src.startsWith('/') && !icon.src.startsWith(base + '/')) icon.src = base + icon.src;
+  await writeFile(manifestPath, JSON.stringify(manifest));
+}
 
 const offlinePath = path.join(root, 'offline-manifest.json');
 const offline = JSON.parse(await readFile(offlinePath, 'utf8'));
