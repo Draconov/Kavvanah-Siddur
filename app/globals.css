@@ -315,8 +315,11 @@ html[dir="rtl"] [data-slot="switch-thumb"][data-state="checked"] {
 .prayer-date-trigger{display:grid;place-items:center;flex:0 0 38px;align-self:stretch;padding:0;border:0;border-inline-start:1px solid var(--border);border-radius:0 6px 6px 0;background:transparent;color:var(--primary)}
 .prayer-date-trigger:hover{background:var(--secondary)}
 .prayer-date-trigger:focus-visible{outline:0;box-shadow:none}
-.special-time-list{margin-top:18px}
-.special-time-list .time-row:last-child{border-bottom:0}
+/* Observances stay inside the chronological zmanim list, distinguished without
+   a second panel or a disruptive background. Logical borders support Hebrew RTL. */
+.time-row.special-time-row{border-inline-start:3px solid var(--primary);padding-inline-start:12px}
+.time-row.special-time-row .time-row-icon{color:var(--primary)}
+.time-row.special-time-row.next-time{border-inline-start-color:transparent}
 @media(max-width:767px){.prayer-date-picker .date-input{width:116px;font-size:12px;padding:7px 2px 7px 8px}.prayer-date-trigger{flex-basis:35px}}
 
 @media(max-width:550px){.times-view .view-heading{flex-wrap:wrap}.times-view .prayer-date-picker{margin-inline-start:auto}}

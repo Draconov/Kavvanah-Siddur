@@ -1,3 +1,5 @@
+import type { PrayerTime } from './core';
+
 /** Timed calendar observances for the prayer-times screen.
  *
  * Reuse Hebcal's existing calendar results so Friday/Yom Tov candle-lighting,
@@ -34,4 +36,34 @@ export function timedCalendarEventsForDate(events: readonly TimedCalendarEvent[]
       time,
     }];
   }).sort((left, right) => left.time.getTime() - right.time.getTime());
+}
+
+/** One chronological timeline for regular zmanim and timed observances.
+ * Invalid or unavailable daily zmanim remain visible at the end, rather than
+ * accidentally appearing before the first valid time at extreme latitudes.
+ * For identical instants, retain the order of daily zmanim before observances.
+ */
+export type TimelineTime =
+  | (PrayerTime & { kind: 'daily' })
+  | (SpecialTime & { kind: 'special' });
+
+function timestamp(value: Date | null): number {
+  const ms = value?.getTime();
+  return ms !== undefined && Number.isFinite(ms) ? ms : Number.POSITIVE_INFINITY;
+}
+
+export function chronologicalPrayerTimes(
+  dailyTimes: readonly PrayerTime[],
+  specialTimes: readonly SpecialTime[],
+): TimelineTime[] {
+  const combined: TimelineTime[] = [
+    ...dailyTimes.map(time => ({ ...time, kind: 'daily' as const })),
+    ...specialTimes.map(time => ({ ...time, kind: 'special' as const })),
+  ];
+  return combined.sort((a, b) => {
+    const difference = timestamp(a.time) - timestamp(b.time);
+    if (!Number.isNaN(difference) && difference !== 0) return difference;
+    if (a.kind !== b.kind) return a.kind === 'daily' ? -1 : 1;
+    return 0; // stable ordering within each input, including missing times
+  });
 }
