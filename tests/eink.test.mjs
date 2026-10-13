@@ -85,3 +85,18 @@ test('Switching E Ink inside Settings does not cancel Radix modal/select lifecyc
  assert.match(page,/<Dialog open=\{settingsOpen\}/);
  assert.match(page,/einkDetected=\{einkDetected\}/);
 });
+
+
+test('E Ink search and reader-language controls keep only their intended border',()=>{
+ const css=readFileSync(new URL('../app/eink.css',import.meta.url),'utf8');
+ const base=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
+ assert.match(base,/\.search-box\{[^}]*border:1px solid var\(--border\)/);
+ assert.match(base,/\.language-choice\{[^}]*border:0!important/);
+ // Do not reapply a forced border to every input and .choice.
+ const generic=css.match(/html\[data-eink='true'\] :is\(input,select,textarea,\.choice\)\s*\{([^}]*)\}/)?.[1];
+ assert.ok(generic,'E Ink control-color rule missing');
+ assert.doesNotMatch(generic,/\bborder\s*:/);
+ assert.match(css,/html\[data-eink='true'\] \.search-box input\s*\{[^}]*border:0 !important;/);
+ assert.match(css,/html\[data-eink='true'\] \.layer-heading \.language-choice\s*\{[^}]*border:0 !important;/);
+ assert.match(css,/html\[data-eink='true'\] :is\(button,input,textarea,select,a,\[role='button'\]\):focus-visible\s*\{/);
+});

@@ -78,8 +78,25 @@ html[data-eink='true'] :is(.main-nav-button[data-active=true],.category-tabs but
 html[data-eink='true'] :is(.button,.choice,.main-nav-button,.sidebar-location,.sidebar-install,.settings-category-trigger,.category-tabs button,.prayer-list button,.reader-navigation button,.calendar-day, input,select,textarea) {
   min-height:44px;
 }
+/* Color controls without manufacturing an extra frame. Existing components
+   own their borders: search-box has an outer outline, whereas the language
+   dropdowns are intentionally borderless in the reader's column headings. */
 html[data-eink='true'] :is(input,select,textarea,.choice) {
-  background:#fff !important;color:#080808 !important;border:1px solid var(--border) !important;
+  background:#fff !important;
+  color:#080808 !important;
+}
+/* Keep the search field itself frameless; the parent handles visible focus. */
+html[data-eink='true'] .search-box input {
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  outline:0 !important;
+}
+/* Reader language selectors are text-like controls, not framed form inputs. */
+html[data-eink='true'] .layer-heading .language-choice {
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
 }
 html[data-eink='true'] :is(button,input,textarea,select,a,[role='button']):focus-visible {
   outline:2px solid #000 !important;outline-offset:3px !important;
