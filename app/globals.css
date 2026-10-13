@@ -63,6 +63,9 @@
 }
 /* Every themed surface shares this hue, including the navigation rail. */
 :root{--brand-hue:220;--brand-saturation:56%;--radius:.65rem;--background:hsl(var(--brand-hue) 24% 97%);--foreground:hsl(var(--brand-hue) 28% 19%);--card:hsl(var(--brand-hue) 20% 100%);--card-foreground:var(--foreground);--popover:var(--card);--popover-foreground:var(--foreground);--primary:hsl(var(--brand-hue) var(--brand-saturation) 37%);--primary-foreground:#fff;--secondary:hsl(var(--brand-hue) 37% 94%);--secondary-foreground:hsl(var(--brand-hue) 40% 31%);--muted:hsl(var(--brand-hue) 22% 94%);--muted-foreground:hsl(var(--brand-hue) 15% 44%);--accent:hsl(var(--brand-hue) 50% 94%);--accent-foreground:var(--primary);--border:hsl(var(--brand-hue) 23% 88%);--input:hsl(var(--brand-hue) 24% 84%);--ring:hsl(var(--brand-hue) 52% 61%);--destructive:#bd3946;--quiet:hsl(var(--brand-hue) 28% 98%);--sidebar:hsl(var(--brand-hue) 43% 17%);--sidebar-foreground:hsl(var(--brand-hue) 45% 91%);--sidebar-muted:hsl(var(--brand-hue) 29% 73%);--sidebar-primary:hsl(var(--brand-hue) 72% 80%);--sidebar-primary-foreground:var(--sidebar);--sidebar-accent:hsl(var(--brand-hue) 37% 28%);--sidebar-accent-foreground:#fff;--sidebar-border:hsl(var(--brand-hue) 30% 31%);--sidebar-ring:var(--sidebar-primary);--gold:var(--sidebar-primary);--shadow:0 5px 28px hsl(var(--brand-hue) 35% 15% / .025);--active-rail:3px}
+/* Native date/search controls should follow the selected app theme, not the OS theme.
+   Dark/AMOLED/dark-paper and E Ink override this explicitly. */
+:root{color-scheme:light}
 :root[data-accent=gold]{--brand-hue:39;--brand-saturation:66%}
 :root[data-accent=teal]{--brand-hue:176;--brand-saturation:70%}
 :root[data-accent=plum]{--brand-hue:308;--brand-saturation:35%}
@@ -181,13 +184,15 @@ html:lang(ru) .kavvanah-layout,html:lang(uk) .kavvanah-layout{--sidebar-width:18
 .month-controls{flex-wrap:wrap}
 .month-controls .choice{width:105px;font-size:14px!important}
 .calendar-jump{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:0 0 24px;padding:16px;background:var(--quiet);border:1px solid var(--border);border-radius:9px}
-.calendar-jump>label{display:grid;gap:6px;min-width:0;font-size:13px;color:var(--muted-foreground)}
+.calendar-jump>.calendar-jump-field{display:grid;gap:6px;min-width:0;font-size:13px;color:var(--muted-foreground)}
 .calendar-jump>label:first-child{width:76px}
-.calendar-jump>label:nth-child(2){flex:1;min-width:125px}
-.calendar-jump>label:nth-child(3){width:100px}
-.calendar-jump .choice,.calendar-jump input{height:40px;width:100%;font-size:14px!important;color:var(--foreground)}
+.calendar-jump>.calendar-jump-field:nth-child(2){flex:1;min-width:125px}
+.calendar-jump>.calendar-jump-field:nth-child(3){width:100px}
+.calendar-jump .choice,.calendar-jump .settings-number-field{height:40px;width:100%;font-size:14px!important;color:var(--foreground)}
+.calendar-jump .settings-number-field>input{height:100%;padding-inline:8px;font-size:inherit!important}
+@media(max-width:767px){.calendar-jump .settings-number-field>input{padding-inline:5px}}
 .calendar-jump>.button{min-height:40px}
-@media(max-width:767px){.calendar-jump{gap:9px;padding:12px}.calendar-jump>.button{width:100%}.month-controls{width:100%;justify-content:space-between}.month-controls .choice{width:100px}.calendar-jump>label:nth-child(3){width:83px}.calendar-jump>label:nth-child(2){min-width:105px}.calendar-jump>label:first-child{width:65px}.view-heading:has(.calendar-mode-toggle){flex-wrap:wrap;gap:14px}}
+@media(max-width:767px){.calendar-jump{gap:9px;padding:12px}.calendar-jump>.button{width:100%}.month-controls{width:100%;justify-content:space-between}.month-controls .choice{width:100px}.calendar-jump>.calendar-jump-field:nth-child(3){width:83px}.calendar-jump>.calendar-jump-field:nth-child(2){min-width:105px}.calendar-jump>label:first-child{width:65px}.view-heading:has(.calendar-mode-toggle){flex-wrap:wrap;gap:14px}}
 
 .translation-attribution{display:block;margin-block:.6rem;font-size:.75rem;line-height:1.5;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px}
 /* Keep the clock legible while the date is hidden on narrower screens. */
@@ -276,15 +281,15 @@ html[dir="rtl"] [data-slot="switch-thumb"][data-state="checked"] {
 .settings-view [data-slot="switch"]:hover:not([data-disabled]){box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 24%,transparent)}
 .settings-view [data-slot="slider-thumb"]:hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--ring) 24%,transparent)}
 .settings-view .time-zone-search:focus-within {outline:2px solid var(--ring);outline-offset:1px}
-/* Replace unthemed browser up/down spin arrows with matched icon buttons.
-   The field remains a true numeric input and retains direct keyboard editing. */
+/* Shared theme-owned numeric spinner in both Settings and Calendar.
+   Real numeric input remains editable, validated and accessible via keyboard. */
 .settings-number-field {height:42px;min-width:0;width:100%;display:flex;align-items:stretch;overflow:hidden;background:var(--card);border:1px solid var(--input);border-radius:7px;transition:border-color .15s,background-color .15s}
 .settings-number-field:focus-within{outline:2px solid var(--ring);outline-offset:1px}
 .settings-number-field>input {flex:1;min-width:0;width:100%;padding:9px 12px;border:0!important;background:transparent!important;border-radius:0;outline:0!important;box-shadow:none!important;color:var(--foreground);font-variant-numeric:tabular-nums}
 .settings-number-field>input::-webkit-outer-spin-button,.settings-number-field>input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .settings-number-field>input[type=number]{appearance:textfield;-moz-appearance:textfield}
 .settings-number-steps{display:flex;flex-direction:column;flex:0 0 28px;align-self:stretch;border-inline-start:1px solid var(--border)}
-.settings-number-steps>button {display:grid;place-items:center;flex:1;min-height:0;width:28px;padding:0;line-height:1;color:var(--muted-foreground);background:transparent;border:0;transition:background-color .15s,color .15s}
+.settings-number-steps>button {display:grid;place-items:center;flex:1;min-height:0;width:28px;appearance:none;border-radius:0;padding:0;line-height:1;color:var(--muted-foreground);background:transparent;border:0;transition:background-color .15s,color .15s}
 .settings-number-steps>button+button{border-top:1px solid var(--border)}
 .settings-number-steps>button:hover:not(:disabled),.settings-number-steps>button:focus-visible{background:var(--secondary);color:var(--primary);outline:0}
 .settings-number-steps>button:focus-visible{box-shadow:inset 0 0 0 2px var(--ring)}
@@ -298,3 +303,20 @@ html[dir="rtl"] [data-slot="switch-thumb"][data-state="checked"] {
 @supports (content-visibility: auto) {
  .reader-body .verse-row {content-visibility:auto;contain-intrinsic-size:auto 140px}
 }
+
+/* Prayer Times: one themed CalendarDays icon, matching the calendar item in
+   the sidebar. Preserve the native date field and platform picker. */
+.prayer-date-picker{display:inline-flex;align-items:center;flex-shrink:0;min-height:40px;border:1px solid var(--input);border-radius:7px;background:var(--card);color:var(--foreground)}
+.prayer-date-picker:focus-within{outline:2px solid var(--ring);outline-offset:2px}
+.prayer-date-picker .date-input{appearance:none;-webkit-appearance:none;flex:1;min-width:0;width:142px;height:38px;padding:7px 4px 7px 11px;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;color:inherit}
+.prayer-date-picker .date-input:is(:focus,:focus-visible){outline:0!important;box-shadow:none!important}
+.prayer-date-picker .date-input::-webkit-calendar-picker-indicator{display:none}
+.prayer-date-picker .date-input::-moz-calendar-picker-indicator{display:none}
+.prayer-date-trigger{display:grid;place-items:center;flex:0 0 38px;align-self:stretch;padding:0;border:0;border-inline-start:1px solid var(--border);border-radius:0 6px 6px 0;background:transparent;color:var(--primary)}
+.prayer-date-trigger:hover{background:var(--secondary)}
+.prayer-date-trigger:focus-visible{outline:0;box-shadow:none}
+.special-time-list{margin-top:18px}
+.special-time-list .time-row:last-child{border-bottom:0}
+@media(max-width:767px){.prayer-date-picker .date-input{width:116px;font-size:12px;padding:7px 2px 7px 8px}.prayer-date-trigger{flex-basis:35px}}
+
+@media(max-width:550px){.times-view .view-heading{flex-wrap:wrap}.times-view .prayer-date-picker{margin-inline-start:auto}}

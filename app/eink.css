@@ -152,3 +152,10 @@ html[data-eink='true'] .notice {border:1px solid #555;color:#111;background:#fff
   html[data-eink='true'] .app-header {padding-inline:12px;}
   html[data-eink='true'] .reader-body {padding-inline:2px;}
 }
+
+/* The prayer date picker owns a single outer focus indicator in E Ink mode. */
+html[data-eink='true'] .prayer-date-picker{min-height:44px;border-color:var(--border)}
+html[data-eink='true'] .prayer-date-picker .date-input{min-height:0!important;height:42px;background:transparent!important}
+html[data-eink='true'] .prayer-date-picker .date-input:is(:focus,:focus-visible),
+html[data-eink='true'] .prayer-date-picker .prayer-date-trigger:focus-visible{outline:0!important;box-shadow:none!important}
+html[data-eink='true'] .prayer-date-picker:focus-within{outline:2px solid var(--ring)!important;outline-offset:2px}

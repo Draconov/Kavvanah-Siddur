@@ -6,6 +6,7 @@ import {hebrewDateLabel} from '@/lib/siddur/i18n';
 import {calendarMonth,calendarDate,calendarParts,moveCalendarDate,type CalendarUnit} from '@/lib/siddur/calendar';
 import {useUI} from '@/lib/siddur/i18n-context';
 import {Choice} from './Controls';
+import {NumberField} from './NumberField';
 import type {Settings,CalendarMode} from '@/lib/siddur/types';
 
 export function CalendarView({settings,patch}:{settings:Settings;patch:(value:Partial<Settings>)=>void}){
@@ -40,7 +41,7 @@ export function CalendarView({settings,patch}:{settings:Settings;patch:(value:Pa
      <div className="calendar-date-pair"><strong>{hebrewFirst?h.getDate():date.getDate()}</strong><span>{hebrewFirst?date.getDate():h.getDate()}</span></div>{titles.slice(0,2).map((e,j)=><small key={j}>{settings.uiLanguage==='he'?e.render('he'):t(e.render('en'))}</small>)}{titles.length>2&&<small>{t('+{count} more',{count:titles.length-2})}</small>}
     </button>;
    })}</div>
-   <p className="calendar-note"><Sunset size={15}/>{t('Dates in the grid refer to daytime. The next Hebrew date begins at sunset.')}</p>
+   {!hebrewFirst&&<p className="calendar-note"><Sunset size={15}/>{t('Dates in the grid refer to daytime. The next Hebrew date begins at sunset.')}</p>}
   </section><aside className="calendar-detail"><div className="panel"><p className="eyebrow">{t('SELECTED DAY')}</p><h2>{hebrewFirst?hebrewDateLabel(selectedHebrew,settings.uiLanguage):localDate(selected).toLocaleDateString(locale,{month:'long',day:'numeric',year:'numeric'})}</h2><p className="selected-civil-date">{hebrewFirst?localDate(selected).toLocaleDateString(locale,{month:'long',day:'numeric',year:'numeric'}):hebrewDateLabel(selectedHebrew,settings.uiLanguage)}</p><p className="detail-hebrew" lang="he">{selectedHebrew.renderGematriya()}</p><div className="event-list">{selectedEvents.length?selectedEvents.map((event,i)=>{
    const time='eventTime' in event?(event as unknown as {eventTime:Date}).eventTime:null;
    return <div className="calendar-event" key={i}><span className="event-mark"/><div><strong>{settings.uiLanguage==='he'?event.render('he'):t(event.render('en'))}</strong>{settings.uiLanguage!=='he'&&<p lang="he" dir="rtl">{event.render('he')}</p>}{time&&<span className="event-time">{formatTime(time,settings.place.timeZone)} · {t(settings.place.name)}</span>}</div></div>;
@@ -61,9 +62,9 @@ function DateJump({selected,mode,onSelect}:{selected:Date;mode:CalendarMode;onSe
  const last=mode==='hebrew'?HDate.daysInMonth(month,safeYear):calendarParts(calendarDate(mode,{year:safeYear,month,day:31}),mode).day;
  const day=Math.min(parts.day,last);
  return <form className="calendar-jump" onSubmit={e=>{e.preventDefault();if(!validYear){setError(true);return;}try{onSelect(calendarDate(mode,{year:numericYear,month,day}));setError(false);}catch{setError(true);}}}>
-  <label><span>{t('Day')}</span><Choice label="Day" value={String(day)} onChange={v=>setParts({...parts,day:Number(v)})} options={Array.from({length:last},(_,i)=>({value:String(i+1),label:String(i+1)}))}/></label>
-  <label><span>{t('Month')}</span><Choice label="Month" value={String(month)} onChange={v=>setParts({...parts,month:Number(v)})} options={months.map(m=>({value:String(m),label:mode==='hebrew'?new HDate(1,m,safeYear).getMonthName():new Date(2000,m-1,1).toLocaleDateString(locale,{month:'long'})}))}/></label>
-  <label><span>{t('Year')}</span><input aria-label={t('Year')} type="number" inputMode="numeric" min={min} max={max} step={1} required value={year} onChange={e=>setYear(e.target.value)}/></label>
+  <div className="calendar-jump-field"><span>{t('Day')}</span><Choice label="Day" value={String(day)} onChange={v=>setParts({...parts,day:Number(v)})} options={Array.from({length:last},(_,i)=>({value:String(i+1),label:String(i+1)}))}/></div>
+  <div className="calendar-jump-field"><span>{t('Month')}</span><Choice label="Month" value={String(month)} onChange={v=>setParts({...parts,month:Number(v)})} options={months.map(m=>({value:String(m),label:mode==='hebrew'?new HDate(1,m,safeYear).getMonthName():new Date(2000,m-1,1).toLocaleDateString(locale,{month:'long'})}))}/></div>
+  <div className="calendar-jump-field"><label htmlFor="calendar-jump-year">{t('Year')}</label><NumberField id="calendar-jump-year" label="Year" value={year} min={min} max={max} step={1} inputMode="numeric" required onChange={raw=>{setYear(raw);setError(false);}}/></div>
   <button className="button subtle" type="submit">{t('Go to date')}</button>
   {error&&<span role="alert">{t('Enter a valid year.')}</span>}
  </form>;
