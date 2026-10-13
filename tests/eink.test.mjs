@@ -61,3 +61,27 @@ test('E Ink theme is scoped and does not remove PWA metadata',()=>{
  assert.match(layout, /manifest\.webmanifest/);
  assert.match(layout, /appleWebApp/);
 });
+
+
+test('Switching E Ink inside Settings does not cancel Radix modal/select lifecycles',()=>{
+ const css=readFileSync(new URL('../app/eink.css',import.meta.url),'utf8');
+ const dialog=readFileSync(new URL('../components/ui/dialog.tsx',import.meta.url),'utf8');
+ const select=readFileSync(new URL('../components/ui/select.tsx',import.meta.url),'utf8');
+ // The drop-down can be midway through closing when its onValueChange
+ // changes data-eink. Radix Presence must still receive animationend.
+ assert.match(dialog,/data-\[state=closed\]:animate-out/);
+ assert.match(select,/data-\[state=closed\]:animate-out/);
+ // Catch accidental reintroduction of global animation/transition resets.
+ // In particular do not use `html[data-eink] *` or `*::before/after`.
+ const uncommented=css.replace(/\/\*[\s\S]*?\*\//g,'');
+ const resetRules=[...uncommented.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(([, ,body])=>/\b(?:animation|transition)(?:-\w+)?\s*:\s*none\s*!important/i.test(body));
+ assert.ok(resetRules.length>0,'Decorative motion should still be disabled');
+ for(const [, selector] of resetRules){
+  assert.doesNotMatch(selector,/\*/,`Global animation/transition reset can freeze Radix: ${selector}`);
+  assert.doesNotMatch(selector,/data-slot|dialog|select|popover|portal/i,`Do not disable portal lifecycle animations: ${selector}`);
+ }
+ // A plain E Ink CSS/theme flip should not unmount Settings or its Select.
+ const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
+ assert.match(page,/<Dialog open=\{settingsOpen\}/);
+ assert.match(page,/einkDetected=\{einkDetected\}/);
+});

@@ -35,15 +35,29 @@
   --active-rail:3px;
 }
 
-/* Avoid costly waveform refreshes caused by effects, and retain semantic SVG
-   colors and visible focus rather than disabling all CSS backgrounds. */
-html[data-eink='true'],html[data-eink='true'] * ,html[data-eink='true'] *::before,html[data-eink='true'] *::after {
+/* Do not reset every element's animations. Radix Select and Dialog use
+   animationend to finish unmounting their portals and release modal pointer/
+   scroll locks. Killing an in-flight close animation can leave an invisible
+   overlay blocking the entire application until reload.
+
+   Apply cheap, static effects only to the reader/chrome, never to a portal,
+   dialog, dropdown or their descendants. Keeping selectors narrow also avoids
+   costly full-document restyling when a long Tanakh chapter is on screen. */
+html[data-eink='true'] { scroll-behavior:auto !important; }
+html[data-eink='true'] :is(.sidebar-scroll,.prayer-list,.reader-body,.prayer-content,.preferences-scroll) {
   scroll-behavior:auto !important;
-  animation:none !important;
+}
+html[data-eink='true'] :is(.app-shell,.app-header,.main-nav-button,.sidebar-location,.sidebar-install,.day-strip,.compass-dial) {
   transition:none !important;
   text-shadow:none !important;
   box-shadow:none !important;
 }
+html[data-eink='true'] :is(.app-shell,.kavvanah-sidebar,.panel,.preferences-dialog,[data-slot='select-content']) {
+  box-shadow:none !important;
+}
+/* Disable only purely decorative continuous animations; keep Radix's
+   open/close animation events, including when switching E Ink mode mid-menu. */
+html[data-eink='true'] .spin { animation:none !important; }
 html[data-eink='true'] body { background:#fff; color:#080808; }
 html[data-eink='true'] :is(.app-shell,.app-header,.prayer-view,.calendar-panel,.compass-panel,.settings-card,.settings-category,.preferences-dialog,.kavvanah-sidebar,.sidebar-header,.sidebar-footer,.prayer-content,.time-list) {
   background:var(--background);
