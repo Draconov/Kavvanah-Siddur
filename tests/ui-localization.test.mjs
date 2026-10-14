@@ -13,6 +13,9 @@ const texts=path.join(root,'public/texts');
 const corpora=['ashkenaz','edot'].map(n=>JSON.parse(readFileSync(path.join(texts,n+'.json'),'utf8')));
 const names=[...new Set(corpora.flatMap(c=>c.sections.flatMap(section=>[section.title,...section.path])))];
 const untranslatedBrandKeys=new Set(['Kavvanah','Sefaria','Hebcal','Android','px','km','GRA']);
+// Font-family names are product identifiers, not untranslated interface copy.
+// Preserve the exact installed family names in every language.
+const unchangedOptionNames=new Set(['Amoled','Alef','Noto Rashi Hebrew']);
 const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(x=>x.isDirectory()?walk(path.join(dir,x.name)):/\.(tsx?|jsx?)$/.test(x.name)?[path.join(dir,x.name)]:[]);
 const files=[...walk(path.join(root,'app')),...walk(path.join(root,'components/siddur')),...walk(path.join(root,'lib/siddur'))].filter(s=>!s.endsWith('i18n.ts')&&!s.endsWith('prayer-labels.ts')&&!s.endsWith('calendar-labels.ts'));
 function uiStrings(){
@@ -104,8 +107,19 @@ test('static choice option labels remain localized',()=>{
  }
  assert.ok(keys.size>30);
  for(const key of keys)for(const lang of ['ru','uk','he']){
-  if(key==='Amoled')continue;
+  if(unchangedOptionNames.has(key))continue;
   assert.notEqual(translate(lang,key),key,`${lang}: untranslated option ${key}`);
+ }
+});
+test('font-family option names remain stable across locales and available in both font menus',()=>{
+ const filenames=['components/siddur/SettingsView.tsx','components/siddur/Reader.tsx'];
+ for(const name of ['Alef','Noto Rashi Hebrew']){
+  for(const file of filenames){
+   const content=readFileSync(path.join(root,file),'utf8');
+   assert.ok(content.includes(`label:'${name}'`),`${file}: missing font-family choice ${name}`);
+  }
+  for(const lang of ['en','ru','uk','he'])
+   assert.equal(translate(lang,name),name,`${lang}: the selectable font-family name should not be translated`);
  }
 });
 test('English headings use canonical prayer names where the English source used a descriptive paraphrase',()=>{
