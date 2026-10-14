@@ -822,6 +822,24 @@ Object.assign(hebrewWords,hebrewExtra);
 // Hebrew calendar annotation must not retain English in Hebrew mode.
 hebrewWords['Third Blessing after Shema']='ברוך ה׳ לעולם (בחוץ לארץ)';
 
+// Additional reading typography and Hebrew cantillation UI strings.
+Object.assign(words,{
+ 'Cantillation source: Open Scriptures Hebrew Bible (CC BY 4.0)':['Источник знаков кантилляции: Open Scriptures Hebrew Bible (CC BY 4.0)','Джерело знаків кантиляції: Open Scriptures Hebrew Bible (CC BY 4.0)'],
+ 'Show cantillation marks (te’amim)':['Показывать знаки кантилляции (теамим)','Показувати знаки кантиляції (теамім)'],
+ 'Cantillation marks (te’amim)':['Знаки кантилляции (теамим)','Знаки кантиляції (теамім)'],
+ 'Show te’amim':['Показывать теамим','Показувати теамім'],
+ 'Hide te’amim':['Скрыть теамим','Приховати теамім'],
+ 'No cantillation marks are available for this passage. The original text is unchanged.':['Для этого отрывка нет знаков кантилляции. Исходный текст не изменён.','Для цього уривка немає знаків кантиляції. Оригінальний текст не змінено.'],
+});
+Object.assign(hebrewWords,{
+ 'Cantillation source: Open Scriptures Hebrew Bible (CC BY 4.0)':'מקור טעמי המקרא: Open Scriptures Hebrew Bible (CC BY 4.0)',
+ 'Show cantillation marks (te’amim)':'הצג טעמי המקרא',
+ 'Cantillation marks (te’amim)':'טעמי המקרא',
+ 'Show te’amim':'הצג טעמים',
+ 'Hide te’amim':'הסתר טעמים',
+ 'No cantillation marks are available for this passage. The original text is unchanged.':'אין טעמי מקרא זמינים לקטע זה. נוסח המקור לא שונה.',
+});
+
 export function translate(language:UiLanguage,key:string,values:Record<string,string|number>={}):string{
  const i=language==='ru'?0:1;
  const prayer=language==='ru'||language==='uk'?prayerLabels[key]?.[i]:undefined;

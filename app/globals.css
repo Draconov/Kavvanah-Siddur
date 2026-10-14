@@ -323,3 +323,13 @@ html[dir="rtl"] [data-slot="switch-thumb"][data-state="checked"] {
 @media(max-width:767px){.prayer-date-picker .date-input{width:116px;font-size:12px;padding:7px 2px 7px 8px}.prayer-date-trigger{flex-basis:35px}}
 
 @media(max-width:550px){.times-view .view-heading{flex-wrap:wrap}.times-view .prayer-date-picker{margin-inline-start:auto}}
+
+/* Optional Hebrew reading faces. Downloads are prepared during predev/prebuild
+   and bundled locally; fonts load only when selected by the reader. */
+@font-face{font-family:'Kavvanah Alef';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/optional/Alef-Regular.ttf') format('truetype');unicode-range:U+0590-05FF,U+FB1D-FB4F}
+@font-face{font-family:'Kavvanah Alef';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/optional/Alef-Bold.ttf') format('truetype');unicode-range:U+0590-05FF,U+FB1D-FB4F}
+@font-face{font-family:'Kavvanah Noto Rashi Hebrew';font-style:normal;font-weight:100 900;font-display:swap;src:url('/fonts/optional/NotoRashiHebrew.ttf') format('truetype');unicode-range:U+0590-05FF,U+FB1D-FB4F}
+.reader-body.font-alef .verse-cell.hebrew{font-family:'Kavvanah Alef','Noto Serif Hebrew',serif}
+.reader-body.font-rashi .verse-cell.hebrew{font-family:'Kavvanah Noto Rashi Hebrew','Noto Serif Hebrew',serif}
+/* Upper/lower niqqud and cantillation should have generous breathing room. */
+.reader-body.font-alef .verse-cell.hebrew,.reader-body.font-rashi .verse-cell.hebrew{line-height:2.15}

@@ -8,16 +8,17 @@
   },
   "scripts": {
     "version:sync": "node scripts/sync-version.mjs",
-    "predev": "node scripts/sync-version.mjs && node scripts/prepare-reader-assets.mjs && node scripts/prepare-tanakh-chapters.mjs && node scripts/prepare-siddur-categories.mjs",
+    "predev": "node scripts/sync-version.mjs && node scripts/prepare-reader-assets.mjs && node scripts/prepare-tanakh-chapters.mjs && node scripts/prepare-siddur-categories.mjs && node scripts/prepare-hebrew-fonts.mjs && node scripts/prepare-tanakh-cantillation.mjs",
     "dev": "vinext dev",
-    "prebuild": "node scripts/sync-version.mjs && node scripts/prepare-reader-assets.mjs && node scripts/prepare-tanakh-chapters.mjs && node scripts/prepare-siddur-categories.mjs",
+    "prebuild": "node scripts/sync-version.mjs && node scripts/prepare-reader-assets.mjs && node scripts/prepare-tanakh-chapters.mjs && node scripts/prepare-siddur-categories.mjs && node scripts/prepare-hebrew-fonts.mjs && node scripts/prepare-tanakh-cantillation.mjs --download",
     "build": "vinext build && node scripts/finalize-offline.mjs",
     "pretest": "node scripts/sync-version.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "check": "tsc --noEmit",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "test:smoke": "node --experimental-strip-types --test tests/version.test.mjs tests/translation-editions.test.mjs tests/release-permissions.test.mjs tests/reader-assets.test.mjs tests/eink.test.mjs tests/form-controls.test.mjs tests/prayer-times.test.mjs tests/offline.test.mjs tests/offline-download.test.mjs tests/personal-store.test.mjs tests/tanakh-edition-bundles.test.mjs tests/translations.test.mjs",
-    "test:localization": "node --experimental-strip-types --test tests/ui-localization.test.mjs"
+    "test:smoke": "node --experimental-strip-types --test tests/version.test.mjs tests/translation-editions.test.mjs tests/release-permissions.test.mjs tests/reader-assets.test.mjs tests/eink.test.mjs tests/form-controls.test.mjs tests/prayer-times.test.mjs tests/offline.test.mjs tests/offline-download.test.mjs tests/personal-store.test.mjs tests/tanakh-edition-bundles.test.mjs tests/translations.test.mjs tests/hebrew-typography.test.mjs tests/compass-motion.test.mjs",
+    "test:localization": "node --experimental-strip-types --test tests/ui-localization.test.mjs",
+    "cantillation:prepare": "node scripts/prepare-tanakh-cantillation.mjs --download"
   },
   "dependencies": {
     "@hebcal/core": "^6.9.2",

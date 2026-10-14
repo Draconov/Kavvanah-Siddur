@@ -16,7 +16,11 @@ test('VERSION is the single release version source',()=>{
  assert.match(text('src-tauri/Cargo.toml'),new RegExp(`^version = "${semver.replaceAll('.','\\.')}"$`,'m'));
  const scripts=json('package.json').scripts;
  assert.equal(scripts.pretest,'node scripts/sync-version.mjs');
- for(const hook of ['predev','prebuild']) assert.equal(scripts[hook],'node scripts/sync-version.mjs && node scripts/prepare-reader-assets.mjs && node scripts/prepare-tanakh-chapters.mjs && node scripts/prepare-siddur-categories.mjs');
+ for(const hook of ['predev','prebuild']) {
+  assert.match(scripts[hook],/^node scripts\/sync-version\.mjs && node scripts\/prepare-reader-assets\.mjs && node scripts\/prepare-tanakh-chapters\.mjs && node scripts\/prepare-siddur-categories\.mjs/);
+  assert.match(scripts[hook],/prepare-hebrew-fonts\.mjs/);
+  assert.match(scripts[hook],/prepare-tanakh-cantillation\.mjs/);
+ }
 });
 
 

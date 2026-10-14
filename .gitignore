@@ -22,3 +22,8 @@ public/texts/translations/optimized.staging/
 # Derived Tanakh Hebrew chapters, generated from canonical book JSON
 public/texts/optimized/
 public/texts/optimized/tanakh.staging/
+
+# Optional OFL fonts fetched from pinned Google Fonts revision during build
+public/fonts/optional/
+public/licenses/Alef-OFL.txt
+public/licenses/Noto-Rashi-Hebrew-OFL.txt

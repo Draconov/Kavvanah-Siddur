@@ -11,7 +11,7 @@ export function safeWrite(key:string,value:unknown):boolean {try{localStorage.se
 
 export function sanitizeSettings(raw:Partial<Settings>):Settings{
  const out={...DEFAULT_SETTINGS,...raw};
- const choices:Record<string,string[]>={uiLanguage:['en','ru','uk','he'],accent:['blue','gold','teal','plum','terracotta','green','amber','rose','violet','slate','olive','cyan'],calendarMode:['hebrew','gregorian'],clockFormat:['24h','12h'],theme:['light','dark','black','paper','dark-paper','system'],einkMode:['auto','on','off'],nusach:['ashkenaz','edot'],pronunciation:['sephardi','ashkenazi'],transliterationLanguage:['en','ru','uk'],translationLanguage:['en','ru','uk'],layout:['columns','stacked'],font:['serif','sans'],zmanMethod:['gra','mga'],nightfall:['8.5','7.083','72']};
+ const choices:Record<string,string[]>={uiLanguage:['en','ru','uk','he'],accent:['blue','gold','teal','plum','terracotta','green','amber','rose','violet','slate','olive','cyan'],calendarMode:['hebrew','gregorian'],clockFormat:['24h','12h'],theme:['light','dark','black','paper','dark-paper','system'],einkMode:['auto','on','off'],nusach:['ashkenaz','edot'],pronunciation:['sephardi','ashkenazi'],transliterationLanguage:['en','ru','uk'],translationLanguage:['en','ru','uk'],layout:['columns','stacked'],font:['serif','sans','alef','rashi'],zmanMethod:['gra','mga'],nightfall:['8.5','7.083','72']};
  for(const [key,options] of Object.entries(choices))if(!options.includes(String(out[key as keyof Settings])))(out as unknown as Record<string,unknown>)[key]=DEFAULT_SETTINGS[key as keyof Settings];
  const rawEditions=raw.translationEditions&&typeof raw.translationEditions==='object'&&!Array.isArray(raw.translationEditions)?raw.translationEditions:{};
  out.translationEditions={...DEFAULT_SETTINGS.translationEditions};
@@ -24,6 +24,7 @@ export function sanitizeSettings(raw:Partial<Settings>):Settings{
  out.textSize=Number.isFinite(out.textSize)?Math.min(44,Math.max(20,out.textSize)):26;
  out.candleMinutes=Number.isFinite(out.candleMinutes)?Math.min(90,Math.max(0,out.candleMinutes)):18;
  out.vowels=typeof out.vowels==='boolean'?out.vowels:true;
+ out.cantillation=typeof out.cantillation==='boolean'?out.cantillation:true;
  out.useElevation=!!out.useElevation;
  out.prayerLinks=typeof out.prayerLinks==='boolean'?out.prayerLinks:true;
  if(!out.place||validateLocation(out.place))out.place=DEFAULT_SETTINGS.place;
