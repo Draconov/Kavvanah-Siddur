@@ -50,7 +50,9 @@ test('Calendar continues to show the day/sunset hint for Gregorian only',()=>{
 
 test('Date picker uses the same CalendarDays icon as sidebar, preserves native input and keyboard access',()=>{
  const app=read('app/page.tsx');
- assert.match(app,/id:'calendar'[^\n]+icon:CalendarDays/);
+ const navigation=read('lib/siddur/app-navigation.ts');
+ assert.match(app,/APP_NAV as NAV/);
+ assert.match(navigation,/id:'calendar'[^\n]+icon:CalendarDays/);
  assert.match(times,/<CalendarDays size=\{18\}/);
  assert.match(times,/type="date"/);
  assert.match(times,/\.showPicker\(\)/);

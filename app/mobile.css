@@ -1,0 +1,178 @@
+/* Kavvanah v1.1.0 — mobile shell. Width plus short-viewport detection prevents
+   a landscape phone from receiving the fixed desktop sidebar. All nine sidebar
+   actions appear in mobile navigation, not behind a More menu. */
+.mobile-action-nav,.mobile-prayer-picker-trigger{display:none}
+
+@media (max-width:767px) {
+  .kavvanah-layout{--handheld-bottom-height:72px}
+  .mobile-menu{display:none!important} /* all destinations are directly on the bottom bar */
+  .app-shell{width:100%;min-width:0;overflow-x:clip}
+  .app-header{min-height:56px;height:56px;padding-inline:14px}
+  .header-left{flex:1;justify-content:space-between;gap:10px}
+  .header-section{font-size:15px}
+  .header-location{max-width:42%;overflow:hidden;text-overflow:ellipsis}
+  main{padding-inline:clamp(10px,3.5vw,20px);padding-top:12px;padding-bottom:calc(var(--handheld-bottom-height) + env(safe-area-inset-bottom,0px) + 18px)}
+  .day-strip{margin-bottom:17px;padding-bottom:14px;min-width:0}
+  .day-strip>div:first-child{min-width:0}
+  .day-strip>div:first-child>span:last-child{min-width:0}
+  .day-strip strong{overflow-wrap:anywhere}
+  .app-footer{flex-wrap:wrap}
+  .mobile-action-nav{display:block;position:fixed;z-index:35;inset-inline:0;bottom:0;height:calc(var(--handheld-bottom-height) + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--border);color:var(--foreground);box-shadow:0 -5px 18px #00000012;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .mobile-action-scroll{height:100%;display:flex;align-items:stretch;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--border) transparent;gap:1px;padding:0 max(6px,env(safe-area-inset-left,0px));-webkit-overflow-scrolling:touch}
+  .mobile-action-item{flex:0 0 76px;min-width:72px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;min-height:54px;margin-block:5px;padding:5px 4px;border:0;background:transparent;border-radius:8px;scroll-snap-align:start;color:var(--muted-foreground);font-size:10px;font-weight:500;line-height:1.16;text-align:center;white-space:normal;overflow-wrap:anywhere}
+  .mobile-action-item>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;min-height:12px}
+  .mobile-action-item svg{flex-shrink:0}
+  .mobile-action-item[data-active=true]{background:var(--secondary);color:var(--primary);font-weight:700}
+  .mobile-action-item:focus-visible{outline:2px solid var(--ring);outline-offset:-3px}
+  .mobile-action-separator{flex:0 0 1px;align-self:center;height:37px;background:var(--border);margin-inline:7px}
+  .prayer-view>.view-heading,.prayer-view>.category-tabs,.prayer-workspace>.prayer-explorer{display:none}
+  .prayer-workspace{display:block}
+  .mobile-prayer-picker-trigger{display:flex;width:100%;align-items:center;gap:12px;min-height:60px;border:1px solid var(--border);border-radius:10px;background:var(--card);padding:10px 13px;text-align:start;margin-bottom:17px;color:var(--foreground)}
+  .mobile-prayer-picker-trigger>span{display:flex;flex:1;min-width:0;flex-direction:column;gap:2px}
+  .mobile-prayer-picker-trigger strong{font-size:12px;color:var(--muted-foreground);font-weight:500}
+  .mobile-prayer-picker-trigger small{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--foreground)}
+  .mobile-prayer-picker-trigger:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+  .prayer-heading{margin-bottom:12px;min-height:0}
+  .prayer-hebrew-title{max-width:38%}
+  .reader-sheet{max-width:100%}
+  .reader-tools{gap:8px}
+  .reader-tools .reading-modes{overflow-x:auto;max-width:calc(100vw - 125px)}
+  .reader-tools .reading-modes button{white-space:nowrap}
+  .reader-body .verse-row{scroll-margin-top:70px}
+  .reader-navigation .button{min-height:44px}
+  .tanakh-view>.view-heading{margin-bottom:14px}
+  .daily-reading-banner{margin-bottom:16px;padding:12px}
+  .daily-reading-banner .button{margin-inline:0;min-height:44px}
+  .tanakh-selectors{display:grid;grid-template-columns:minmax(0,1fr) minmax(105px,0.48fr);align-items:end;gap:10px}
+  .tanakh-selectors>div:first-child,.tanakh-selectors>div:nth-child(2){min-width:0;width:auto}
+  .tanakh-category{grid-column:1/-1}
+  .calendar-panel{min-width:0}
+  .calendar-grid.days,.calendar-grid.weekdays{min-width:0}
+  .calendar-day,.blank-day{min-height:64px;padding:6px 3px}
+  .calendar-detail{margin-top:12px}
+  .calendar-day strong{font-size:13px}
+  .time-highlights{display:flex;overflow-x:auto;gap:10px;scroll-snap-type:x proximity;overscroll-behavior-x:contain;padding-bottom:6px}
+  .time-highlight{flex:0 0 clamp(132px,42%,230px);scroll-snap-align:start;min-width:0;padding:13px}
+  .time-highlight>strong{font-size:22px}
+  .time-list{padding:14px 12px}
+  .time-row-icon{flex-shrink:0}
+  .time-name{min-width:0}
+  .time-end{min-width:65px}
+  .compass-panel{padding:18px 12px}
+  .compass-dial{width:min(320px,88vw)}
+  .settings-dialog.preferences-dialog{border-radius:0!important;inset:0!important;transform:none!important;translate:0 0!important;top:0!important;left:0!important;width:100vw!important;height:100dvh;max-width:100vw!important;max-height:100dvh!important;padding:0!important;display:flex;flex-direction:column;overflow:hidden}
+  .preferences-dialog .preferences-scroll{flex:1;overflow:auto;min-height:0;padding:16px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+  .preferences-dialog [data-slot=dialog-header]{flex-shrink:0;padding:20px 48px 16px 18px}
+  html[dir=rtl] .preferences-dialog [data-slot=dialog-header]{padding-left:48px;padding-right:18px}
+  .settings-dialog.preferences-dialog [data-slot=dialog-close]{top:18px;inset-inline-end:14px}
+}
+
+/* Dialog portal is separate from the source component, so keep its mobile sheet
+   rules outside the PrayerView subtree. The Sheet is only opened on demand. */
+.mobile-prayer-sheet{display:flex!important;flex-direction:column;gap:8px;max-height:min(88dvh,780px);height:min(88dvh,780px);background:var(--card)!important;color:var(--foreground);padding:18px 16px max(14px,env(safe-area-inset-bottom,0px))!important;border-color:var(--border)!important}
+.mobile-prayer-sheet [data-slot=sheet-header]{flex-shrink:0;padding-inline-end:34px}
+.mobile-prayer-sheet-inner{display:flex;flex:1;min-height:0;flex-direction:column;gap:12px}
+.mobile-prayer-sheet-tradition{flex-shrink:0}
+.mobile-prayer-sheet-tradition .choice{max-width:100%;width:100%}
+.mobile-prayer-categories{flex-shrink:0;margin:0;max-width:100%;padding-bottom:2px;min-height:40px}
+.mobile-prayer-categories button{min-height:40px}
+.mobile-prayer-search{flex-shrink:0;min-height:45px}
+.mobile-prayer-search input{font-size:16px}
+.mobile-prayer-results{overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0;scrollbar-width:thin}
+.mobile-prayer-results>button{display:flex;flex-direction:column;gap:4px;width:100%;text-align:start;padding:13px;min-height:55px;border-bottom:1px solid var(--border);color:var(--foreground)}
+.mobile-prayer-results>button.selected{background:var(--secondary);border-inline-start:3px solid var(--primary)}
+.mobile-prayer-results small{font-size:12px;color:var(--muted-foreground)}
+.mobile-prayer-results .muted{padding:15px}
+.mobile-prayer-results>button:focus-visible{outline:2px solid var(--ring);outline-offset:-2px}
+
+/* Small landscape phones: hide desktop SidebarProvider's 768px breakpoint
+   output and replace with an orientation-aware, scrolling rail of ALL actions. */
+@media (orientation:landscape) and (max-height:650px) and (max-width:1100px) {
+  .kavvanah-layout{--handheld-rail-width:76px}
+  .kavvanah-layout>[data-slot="sidebar"]{display:none!important}
+  .app-shell{width:calc(100% - var(--handheld-rail-width));flex:1;min-width:0;margin-inline-start:var(--handheld-rail-width);overflow-x:clip}
+  .mobile-action-nav{display:block;position:fixed;z-index:35;inset-inline-start:0;inset-inline-end:auto;top:0;bottom:0;width:var(--handheld-rail-width);height:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-inline-end:1px solid var(--border);border-top:0;box-shadow:3px 0 12px #0000000a}
+  .mobile-action-scroll{display:flex;flex-direction:column;align-items:stretch;gap:1px;height:100%;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y proximity;scrollbar-width:thin;padding:4px 3px}
+  .mobile-action-item{flex:0 0 auto;min-height:58px;min-width:0;width:100%;padding:5px 2px;margin:0;scroll-snap-align:start;font-size:10px}
+  .mobile-action-separator{flex:0 0 1px;width:60%;height:1px;margin:5px auto;align-self:center}
+  .mobile-menu{display:none!important}
+  .app-header{height:46px;min-height:46px;padding-inline:14px}
+  .header-date,.header-divider{display:none}
+  main{max-width:none;padding:10px 14px 16px}
+  .day-strip{padding-bottom:8px;margin-bottom:10px;gap:10px}
+  .day-strip small{display:none}
+  .view-heading{gap:8px;margin-bottom:11px}
+  .view-heading .eyebrow{display:none}
+  .prayer-view>.view-heading,.prayer-view>.category-tabs,.prayer-workspace>.prayer-explorer{display:none}
+  .mobile-prayer-picker-trigger{display:flex;width:100%;align-items:center;gap:10px;min-height:44px;padding:5px 12px;margin-bottom:8px;border:1px solid var(--border);background:var(--card);border-radius:7px;text-align:start}
+  .mobile-prayer-picker-trigger>span{display:flex;flex:1;min-width:0;justify-content:space-between;gap:12px}
+  .mobile-prayer-picker-trigger small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prayer-workspace{display:block}
+  .prayer-heading{min-height:0;margin-bottom:10px}
+  .prayer-heading h2{font-size:21px}
+  .prayer-heading .eyebrow{display:none}
+  .prayer-hebrew-title{font-size:18px}
+  .reader-tools{margin-bottom:8px}
+  .reader-sheet{overflow:hidden}
+  .reader-body{padding-inline:8px}
+  .reader-body .verse-row{padding:15px 0}
+  .reader-body.columns .verse-row{grid-template-columns:repeat(var(--layer-count),minmax(0,1fr));gap:0}
+  .reader-body .verse-cell{padding-inline:10px}
+  .reader-body .verse-cell.hebrew{line-height:1.75}
+  .reader-body .verse-cell:is(.transliteration,.translation){line-height:1.55}
+  .layer-headings{padding:8px}
+  .layer-heading{padding-inline:6px}
+  .mobile-layer-label{display:none}
+  .calendar-layout{grid-template-columns:minmax(0,1fr) minmax(200px,35%);gap:12px}
+  .calendar-panel{padding:12px;min-width:0}
+  .calendar-detail{display:block;min-width:0;margin:0}
+  .calendar-detail>.panel{padding:12px}
+  .calendar-day,.blank-day{min-height:47px;padding:4px 3px}
+  .calendar-day small{display:none}
+  .month-heading{margin-bottom:12px;flex-wrap:wrap}
+  .month-controls{gap:5px}
+  .calendar-jump{padding:7px;gap:7px}
+  .time-highlights{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}
+  .time-highlight{flex:1;min-width:120px;padding:10px}
+  .time-highlight>svg{display:none}
+  .time-highlight>strong{font-size:20px}
+  .time-list{padding:12px}
+  .compass-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,0.8fr);align-items:center;gap:10px;max-width:none;padding:12px}
+  .compass-panel .compass-dial{grid-row:1 / span 4;grid-column:1;width:min(270px,46vw);max-width:100%;margin:auto}
+  .compass-panel .compass-intro,.compass-panel .compass-bearing,.compass-panel .compass-stats,.compass-panel .compass-actions{grid-column:2;min-width:0;margin:0}
+  .compass-panel .compass-intro h2{font-size:18px}
+  .compass-panel .compass-intro p{font-size:11px}
+  .compass-panel .compass-bearing>strong{font-size:30px}
+  .compass-panel .compass-stats{gap:9px;padding-top:7px;flex-wrap:wrap}
+  .compass-panel .compass-actions{flex-wrap:wrap;margin:0}
+  .compass-panel>:is(.compass-status,.notice){grid-column:1/-1}
+  .settings-dialog.preferences-dialog{max-height:100dvh!important;height:100dvh;max-width:min(650px,calc(100vw - 80px))!important;width:min(650px,calc(100vw - 80px));display:flex;flex-direction:column;overflow:hidden}
+  .preferences-dialog .preferences-scroll{min-height:0;flex:1;overflow-y:auto}
+  .mobile-prayer-sheet{height:100dvh;max-height:100dvh}
+}
+@media (orientation:landscape) and (max-height:650px) and (max-width:767px){
+  main{padding-bottom:16px}
+  .app-shell{width:calc(100% - var(--handheld-rail-width))}
+}
+/* Three reading layers in phone landscape: one wide primary pane and the
+   next two stacked in a secondary pane, without changing user layer order. */
+@media (orientation:landscape) and (max-height:650px) and (min-width:650px) and (max-width:1100px){
+ .reader-sheet:has(.reader-body[data-mobile-panels="true"]) .layer-headings{display:none}
+ .reader-body.columns[data-mobile-panels="true"] .verse-row{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)!important;grid-template-rows:auto auto;gap:12px}
+ .reader-body.columns[data-mobile-panels="true"] .verse-cell:nth-child(2){grid-column:1;grid-row:1/span 2}
+ .reader-body.columns[data-mobile-panels="true"] .verse-cell:nth-child(3){grid-column:2;grid-row:1}
+ .reader-body.columns[data-mobile-panels="true"] .verse-cell:nth-child(4){grid-column:2;grid-row:2;border-top:1px solid var(--border);padding-top:10px}
+ .reader-body.columns[data-mobile-panels="true"] .mobile-layer-label{display:block;font-size:10px;color:var(--muted-foreground);margin-bottom:5px}
+}
+@media (max-width:359px){
+ .mobile-action-item{flex-basis:70px}
+ .calendar-day,.blank-day{min-height:56px;padding:4px 2px}
+ .time-row{gap:6px}
+ .time-end{min-width:55px}
+ .reader-navigation>span{display:none}
+}
+@media (prefers-reduced-motion:reduce){.mobile-action-scroll{scroll-behavior:auto!important;scroll-snap-type:none}}
+html[data-eink=true] .mobile-action-nav{box-shadow:none}
+html[data-eink=true] .mobile-action-item{transition:none}
+html[data-eink=true] .mobile-prayer-picker-trigger{box-shadow:none;transition:none}
+html[data-eink=true] .mobile-prayer-results>button{transition:none}

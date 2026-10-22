@@ -1,6 +1,6 @@
 [package]
 name = "kavvanah"
-version = "1.0.1"
+version = "1.1.0"
 description = "Kavvanah Siddur desktop app"
 authors = ["Draconov"]
 edition = "2021"

@@ -533,6 +533,7 @@ const words:Record<string,[string,string]>={
  'Elevation: {metres} m.':['Высота: {metres} м.','Висота: {metres} м.'],'MGA · 72 minutes':['МГА · 72 минуты','МҐА · 72 хвилини'],
  'Your browser could not save these translations. Export a backup in Settings before closing the app.':['Браузер не смог сохранить переводы. Перед закрытием приложения экспортируйте копию в настройках.','Браузер не зміг зберегти переклади. Перед закриттям застосунку експортуйте копію в налаштуваннях.'],
  'Your browser is not saving settings. They will reset when this session ends.':['Браузер не сохраняет настройки. После завершения сеанса они сбросятся.','Браузер не зберігає налаштування. Після завершення сеансу їх буде скинуто.'],
+ 'Navigation':['Навигация','Навігація'],
  'Siddur':['Сидур','Сидур'],'Tanakh':['Танах','Танах'],'Calendar':['Календарь','Календар'],
  'Prayer times':['Время молитв','Час молитов'],'Mizrach':['Мизрах','Мізрах'],'Settings':['Настройки','Налаштування'],
  'TODAY IN THE HEBREW CALENDAR':['СЕГОДНЯ ПО ЕВРЕЙСКОМУ КАЛЕНДАРЮ','СЬОГОДНІ ЗА ЄВРЕЙСЬКИМ КАЛЕНДАРЕМ'],
