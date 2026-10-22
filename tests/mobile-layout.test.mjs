@@ -44,3 +44,33 @@ test('mobile settings support a full-height scroller and native safe areas',()=>
  assert.match(read('app/layout.tsx'),/viewportFit:'cover'/);
  assert.match(read('VERSION'),/^1\.1\.0\s*$/);
 });
+
+test('mobile navigation shares the themed desktop sidebar palette, including E Ink',()=>{
+ for(const token of ['--sidebar','--sidebar-foreground','--sidebar-accent','--sidebar-accent-foreground','--sidebar-primary','--sidebar-border','--sidebar-ring']){
+  assert.ok(css.includes(`var(${token})`),`missing shared sidebar variable ${token}`);
+ }
+ assert.match(css,/\.mobile-action-item\[data-active=true\]\{background:var\(--sidebar-accent\)/);
+ assert.match(css,/html\[data-eink=true\] \.mobile-action-item\[data-active=true\]/);
+});
+
+test('reader tabs are scrollable horizontally without drawing native vertical scroll arrows',()=>{
+ assert.match(css,/\.reader-tools \.reading-modes\{[^}]*overflow-x:auto;overflow-y:hidden;scrollbar-width:none/s);
+ assert.match(css,/\.reader-tools \.reading-modes::-webkit-scrollbar\{display:none/);
+ assert.match(css,/max-width:1100px/);
+});
+
+test('calendar renders actual event markers on narrow phone and tablet viewports',()=>{
+ const calendar=read('components/siddur/CalendarView.tsx');
+ assert.match(calendar,/titles\.length>0&&<span className="calendar-event-dot" aria-hidden="true"\/>/);
+ assert.match(css,/\.calendar-grid\.days \.calendar-event-dot\{[\s\S]*?display:block;/);
+ assert.doesNotMatch(read('app/globals.css'),/calendar-day:has\(small\)::after/);
+});
+
+test('all compact modal dialogs and selects honor viewport bounds',()=>{
+ assert.match(css,/\[data-slot="dialog-content"\]:not\(\.preferences-dialog\)/);
+ assert.match(css,/max-height:calc\(100dvh - 24px - env\(safe-area-inset-top/);
+ assert.match(css,/\.preferences-dialog\{[\s\S]*?top:50%!important;left:50%!important;/);
+ assert.match(css,/\[data-slot="select-content"\]/);
+ assert.match(css,/\.time-zone-panel\{position:relative!important/);
+ assert.match(read('components/siddur/Controls.tsx'),/collisionPadding=\{12\}/);
+});

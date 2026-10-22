@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 
 export function Choice({label,value,onChange,options,className=''}:{label:string;value:string;onChange:(v:string)=>void;options:{value:string;label:string}[];className?:string}){
  const {t}=useUI();
- return <Select value={value} onValueChange={onChange}><SelectTrigger aria-label={t(label)} className={`choice ${className}`}><SelectValue/></SelectTrigger><SelectContent position="popper">{options.map(o=><SelectItem value={o.value} key={o.value}>{t(o.label)}</SelectItem>)}</SelectContent></Select>;
+ return <Select value={value} onValueChange={onChange}><SelectTrigger aria-label={t(label)} className={`choice ${className}`}><SelectValue/></SelectTrigger><SelectContent position="popper" sideOffset={6} collisionPadding={12}>{options.map(o=><SelectItem value={o.value} key={o.value}>{t(o.label)}</SelectItem>)}</SelectContent></Select>;
 }
 export function ToggleRow({label,description,checked,onChange}:{label:string;description?:string;checked:boolean;onChange:(value:boolean)=>void}){
  const {t}=useUI();

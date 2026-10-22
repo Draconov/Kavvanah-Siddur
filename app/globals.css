@@ -98,7 +98,7 @@
 /* Keep the active navigation rail in sync with the selected application color. */
 .main-nav-button[data-active=true]{box-shadow:inset var(--active-rail) 0 0 var(--sidebar-primary)}
 
-@media(max-width:767px){.calendar-day small{display:none}.calendar-day:has(small)::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--primary);margin:8px auto 0}.layer-heading>div:first-child{font-size:12px}.layer-headings{overflow-x:auto}.layer-heading{min-width:105px}.reading-modes button{font-size:12px}.reader-tools{flex-wrap:wrap}.reader-tools>.tool-actions{margin-inline-start:auto}}
+@media(max-width:767px){.calendar-day small{display:none}.layer-heading>div:first-child{font-size:12px}.layer-headings{overflow-x:auto}.layer-heading{min-width:105px}.reading-modes button{font-size:12px}.reader-tools{flex-wrap:wrap}.reader-tools>.tool-actions{margin-inline-start:auto}}
 
 .instruction-row{padding-top:24px;padding-bottom:17px;background:var(--quiet)}.instruction-row .verse-cell.hebrew{direction:rtl;text-align:right;font-family:Arial,sans-serif;font-size:16px;line-height:1.7}.instruction-row .verse-cell.transliteration{font-size:12px;color:var(--muted-foreground);font-style:italic}.instruction-row .verse-cell.translation{font-family:DM Sans,Arial,sans-serif;font-size:13px;line-height:1.7}.instruction-row .verse-number{display:none}
 

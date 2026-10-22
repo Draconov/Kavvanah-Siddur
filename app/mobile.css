@@ -17,14 +17,15 @@
   .day-strip>div:first-child>span:last-child{min-width:0}
   .day-strip strong{overflow-wrap:anywhere}
   .app-footer{flex-wrap:wrap}
-  .mobile-action-nav{display:block;position:fixed;z-index:35;inset-inline:0;bottom:0;height:calc(var(--handheld-bottom-height) + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--border);color:var(--foreground);box-shadow:0 -5px 18px #00000012;padding-bottom:env(safe-area-inset-bottom,0px)}
-  .mobile-action-scroll{height:100%;display:flex;align-items:stretch;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--border) transparent;gap:1px;padding:0 max(6px,env(safe-area-inset-left,0px));-webkit-overflow-scrolling:touch}
-  .mobile-action-item{flex:0 0 76px;min-width:72px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;min-height:54px;margin-block:5px;padding:5px 4px;border:0;background:transparent;border-radius:8px;scroll-snap-align:start;color:var(--muted-foreground);font-size:10px;font-weight:500;line-height:1.16;text-align:center;white-space:normal;overflow-wrap:anywhere}
+  .mobile-action-nav{display:block;position:fixed;z-index:35;inset-inline:0;bottom:0;height:calc(var(--handheld-bottom-height) + env(safe-area-inset-bottom,0px));background:var(--sidebar);border-top:1px solid var(--sidebar-border);color:var(--sidebar-foreground);box-shadow:0 -5px 18px #00000012;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .mobile-action-scroll{height:100%;display:flex;align-items:stretch;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none;gap:1px;padding:0 max(6px,env(safe-area-inset-left,0px));-webkit-overflow-scrolling:touch}
+  .mobile-action-item{flex:0 0 76px;min-width:72px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;min-height:54px;margin-block:5px;padding:5px 4px;border:0;background:transparent;border-radius:8px;scroll-snap-align:start;color:var(--sidebar-muted);font-size:10px;font-weight:500;line-height:1.16;text-align:center;white-space:normal;overflow-wrap:anywhere}
   .mobile-action-item>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;min-height:12px}
-  .mobile-action-item svg{flex-shrink:0}
-  .mobile-action-item[data-active=true]{background:var(--secondary);color:var(--primary);font-weight:700}
-  .mobile-action-item:focus-visible{outline:2px solid var(--ring);outline-offset:-3px}
-  .mobile-action-separator{flex:0 0 1px;align-self:center;height:37px;background:var(--border);margin-inline:7px}
+  .mobile-action-item svg{flex-shrink:0;color:inherit}
+  .mobile-action-scroll::-webkit-scrollbar{display:none;width:0;height:0}
+  .mobile-action-item[data-active=true]{background:var(--sidebar-accent);color:var(--sidebar-accent-foreground);box-shadow:inset 0 3px 0 var(--sidebar-primary);font-weight:700}
+  .mobile-action-item:focus-visible{outline:2px solid var(--sidebar-ring);outline-offset:-3px}
+  .mobile-action-separator{flex:0 0 1px;align-self:center;height:37px;background:var(--sidebar-border);margin-inline:7px}
   .prayer-view>.view-heading,.prayer-view>.category-tabs,.prayer-workspace>.prayer-explorer{display:none}
   .prayer-workspace{display:block}
   .mobile-prayer-picker-trigger{display:flex;width:100%;align-items:center;gap:12px;min-height:60px;border:1px solid var(--border);border-radius:10px;background:var(--card);padding:10px 13px;text-align:start;margin-bottom:17px;color:var(--foreground)}
@@ -36,7 +37,9 @@
   .prayer-hebrew-title{max-width:38%}
   .reader-sheet{max-width:100%}
   .reader-tools{gap:8px}
-  .reader-tools .reading-modes{overflow-x:auto;max-width:calc(100vw - 125px)}
+  .reader-tools [data-slot="tabs"]{min-width:0;max-width:100%}
+  .reader-tools .reading-modes{max-width:min(100%,calc(100vw - 125px));overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .reader-tools .reading-modes::-webkit-scrollbar{display:none;width:0;height:0}
   .reader-tools .reading-modes button{white-space:nowrap}
   .reader-body .verse-row{scroll-margin-top:70px}
   .reader-navigation .button{min-height:44px}
@@ -91,9 +94,10 @@
   .kavvanah-layout{--handheld-rail-width:76px}
   .kavvanah-layout>[data-slot="sidebar"]{display:none!important}
   .app-shell{width:calc(100% - var(--handheld-rail-width));flex:1;min-width:0;margin-inline-start:var(--handheld-rail-width);overflow-x:clip}
-  .mobile-action-nav{display:block;position:fixed;z-index:35;inset-inline-start:0;inset-inline-end:auto;top:0;bottom:0;width:var(--handheld-rail-width);height:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-inline-end:1px solid var(--border);border-top:0;box-shadow:3px 0 12px #0000000a}
+  .mobile-action-nav{display:block;position:fixed;z-index:35;inset-inline-start:0;inset-inline-end:auto;top:0;bottom:0;width:var(--handheld-rail-width);height:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--sidebar);border-inline-end:1px solid var(--sidebar-border);border-top:0;box-shadow:3px 0 12px #0000000a}
   .mobile-action-scroll{display:flex;flex-direction:column;align-items:stretch;gap:1px;height:100%;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y proximity;scrollbar-width:thin;padding:4px 3px}
   .mobile-action-item{flex:0 0 auto;min-height:58px;min-width:0;width:100%;padding:5px 2px;margin:0;scroll-snap-align:start;font-size:10px}
+  .mobile-action-item[data-active=true]{box-shadow:inset var(--active-rail,3px) 0 0 var(--sidebar-primary)}
   .mobile-action-separator{flex:0 0 1px;width:60%;height:1px;margin:5px auto;align-self:center}
   .mobile-menu{display:none!important}
   .app-header{height:46px;min-height:46px;padding-inline:14px}
@@ -176,3 +180,91 @@ html[data-eink=true] .mobile-action-nav{box-shadow:none}
 html[data-eink=true] .mobile-action-item{transition:none}
 html[data-eink=true] .mobile-prayer-picker-trigger{box-shadow:none;transition:none}
 html[data-eink=true] .mobile-prayer-results>button{transition:none}
+
+
+/* Compact-screen corrections shared by phones and tablets.
+   Do not depend on whether 768px desktop/sidebar breakpoint is crossed. */
+@media (max-width:1100px), (max-height:650px) {
+  /* Allow the four reading tabs to swipe horizontally without a *vertical*
+     native scrollbar (the up/down arrows shown beside "All"). */
+  .reader-tools [data-slot="tabs"]{min-width:0;max-width:100%}
+  .reader-tools .reading-modes{
+    max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;
+    scrollbar-width:none;overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  .reader-tools .reading-modes::-webkit-scrollbar{display:none;width:0;height:0}
+  .reader-tools .reading-modes button{flex-shrink:0;white-space:nowrap}
+
+  /* Event dots are explicit DOM elements so they don't rely on :has(small)
+     or on a narrow phone-only CSS breakpoint. Accessible event text stays
+     in each calendar button's aria-label and selected-day details. */
+  .calendar-grid.days .calendar-day{position:relative;padding-bottom:16px}
+  .calendar-grid.days .calendar-day>small{display:none}
+  .calendar-grid.days .calendar-event-dot{
+    display:block;position:absolute;bottom:6px;inset-inline-start:50%;
+    transform:translateX(-50%);width:6px;height:6px;border-radius:50%;
+    background:var(--primary);margin:0;pointer-events:none;
+  }
+  /* Centering on the inline axis also works with RTL because the element
+     is positioned from the midpoint of its own calendar cell. */
+  html[dir="rtl"] .calendar-grid.days .calendar-event-dot{transform:translateX(50%)}
+
+  /* Portal dialogs otherwise inherit desktop widths and transforms, putting
+     their header or footer beyond short landscape viewports. Restrict both
+     axes and keep every dialog's contents independently scrollable. */
+  [data-slot="dialog-content"]:not(.preferences-dialog){
+    position:fixed!important;inset:auto!important;top:50%!important;
+    left:50%!important;right:auto!important;bottom:auto!important;
+    transform:translate(-50%,-50%)!important;translate:none!important;
+    width:min(560px,calc(100vw - 24px))!important;
+    max-width:calc(100vw - 24px)!important;
+    max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+    overscroll-behavior:contain;box-sizing:border-box;
+    padding:clamp(12px,3vw,22px)!important;
+  }
+  [data-slot="dialog-content"]:not(.preferences-dialog) textarea{
+    max-height:min(34dvh,200px);min-height:75px;
+  }
+  /* Radix handles collisions for Select popovers; these guards stop large
+     option lists from exceeding the actual visual viewport on phones. */
+  [data-slot="select-content"]{
+    max-width:calc(100vw - 24px)!important;
+    max-height:min(var(--radix-select-content-available-height,70dvh),70dvh)!important;
+    overflow-y:auto;overscroll-behavior:contain;
+  }
+  .time-zone-picker{min-width:0;max-width:100%}
+  .time-zone-panel{position:relative!important;inset:auto!important;width:100%!important;max-height:min(42dvh,250px);overflow-y:auto;z-index:1}
+  .mobile-prayer-sheet{left:0!important;right:0!important;width:100%!important;max-width:100vw!important;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px))!important;box-sizing:border-box}
+}
+
+/* Apply a consistent sidebar palette to the icon rail and bottom bar, while
+   honoring paper/dark/black accents and the monochrome E Ink variables. */
+.mobile-action-nav{background:var(--sidebar);color:var(--sidebar-foreground);border-color:var(--sidebar-border)}
+.mobile-action-item{color:var(--sidebar-muted)}
+.mobile-action-item[data-active=true]{background:var(--sidebar-accent);color:var(--sidebar-accent-foreground)}
+.mobile-action-item:focus-visible{outline-color:var(--sidebar-ring)}
+.mobile-action-separator{background:var(--sidebar-border)}
+html[data-eink=true] .mobile-action-item[data-active=true]{box-shadow:inset 0 3px 0 var(--sidebar-primary)}
+@media (orientation:landscape) and (max-height:650px) and (max-width:1100px){
+  html[data-eink=true] .mobile-action-item[data-active=true]{box-shadow:inset var(--active-rail,3px) 0 0 var(--sidebar-primary)}
+}
+
+/* In landscape the preferences dialog is a centered, viewport-bounded sheet,
+   not a portrait full-screen dialog with a 50%-offset left position. */
+@media (orientation:landscape) and (max-height:650px) and (max-width:1100px){
+  [data-slot="dialog-content"].preferences-dialog{
+    top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;
+    transform:translate(-50%,-50%)!important;translate:none!important;
+    width:min(660px,calc(100vw - 100px))!important;
+    max-width:calc(100vw - 100px)!important;
+    height:calc(100dvh - 16px)!important;
+    max-height:calc(100dvh - 16px)!important;
+    overflow:hidden;
+  }
+}
+
+.calendar-grid.days .calendar-event-dot{display:none}
+@media (max-width:1100px), (max-height:650px){.calendar-grid.days .calendar-event-dot{display:block}}
