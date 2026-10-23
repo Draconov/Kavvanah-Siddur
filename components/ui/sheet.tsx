@@ -57,10 +57,31 @@ function SheetContent({
   showCloseButton?: boolean
 }) {
   const {t}=useUI()
+  const contentRef=React.useRef<HTMLDivElement>(null)
+  React.useEffect(()=>{
+    const viewport=window.visualViewport
+    if(!viewport)return
+    // Visible geometry only. This follows the on-screen keyboard and is never
+    // stored or transmitted; event listeners live only while a sheet is open.
+    const update=()=>{
+      const element=contentRef.current
+      if(!element)return
+      element.style.setProperty('--kav-visible-height',`${viewport.height}px`)
+      element.style.setProperty('--kav-visible-top',`${viewport.offsetTop}px`)
+    }
+    update()
+    viewport.addEventListener('resize',update)
+    viewport.addEventListener('scroll',update)
+    return()=>{
+      viewport.removeEventListener('resize',update)
+      viewport.removeEventListener('scroll',update)
+    }
+  },[])
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
+        ref={contentRef}
         data-slot="sheet-content"
         className={cn(
           "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500",

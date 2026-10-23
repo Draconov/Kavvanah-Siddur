@@ -294,9 +294,123 @@ html[data-device-class="tablet"][data-device-input="hybrid"] .mobile-action-item
    A mouse-equipped touchscreen is 'hybrid' and remains fully keyboard-usable. */
 html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-input="hybrid"]) .main-nav-button,
 html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-input="hybrid"]) .sidebar-footer button{min-height:44px}
-@media (orientation:landscape) and (min-width:768px) and (max-width:1100px) and (max-height:650px){
-  html[data-device-class="tablet"] .kavvanah-layout{--handheld-rail-width:84px}
-}
+/* The tablet rail uses exactly the phone rail width and control sizes. */
 @media (orientation:portrait) and (min-width:480px) and (max-width:767px){
   html[data-device-class="tablet"] .mobile-action-item{flex-basis:88px}
+}
+
+
+/* Tablet landscape uses the SAME nav component, dimensions and interaction
+   treatment as phone landscape. The device profile is local-only; actual CSS
+   space remains authoritative. This also handles 1024x768 / 1194x834 and
+   larger touch tablets that used to show the full desktop sidebar. */
+@media (orientation:landscape) and (max-width:1500px){
+  html[data-device-class="tablet"] .kavvanah-layout{--handheld-rail-width:76px}
+  html[data-device-class="tablet"] .kavvanah-layout>[data-slot="sidebar"]{display:none!important}
+  html[data-device-class="tablet"] .app-shell{
+    width:calc(100% - var(--handheld-rail-width));flex:1;min-width:0;
+    margin-inline-start:var(--handheld-rail-width);overflow-x:clip
+  }
+  html[data-device-class="tablet"] .mobile-menu{display:none!important}
+  html[data-device-class="tablet"] .mobile-action-nav{
+    display:block;position:fixed;z-index:35;
+    inset-inline-start:0;inset-inline-end:auto;top:0;bottom:0;
+    width:var(--handheld-rail-width);height:auto;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    background:var(--sidebar);color:var(--sidebar-foreground);
+    border-inline-end:1px solid var(--sidebar-border);border-top:0;
+    box-shadow:3px 0 12px #0000000a
+  }
+  html[data-device-class="tablet"] .mobile-action-scroll{
+    display:flex;flex-direction:column;align-items:stretch;gap:1px;
+    height:100%;overflow-y:auto;overflow-x:hidden;
+    scroll-snap-type:y proximity;scrollbar-width:thin;padding:4px 3px
+  }
+  html[data-device-class="tablet"] .mobile-action-item{
+    flex:0 0 auto;min-height:58px;min-width:0;width:100%;
+    padding:5px 2px;margin:0;scroll-snap-align:start;font-size:10px
+  }
+  html[data-device-class="tablet"] .mobile-action-item[data-active=true]{
+    box-shadow:inset var(--active-rail,3px) 0 0 var(--sidebar-primary)
+  }
+  html[data-device-class="tablet"] .mobile-action-separator{
+    flex:0 0 1px;width:60%;height:1px;margin:5px auto;align-self:center
+  }
+  html[data-device-class="tablet"] main{
+    padding-bottom:16px;
+  }
+  html[data-eink=true][data-device-class="tablet"] .mobile-action-nav{box-shadow:none}
+}
+
+/* All Radix dialogs (Settings, appearance, personal translation, install) are
+   placed INSIDE the *visible* viewport. The old 50%-center and translation
+   competed with desktop and phone transforms; they could place Close/Save
+   outside reach, especially when the software keyboard opened.
+   DialogContent sets two CSS variables from VisualViewport when available;
+   100dvh is the safe fallback on older WebViews. Insets are physical here so
+   the layout works identically for Hebrew RTL and LTR. */
+@media (max-width:1500px), (max-height:800px){
+  [data-slot="dialog-content"][data-state]{
+    --kav-dialog-pad-top:max(8px,env(safe-area-inset-top,0px));
+    --kav-dialog-pad-bottom:max(8px,env(safe-area-inset-bottom,0px));
+    position:fixed!important;
+    inset:auto!important; /* supersede the mobile portrait full-screen inset */
+    inset-block-start:calc(var(--kav-visible-top,0px) + var(--kav-dialog-pad-top))!important;
+    inset-block-end:calc(max(0px,100dvh - var(--kav-visible-top,0px) - var(--kav-visible-height,100dvh)) + var(--kav-dialog-pad-bottom))!important;
+    inset-inline-start:max(8px,env(safe-area-inset-left,0px))!important;
+    inset-inline-end:max(8px,env(safe-area-inset-right,0px))!important;
+    width:auto!important;max-width:560px!important;
+    height:max-content!important;
+    max-height:calc(var(--kav-visible-height,100dvh) - var(--kav-dialog-pad-top) - var(--kav-dialog-pad-bottom))!important;
+    margin:auto!important;transform:none!important;translate:none!important;
+    min-width:0;box-sizing:border-box;overflow-x:hidden!important;
+    overflow-y:auto!important;overscroll-behavior:contain;
+    padding:clamp(12px,3vw,22px)!important;
+  }
+  [data-slot="dialog-content"].preferences-dialog{
+    max-width:680px!important;
+    height:min(760px,calc(var(--kav-visible-height,100dvh) - var(--kav-dialog-pad-top) - var(--kav-dialog-pad-bottom)))!important;
+    max-height:calc(var(--kav-visible-height,100dvh) - var(--kav-dialog-pad-top) - var(--kav-dialog-pad-bottom))!important;
+    display:flex!important;flex-direction:column;
+    gap:0!important;padding:0!important;overflow:hidden!important;
+    border-radius:10px!important;
+  }
+  [data-slot="dialog-content"].preferences-dialog .preferences-scroll{
+    flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+    padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))
+  }
+  [data-slot="dialog-content"] [data-slot="dialog-header"]{
+    min-width:0;
+  }
+  [data-slot="dialog-content"] [data-slot="dialog-footer"]{
+    flex-shrink:0;flex-wrap:wrap;
+  }
+  [data-slot="dialog-content"] textarea{max-height:min(35dvh,200px)}
+  /* Use the same bounds for Radix selects opened inside Settings. */
+  [data-slot="select-content"]{
+    max-width:calc(100vw - 16px)!important;
+    max-height:min(var(--radix-select-content-available-height,65dvh),65dvh)!important;
+    overscroll-behavior:contain;
+  }
+}
+@media (max-height:500px){
+  [data-slot="dialog-content"].preferences-dialog [data-slot="dialog-header"]{
+    padding-block:10px;min-height:0
+  }
+  [data-slot="dialog-content"].preferences-dialog [data-slot="dialog-title"]{font-size:19px}
+  [data-slot="dialog-content"].preferences-dialog .preferences-scroll{padding:10px}
+}
+
+/* The prayer picker is a popup too. Keep its searchable sheet fully inside
+   VisualViewport when the on-screen keyboard is open; its results scroll. */
+@media (max-width:1500px), (max-height:800px){
+  [data-slot="sheet-content"].mobile-prayer-sheet{
+    top:calc(var(--kav-visible-top,0px) + env(safe-area-inset-top,0px))!important;
+    bottom:calc(max(0px,100dvh - var(--kav-visible-top,0px) - var(--kav-visible-height,100dvh)) + env(safe-area-inset-bottom,0px))!important;
+    height:calc(var(--kav-visible-height,100dvh) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+    max-height:calc(var(--kav-visible-height,100dvh) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+    overflow:hidden!important;
+  }
+  .mobile-prayer-sheet .mobile-prayer-results{min-height:0;overflow-y:auto}
 }
