@@ -127,16 +127,29 @@ test('the original short landscape fallback cannot override the common rail geom
  assert.doesNotMatch(fallback[0],/border-radius:8px/);
 });
 
-test('settings use full visible phone space and keep a scrolling body when keyboard opens',()=>{
+test('settings use content-sized dialogs bounded by the visual viewport and scroll when needed',()=>{
  const component=read('components/ui/dialog.tsx');
  assert.match(component,/viewport\?\.addEventListener\('resize',update\)/);
  assert.match(component,/viewport\?\.addEventListener\('scroll',update\)/);
  assert.match(component,/viewport\?\.removeEventListener\('resize',update\)/);
  assert.match(component,/window\.addEventListener\('resize',update\)/);
  assert.match(css,/@media \(max-width:800px\), \(max-height:600px\)\{/);
- assert.match(css,/\[data-slot="dialog-viewport"\]>\[data-slot="dialog-content"\]\.preferences-dialog\{\s*height:100%!important;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\]>\[data-slot="dialog-content"\]\.preferences-dialog\{\s*height:auto!important;max-height:100%!important;/);
+ assert.doesNotMatch(css,/\[data-slot="dialog-viewport"\]>\[data-slot="dialog-content"\]\.preferences-dialog\{\s*height:100%!important;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\] \.preferences-dialog \.preferences-scroll\{\s*padding:14px;/);
+ assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)\{/);
+ assert.match(css,/max-width:min\(640px,100%\)!important/);
  assert.match(css,/\[data-slot="dialog-viewport"\] \.preferences-dialog \.preferences-scroll\{[\s\S]*?overflow-y:auto;/);
  assert.match(css,/\[data-slot="dialog-viewport"\] \.preferences-dialog>\[data-slot="dialog-header"\]\{[\s\S]*?flex:0 0 auto/);
+});
+
+test('compact Settings keep balanced bottom padding instead of reserving empty viewport height',()=>{
+ const layout=css.split('/* The portal owns dialog placement.')[1]?.split('/* The prayer picker is a popup too.')[0];
+ assert.ok(layout);
+ assert.match(layout,/flex:0 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;/);
+ assert.match(layout,/padding:14px; \/\* equal side and bottom inset/);
+ assert.doesNotMatch(layout,/(?:^|[^-])height:100%!important;/);
+ assert.doesNotMatch(layout,/padding:12px 14px max\(16px/);
 });
 
 test('searchable prayer-selection sheet stays usable with the virtual keyboard',()=>{

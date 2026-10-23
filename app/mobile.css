@@ -344,9 +344,11 @@ html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-inp
   overflow-y:auto;overflow-x:hidden;
   overscroll-behavior:contain;
 }
+/* Content-sized settings panel: never reserve blank space under the last card.
+   Only its body scrolls once the content exceeds the current visible viewport. */
 [data-slot="dialog-viewport"]>[data-slot="dialog-content"].preferences-dialog{
   width:100%!important;max-width:min(680px,100%)!important;
-  height:min(760px,100%)!important;max-height:100%!important;
+  height:auto!important;max-height:100%!important;
   display:flex!important;flex-direction:column;
   gap:0!important;padding:0!important;overflow:hidden!important;
 }
@@ -357,16 +359,16 @@ html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-inp
   overflow-wrap:anywhere;
 }
 [data-slot="dialog-viewport"] .preferences-dialog .preferences-scroll{
-  flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;
+  flex:0 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;
   overscroll-behavior:contain;
-  padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  padding:20px;
 }
 [data-slot="dialog-viewport"] [data-slot="dialog-footer"]{
   flex-shrink:0;flex-wrap:wrap;
 }
 [data-slot="dialog-viewport"] textarea{max-height:min(35dvh,200px)}
-/* A phone or short landscape window uses almost all of its actual available
-   viewport. The header/close stay visible while the settings body scrolls. */
+/* Compact devices use the visible viewport as a MAXIMUM, not a mandated
+   window size. The header/close stay visible while long settings scroll. */
 @media (max-width:800px), (max-height:600px){
   [data-slot="dialog-viewport"]{
     padding:max(8px,env(safe-area-inset-top,0px))
@@ -379,19 +381,26 @@ html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-inp
     max-width:100%!important;
   }
   [data-slot="dialog-viewport"]>[data-slot="dialog-content"].preferences-dialog{
-    height:100%!important;
+    height:auto!important;max-height:100%!important;
   }
   [data-slot="dialog-viewport"] .preferences-dialog>[data-slot="dialog-header"]{
     padding:12px 14px;
     padding-inline-end:48px;
   }
   [data-slot="dialog-viewport"] .preferences-dialog .preferences-scroll{
-    padding:12px 14px max(16px,env(safe-area-inset-bottom,0px));
+    padding:14px; /* equal side and bottom inset; no doubled safe-area space */
   }
   [data-slot="select-content"]{
     max-width:calc(100vw - 16px)!important;
     max-height:min(var(--radix-select-content-available-height,65dvh),65dvh)!important;
     overscroll-behavior:contain;
+  }
+}
+/* A short landscape display is WIDE but not tall. Leave a meaningful
+   glimpse of the app beside Settings rather than spanning its entire width. */
+@media (orientation:landscape) and (max-height:600px){
+  [data-slot="dialog-viewport"]>[data-slot="dialog-content"].preferences-dialog{
+    max-width:min(640px,100%)!important;
   }
 }
 @media(max-height:500px){
