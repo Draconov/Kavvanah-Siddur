@@ -36,23 +36,14 @@ export function useSettings(){
  const [einkDetected,setEinkDetected]=useState(()=>typeof document!=='undefined'&&document.documentElement.dataset.eink==='true');
  useEffect(()=>{const raw=safeRead<Partial<Settings>>('kavvanah.settings',{});setSettings(sanitizeSettings(raw??{}));setReady(true);},[]);
  useEffect(()=>{if(ready)setStorageError(!safeWrite('kavvanah.settings',settings));},[settings,ready]);
- // UA/client hints may identify a reader; other E Ink devices advertise only a
- // monochrome framebuffer. Browser limitations mean Auto is best-effort.
+ // E Ink detection is entirely local. Do not request high-entropy model
+ // hints: some browsers treat them as fingerprinting-sensitive information.
  useEffect(()=>{
-  let mounted=true;
   const monochrome=window.matchMedia('(monochrome)');
-  let model='';
-  const detect=()=>setEinkDetected(isEinkDevice({userAgent:navigator.userAgent,model,monochrome:monochrome.matches}));
+  const detect=()=>setEinkDetected(isEinkDevice({userAgent:navigator.userAgent,monochrome:monochrome.matches}));
   detect();
   monochrome.addEventListener?.('change',detect);
-  type ClientHints = Navigator & {userAgentData?:{getHighEntropyValues?:(hints:string[])=>Promise<{model?:string}>}};
-  const hints=(navigator as ClientHints).userAgentData;
-  if(hints?.getHighEntropyValues){
-   void hints.getHighEntropyValues(['model']).then(value=>{
-    if(mounted){model=value.model??'';detect();}
-   }).catch(()=>{});
-  }
-  return()=>{mounted=false;monochrome.removeEventListener?.('change',detect);};
+  return()=>monochrome.removeEventListener?.('change',detect);
  },[]);
  useEffect(()=>{document.documentElement.dataset.eink=einkEnabled(settings.einkMode,einkDetected)?'true':'false';},[settings.einkMode,einkDetected]);
  useEffect(()=>{document.documentElement.lang=settings.uiLanguage==='he'?'he':settings.uiLanguage;document.documentElement.dir=settings.uiLanguage==='he'?'rtl':'ltr';},[settings.uiLanguage]);

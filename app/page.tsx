@@ -7,6 +7,7 @@ import { Sidebar,SidebarContent,SidebarFooter,SidebarHeader,SidebarMenu,SidebarM
 import { Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription } from '@/components/ui/dialog';
 import { useSettings } from '@/lib/siddur/storage';
 import { einkEnabled } from '@/lib/siddur/eink';
+import { installDeviceProfile } from '@/lib/siddur/device-profile';
 import { loadPersonalTranslations,savePersonalTranslations } from '@/lib/siddur/personal-store';
 import { calculateTimes,currentHebrewDate,dateKeyInZone,formatTime } from '@/lib/siddur/core';
 import { PrayerView } from '@/components/siddur/PrayerView';
@@ -23,6 +24,7 @@ import type { PersonalTranslations } from '@/lib/siddur/types';
 type InstallPrompt=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:string}>};
 
 function App(){
+ useEffect(()=>installDeviceProfile(),[]);
  const {settings,ready,storageError,einkDetected,patch}=useSettings();
  const {t,locale}=getUI(settings.uiLanguage);
  const einkActive=einkEnabled(settings.einkMode,einkDetected);
