@@ -68,10 +68,12 @@ test('calendar renders actual event markers on narrow phone and tablet viewports
 
 test('compact dialog and select controls honor the actual visual viewport',()=>{
  const component=read('components/ui/dialog.tsx');
- assert.match(css,/\[data-slot="dialog-content"\]\[data-state\]\{/);
- assert.match(css,/top:var\(--kav-visible-center-y,50dvh\)!important/);
- assert.match(css,/left:var\(--kav-visible-center-x,50vw\)!important/);
- assert.match(css,/transform:translate\(-50%,-50%\)!important/);
+ assert.match(css,/\[data-slot="dialog-content"\]\{/);
+ assert.match(css,/top:calc\(var\(--kav-visible-top,0px\)/);
+ assert.match(css,/left:calc\(var\(--kav-visible-left,0px\)/);
+ assert.match(css,/transform:none!important/);
+ assert.match(css,/translate:none!important/);
+ assert.match(css,/margin:auto!important/);
  assert.match(css,/max-height:max\(0px,calc\(var\(--kav-visible-height,100dvh\)/);
  assert.match(css,/width:min\(560px,calc\(var\(--kav-visible-width,100vw\)/);
  assert.match(css,/\[data-slot="dialog-content"\]\.preferences-dialog\{[\s\S]*?overflow:hidden!important/);
@@ -83,21 +85,45 @@ test('compact dialog and select controls honor the actual visual viewport',()=>{
  }
 });
 
-test('tablet landscape and phone landscape use exactly the same responsive rail rules',()=>{
- const section=css.match(/\/\* Mobile phone and tablet LANDSCAPE[\s\S]*?\/\* Unified viewport-safe dialogs/);
- assert.ok(section,'shared phone/tablet rail missing');
+test('phone and tablet landscape share one COMPLETE rail style across the 767px breakpoint',()=>{
+ const section=css.match(/\/\* Compact landscape navigation is one visual component[\s\S]*?\/\* One viewport-safe dialog layout./);
+ assert.ok(section,'one canonical landscape rail block required');
  const rules=section[0];
  assert.match(rules,/@media \(orientation:landscape\)\{/);
  assert.match(rules,/html:is\(\[data-device-class="phone"\],\[data-device-class="tablet"\]\)/);
  assert.match(rules,/--handheld-rail-width:76px/);
- for(const name of ['.mobile-action-nav','.mobile-action-scroll','.mobile-action-item','.mobile-action-item[data-active=true]','.mobile-action-separator']){
-  assert.ok(rules.includes(name),`shared ${name} missing`);
+ assert.match(rules,/\.kavvanah-layout>\[data-slot="sidebar"\]\{display:none!important\}/);
+ // Crucial regression: landscape at 774px must NOT depend on <=767px rules
+ // for centering, rounded active tile, icon/label layout or focus indicator.
+ const item=rules.match(/\n  \.mobile-action-item\{([^}]*)\}/)?.[1];
+ assert.ok(item,'canonical rail item missing');
+ for(const property of ['display:flex','align-items:center','justify-content:center','flex-direction:column',
+   'gap:5px','min-height:58px','width:100%','border-radius:8px','font-size:10px',
+   'text-align:center','color:var(--sidebar-muted)']){
+   assert.ok(item.includes(property),`missing shared landscape button style ${property}`);
+ }
+ for(const selector of ['.mobile-action-nav{','.mobile-action-scroll{',
+   '.mobile-action-item>span{','.mobile-action-item svg{',
+   '.mobile-action-item[data-active=true]{','.mobile-action-item:focus-visible{',
+   '.mobile-action-separator{']){
+   assert.ok(rules.includes(selector),`missing shared rail selector ${selector}`);
  }
  assert.match(rules,/overflow-y:auto;overflow-x:hidden/);
  assert.match(rules,/scroll-snap-type:y proximity/);
- assert.match(rules,/min-height:58px/);
- assert.match(rules,/\.kavvanah-layout>\[data-slot="sidebar"\]\{display:none!important\}/);
- assert.doesNotMatch(rules,/html\[data-device-class="tablet"\] \.mobile-action-(?:nav|scroll|item)/,'avoid tablet-only rail diverging again');
+ assert.match(rules,/background:var\(--sidebar-accent\);color:var\(--sidebar-accent-foreground\)/);
+ assert.doesNotMatch(rules,/html\[data-device-class="tablet"\] \.mobile-action-(?:nav|scroll|item)/,
+   'no alternate tablet rail style may be defined in the shared block');
+});
+
+test('the original short landscape fallback cannot override the common rail geometry',()=>{
+ const fallback=css.match(/\/\* Small landscape phones:[\s\S]*?\/\* Three reading layers/);
+ assert.ok(fallback,'existing short landscape fallback should remain');
+ // The short-height selector must only TURN ON the common component, not
+ // redefine its look with incomplete button properties.
+ assert.match(fallback[0],/\.mobile-action-nav\{display:block\}/);
+ assert.doesNotMatch(fallback[0],/\.mobile-action-item\{/);
+ assert.doesNotMatch(fallback[0],/\.mobile-action-scroll\{/);
+ assert.doesNotMatch(fallback[0],/border-radius:8px/);
 });
 
 test('viewport-bounded preferences dialog stays scrollable when keyboard shrinks height',()=>{
@@ -119,4 +145,22 @@ test('searchable prayer-selection sheet stays usable with the virtual keyboard',
  assert.match(component,/viewport\.removeEventListener\('scroll',update\)/);
  assert.match(css,/\[data-slot="sheet-content"\]\.mobile-prayer-sheet\{[\s\S]*?height:calc\(var\(--kav-visible-height,100dvh\)/);
  assert.match(css,/\.mobile-prayer-sheet \.mobile-prayer-results\{min-height:0;overflow-y:auto\}/);
+});
+
+// Guard against the double-centering regression shown in Settings at 774x571.
+test('dialogs use one positioning mechanism; no double translate or conflicting mobile overrides',()=>{
+ const block=css.split('/* One viewport-safe dialog layout.')[1]?.split('/* The prayer picker is a popup too.')[0];
+ assert.ok(block,'single viewport-safe dialog block');
+ for(const rule of ['transform:none!important','translate:none!important','margin:auto!important',
+   'inset-block:auto!important','inset-inline:auto!important','--kav-layout-width','--kav-layout-height']){
+   assert.ok(block.includes(rule),`missing geometry safeguard ${rule}`);
+ }
+ assert.doesNotMatch(block.split('@media')[1],/transform:translate\(/);
+ assert.doesNotMatch(css,/\.settings-dialog\.preferences-dialog\{(?:[^}]*)?(?:top:0!important|top:50%!important|transform:translate)/,
+   'separate portrait/landscape dialog centering rule reintroduced');
+ assert.equal((css.match(/\/\* One viewport-safe dialog layout\./g)||[]).length,1);
+ const component=read('components/ui/dialog.tsx');
+ assert.match(component,/window\.innerWidth/);
+ assert.match(component,/window\.innerHeight/);
+ assert.match(component,/window\.addEventListener\('resize',update\)/);
 });

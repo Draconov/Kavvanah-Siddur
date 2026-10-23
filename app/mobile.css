@@ -63,10 +63,6 @@
   .time-end{min-width:65px}
   .compass-panel{padding:18px 12px}
   .compass-dial{width:min(320px,88vw)}
-  .settings-dialog.preferences-dialog{border-radius:0!important;inset:0!important;transform:none!important;translate:0 0!important;top:0!important;left:0!important;width:100vw!important;height:100dvh;max-width:100vw!important;max-height:100dvh!important;padding:0!important;display:flex;flex-direction:column;overflow:hidden}
-  .preferences-dialog .preferences-scroll{flex:1;overflow:auto;min-height:0;padding:16px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
-  .preferences-dialog [data-slot=dialog-header]{flex-shrink:0;padding:20px 48px 16px 18px}
-  html[dir=rtl] .preferences-dialog [data-slot=dialog-header]{padding-left:48px;padding-right:18px}
   .settings-dialog.preferences-dialog [data-slot=dialog-close]{top:18px;inset-inline-end:14px}
 }
 
@@ -94,11 +90,8 @@
   .kavvanah-layout{--handheld-rail-width:76px}
   .kavvanah-layout>[data-slot="sidebar"]{display:none!important}
   .app-shell{width:calc(100% - var(--handheld-rail-width));flex:1;min-width:0;margin-inline-start:var(--handheld-rail-width);overflow-x:clip}
-  .mobile-action-nav{display:block;position:fixed;z-index:35;inset-inline-start:0;inset-inline-end:auto;top:0;bottom:0;width:var(--handheld-rail-width);height:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--sidebar);border-inline-end:1px solid var(--sidebar-border);border-top:0;box-shadow:3px 0 12px #0000000a}
-  .mobile-action-scroll{display:flex;flex-direction:column;align-items:stretch;gap:1px;height:100%;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y proximity;scrollbar-width:thin;padding:4px 3px}
-  .mobile-action-item{flex:0 0 auto;min-height:58px;min-width:0;width:100%;padding:5px 2px;margin:0;scroll-snap-align:start;font-size:10px}
-  .mobile-action-item[data-active=true]{box-shadow:inset var(--active-rail,3px) 0 0 var(--sidebar-primary)}
-  .mobile-action-separator{flex:0 0 1px;width:60%;height:1px;margin:5px auto;align-self:center}
+  /* Rail geometry and button styling are provided once below. */
+  .mobile-action-nav{display:block}
   .mobile-menu{display:none!important}
   .app-header{height:46px;min-height:46px;padding-inline:14px}
   .header-date,.header-divider{display:none}
@@ -150,8 +143,6 @@
   .compass-panel .compass-stats{gap:9px;padding-top:7px;flex-wrap:wrap}
   .compass-panel .compass-actions{flex-wrap:wrap;margin:0}
   .compass-panel>:is(.compass-status,.notice){grid-column:1/-1}
-  .settings-dialog.preferences-dialog{max-height:100dvh!important;height:100dvh;max-width:min(650px,calc(100vw - 80px))!important;width:min(650px,calc(100vw - 80px));display:flex;flex-direction:column;overflow:hidden}
-  .preferences-dialog .preferences-scroll{min-height:0;flex:1;overflow-y:auto}
   .mobile-prayer-sheet{height:100dvh;max-height:100dvh}
 }
 @media (orientation:landscape) and (max-height:650px) and (max-width:767px){
@@ -210,23 +201,6 @@ html[data-eink=true] .mobile-prayer-results>button{transition:none}
      is positioned from the midpoint of its own calendar cell. */
   html[dir="rtl"] .calendar-grid.days .calendar-event-dot{transform:translateX(50%)}
 
-  /* Portal dialogs otherwise inherit desktop widths and transforms, putting
-     their header or footer beyond short landscape viewports. Restrict both
-     axes and keep every dialog's contents independently scrollable. */
-  [data-slot="dialog-content"]:not(.preferences-dialog){
-    position:fixed!important;inset:auto!important;top:50%!important;
-    left:50%!important;right:auto!important;bottom:auto!important;
-    transform:translate(-50%,-50%)!important;translate:none!important;
-    width:min(560px,calc(100vw - 24px))!important;
-    max-width:calc(100vw - 24px)!important;
-    max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
-    overflow-x:hidden!important;overflow-y:auto!important;
-    overscroll-behavior:contain;box-sizing:border-box;
-    padding:clamp(12px,3vw,22px)!important;
-  }
-  [data-slot="dialog-content"]:not(.preferences-dialog) textarea{
-    max-height:min(34dvh,200px);min-height:75px;
-  }
   /* Radix handles collisions for Select popovers; these guards stop large
      option lists from exceeding the actual visual viewport on phones. */
   [data-slot="select-content"]{
@@ -250,20 +224,6 @@ html[data-eink=true] .mobile-prayer-results>button{transition:none}
 html[data-eink=true] .mobile-action-item[data-active=true]{box-shadow:inset 0 3px 0 var(--sidebar-primary)}
 @media (orientation:landscape) and (max-height:650px) and (max-width:1100px){
   html[data-eink=true] .mobile-action-item[data-active=true]{box-shadow:inset var(--active-rail,3px) 0 0 var(--sidebar-primary)}
-}
-
-/* In landscape the preferences dialog is a centered, viewport-bounded sheet,
-   not a portrait full-screen dialog with a 50%-offset left position. */
-@media (orientation:landscape) and (max-height:650px) and (max-width:1100px){
-  [data-slot="dialog-content"].preferences-dialog{
-    top:50%!important;left:50%!important;right:auto!important;bottom:auto!important;
-    transform:translate(-50%,-50%)!important;translate:none!important;
-    width:min(660px,calc(100vw - 100px))!important;
-    max-width:calc(100vw - 100px)!important;
-    height:calc(100dvh - 16px)!important;
-    max-height:calc(100dvh - 16px)!important;
-    overflow:hidden;
-  }
 }
 
 .calendar-grid.days .calendar-event-dot{display:none}
@@ -300,10 +260,12 @@ html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-inp
 }
 
 
-/* Mobile phone and tablet LANDSCAPE share ONE actual rail presentation.
-   A tablet's taller height must not change its active buttons, spacing or
-   scroll behavior. Desktop pointer layouts remain unchanged. */
+/* Compact landscape navigation is one visual component for ALL phone/tablet
+   widths. The rail's visibility comes from the two layout selectors, but its
+   icon/label/active-button styles never vary across the 767/768px breakpoint.
+   This fixes the missing flexbox centering + rounded active tile at 774px. */
 @media (orientation:landscape){
+  /* Device-class selection supplements the short-landscape fallback. */
   html:is([data-device-class="phone"],[data-device-class="tablet"]) .kavvanah-layout{--handheld-rail-width:76px}
   html:is([data-device-class="phone"],[data-device-class="tablet"]) .kavvanah-layout>[data-slot="sidebar"]{display:none!important}
   html:is([data-device-class="phone"],[data-device-class="tablet"]) .app-shell{
@@ -311,79 +273,120 @@ html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-inp
     margin-inline-start:var(--handheld-rail-width);overflow-x:clip
   }
   html:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-menu{display:none!important}
-  html:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-action-nav{
-    display:block;position:fixed;z-index:35;inset-inline-start:0;inset-inline-end:auto;
-    top:0;bottom:0;width:var(--handheld-rail-width);height:auto;
-    padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-    background:var(--sidebar);color:var(--sidebar-foreground);
-    border-inline-end:1px solid var(--sidebar-border);border-top:0;
-    box-shadow:3px 0 12px #0000000a
-  }
-  html:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-action-scroll{
-    display:flex;flex-direction:column;align-items:stretch;gap:1px;height:100%;
-    overflow-y:auto;overflow-x:hidden;scroll-snap-type:y proximity;
-    scrollbar-width:thin;padding:4px 3px
-  }
-  html:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-action-item{
-    flex:0 0 auto;min-height:58px;min-width:0;width:100%;
-    padding:5px 2px;margin:0;scroll-snap-align:start;font-size:10px
-  }
-  html:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-action-item[data-active=true]{
-    background:var(--sidebar-accent);color:var(--sidebar-accent-foreground);
-    box-shadow:inset var(--active-rail,3px) 0 0 var(--sidebar-primary)
-  }
-  html:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-action-separator{
-    flex:0 0 1px;width:60%;height:1px;margin:5px auto;align-self:center
-  }
+  html:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-action-nav{display:block}
   html:is([data-device-class="phone"],[data-device-class="tablet"]) main{padding-bottom:16px}
-  html[data-eink=true]:is([data-device-class="phone"],[data-device-class="tablet"]) .mobile-action-nav{box-shadow:none}
+
+  /* SINGLE full style contract: no phone/tablet or <=767/>=768 variants. */
+  .mobile-action-nav{
+    position:fixed;z-index:35;inset-inline-start:0;inset-inline-end:auto;
+    top:0;bottom:0;width:76px;height:auto;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    background:var(--sidebar);color:var(--sidebar-foreground);
+    border:0;border-inline-end:1px solid var(--sidebar-border);
+    box-shadow:3px 0 12px #0000000a;
+  }
+  .mobile-action-scroll{
+    height:100%;display:flex;flex-direction:column;align-items:stretch;gap:1px;
+    overflow-y:auto;overflow-x:hidden;scroll-snap-type:y proximity;
+    scrollbar-width:none;overscroll-behavior-y:contain;
+    padding:4px 3px;-webkit-overflow-scrolling:touch;
+  }
+  .mobile-action-scroll::-webkit-scrollbar{display:none;width:0;height:0}
+  .mobile-action-item{
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    flex:0 0 auto;gap:5px;min-width:0;min-height:58px;width:100%;
+    margin:0;padding:5px 2px;border:0;border-radius:8px;
+    background:transparent;color:var(--sidebar-muted);
+    scroll-snap-align:start;font-size:10px;font-weight:500;line-height:1.16;
+    text-align:center;white-space:normal;overflow-wrap:anywhere;
+  }
+  .mobile-action-item>span{
+    display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+    overflow:hidden;max-width:100%;min-height:12px;
+  }
+  .mobile-action-item svg{flex-shrink:0;color:inherit}
+  .mobile-action-item[data-active=true]{
+    background:var(--sidebar-accent);color:var(--sidebar-accent-foreground);
+    box-shadow:inset 3px 0 0 var(--sidebar-primary);font-weight:700;
+  }
+  .mobile-action-item:focus-visible{
+    outline:2px solid var(--sidebar-ring);outline-offset:-3px;
+  }
+  .mobile-action-separator{
+    flex:0 0 1px;width:60%;height:1px;margin:5px auto;align-self:center;
+    background:var(--sidebar-border);
+  }
+  html[data-eink=true] .mobile-action-nav{box-shadow:none}
+  html[data-eink=true] .mobile-action-item[data-active=true]{box-shadow:inset 3px 0 0 var(--sidebar-primary)}
 }
 
-/* Unified viewport-safe dialogs. Radix portals have viewport positioning,
-   not positioning relative to the app-shell/sidebar. The geometric variables
-   are measured only while a dialog is mounted; no hardware fingerprinting.
-   A single center+max-size layout replaces competing logical insets, margins,
-   transforms and 100dvh fullscreen rules from older mobile styles. */
+/* One viewport-safe dialog layout. Do not combine CSS translate-X/Y (used by
+   the standard Radix/Tailwind dialog) with transform:translate(-50%,-50%):
+   both apply and shift the popup a second time. This was the reason only the
+   right half of Settings was visible at 774x571 and other compact screens.
+
+   Keep the dialog INSIDE four visible-viewport edges and use auto margins to
+   center it. There is no transform/translate anywhere in the final contract,
+   including while the keyboard is open. Other mobile styles must not set
+   separate positioning for .preferences-dialog. */
 @media (max-width:1500px), (max-height:800px){
-  [data-slot="dialog-content"][data-state]{
-    position:fixed!important;inset:auto!important;
-    inset-block-start:auto!important;inset-block-end:auto!important;
-    inset-inline-start:auto!important;inset-inline-end:auto!important;
-    top:var(--kav-visible-center-y,50dvh)!important;
-    left:var(--kav-visible-center-x,50vw)!important;
-    right:auto!important;bottom:auto!important;
-    transform:translate(-50%,-50%)!important;translate:none!important;
-    margin:0!important;min-width:0;box-sizing:border-box;
-    width:min(560px,calc(var(--kav-visible-width,100vw) - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)))!important;
+  [data-slot="dialog-content"]{
+    position:fixed!important;
+    inset:auto!important;
+    inset-block:auto!important;
+    inset-inline:auto!important;
+    top:calc(var(--kav-visible-top,0px) + max(8px,env(safe-area-inset-top,0px)))!important;
+    left:calc(var(--kav-visible-left,0px) + max(8px,env(safe-area-inset-left,0px)))!important;
+    right:calc(max(0px,var(--kav-layout-width,100vw) - var(--kav-visible-left,0px) - var(--kav-visible-width,100vw)) + max(8px,env(safe-area-inset-right,0px)))!important;
+    bottom:calc(max(0px,var(--kav-layout-height,100dvh) - var(--kav-visible-top,0px) - var(--kav-visible-height,100dvh)) + max(8px,env(safe-area-inset-bottom,0px)))!important;
+    margin:auto!important;
+    transform:none!important;
+    translate:none!important;
+    width:min(560px,calc(var(--kav-visible-width,100vw) - 24px))!important;
+    min-width:0!important;
     max-width:calc(var(--kav-visible-width,100vw) - 16px)!important;
-    height:auto!important;min-height:0!important;
-    max-height:max(0px,calc(var(--kav-visible-height,100dvh) - 16px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;
-    overflow-x:hidden!important;overflow-y:auto!important;
+    height:max-content!important;
+    min-height:0!important;
+    max-height:max(0px,calc(var(--kav-visible-height,100dvh) - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
     overscroll-behavior:contain;
+    box-sizing:border-box;
     padding:clamp(12px,3vw,22px)!important;
   }
   [data-slot="dialog-content"].preferences-dialog{
-    width:min(680px,calc(var(--kav-visible-width,100vw) - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)))!important;
-    max-width:calc(var(--kav-visible-width,100vw) - 16px)!important;
-    height:min(760px,max(0px,calc(var(--kav-visible-height,100dvh) - 16px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))))!important;
-    max-height:max(0px,calc(var(--kav-visible-height,100dvh) - 16px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;
-    display:flex!important;flex-direction:column;gap:0!important;
-    padding:0!important;overflow:hidden!important;border-radius:10px!important;
+    width:min(680px,calc(var(--kav-visible-width,100vw) - 24px))!important;
+    height:min(760px,max(0px,calc(var(--kav-visible-height,100dvh) - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))))!important;
+    max-height:max(0px,calc(var(--kav-visible-height,100dvh) - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;
+    display:flex!important;
+    flex-direction:column;
+    gap:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    border-radius:10px!important;
   }
   [data-slot="dialog-content"].preferences-dialog [data-slot="dialog-header"]{
-    flex:0 0 auto;min-height:0;padding:clamp(10px,2vw,20px);
-    padding-inline-end:50px;overflow-wrap:anywhere
+    flex:0 0 auto;
+    min-height:0;
+    padding:clamp(10px,2vw,20px);
+    padding-inline-end:50px;
+    overflow-wrap:anywhere;
   }
   [data-slot="dialog-content"].preferences-dialog .preferences-scroll{
-    flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;
-    overscroll-behavior:contain;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))
+    flex:1;
+    min-height:0;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
   }
   [data-slot="dialog-content"] [data-slot="dialog-footer"]{flex-shrink:0;flex-wrap:wrap}
   [data-slot="dialog-content"] textarea{max-height:min(35dvh,200px)}
   [data-slot="select-content"]{
     max-width:calc(var(--kav-visible-width,100vw) - 16px)!important;
     max-height:min(var(--radix-select-content-available-height,65dvh),65dvh)!important;
-    overscroll-behavior:contain
+    overscroll-behavior:contain;
   }
 }
 @media (max-height:500px){

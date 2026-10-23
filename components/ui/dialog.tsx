@@ -67,6 +67,8 @@ function DialogContent({
     const update=()=>{
       const element=contentRef.current
       if(!element)return
+      element.style.setProperty('--kav-layout-height',`${window.innerHeight}px`)
+      element.style.setProperty('--kav-layout-width',`${window.innerWidth}px`)
       element.style.setProperty('--kav-visible-height',`${viewport.height}px`)
       element.style.setProperty('--kav-visible-width',`${viewport.width}px`)
       element.style.setProperty('--kav-visible-top',`${viewport.offsetTop}px`)
@@ -77,9 +79,11 @@ function DialogContent({
     update()
     viewport.addEventListener('resize',update)
     viewport.addEventListener('scroll',update)
+    window.addEventListener('resize',update)
     return()=>{
       viewport.removeEventListener('resize',update)
       viewport.removeEventListener('scroll',update)
+      window.removeEventListener('resize',update)
     }
   },[])
   return (
