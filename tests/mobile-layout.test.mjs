@@ -66,40 +66,51 @@ test('calendar renders actual event markers on narrow phone and tablet viewports
  assert.doesNotMatch(read('app/globals.css'),/calendar-day:has\(small\)::after/);
 });
 
-test('all compact modal dialogs and selects honor viewport bounds',()=>{
- assert.match(css,/\[data-slot="dialog-content"\]:not\(\.preferences-dialog\)/);
- assert.match(css,/max-height:calc\(var\(--kav-visible-height,100dvh\)/);
- assert.match(css,/\.preferences-dialog\{[\s\S]*?top:50%!important;left:50%!important;/);
+test('compact dialog and select controls honor the actual visual viewport',()=>{
+ const component=read('components/ui/dialog.tsx');
+ assert.match(css,/\[data-slot="dialog-content"\]\[data-state\]\{/);
+ assert.match(css,/top:var\(--kav-visible-center-y,50dvh\)!important/);
+ assert.match(css,/left:var\(--kav-visible-center-x,50vw\)!important/);
+ assert.match(css,/transform:translate\(-50%,-50%\)!important/);
+ assert.match(css,/max-height:max\(0px,calc\(var\(--kav-visible-height,100dvh\)/);
+ assert.match(css,/width:min\(560px,calc\(var\(--kav-visible-width,100vw\)/);
+ assert.match(css,/\[data-slot="dialog-content"\]\.preferences-dialog\{[\s\S]*?overflow:hidden!important/);
  assert.match(css,/\[data-slot="select-content"\]/);
  assert.match(css,/\.time-zone-panel\{position:relative!important/);
  assert.match(read('components/siddur/Controls.tsx'),/collisionPadding=\{12\}/);
+ for(const v of ['--kav-visible-height','--kav-visible-width','--kav-visible-center-x','--kav-visible-center-y','viewport.offsetTop','viewport.offsetLeft']){
+  assert.ok(component.includes(v),`viewport measurements missing ${v}`);
+ }
 });
 
-test('tablet landscape uses the exact phone rail, including taller and wider touch tablets',()=>{
- assert.match(css,/orientation:landscape\) and \(max-width:1500px\)/);
- assert.match(css,/html\[data-device-class="tablet"\] \.kavvanah-layout\{--handheld-rail-width:76px\}/);
- assert.doesNotMatch(css,/--handheld-rail-width:84px/);
- assert.match(css,/html\[data-device-class="tablet"\] \.kavvanah-layout>\[data-slot="sidebar"\]\{display:none!important\}/);
- assert.match(css,/html\[data-device-class="tablet"\] \.mobile-action-nav\{[\s\S]*?display:block/);
- assert.match(css,/html\[data-device-class="tablet"\] \.mobile-action-scroll\{[\s\S]*?flex-direction:column/);
- assert.match(css,/html\[data-device-class="tablet"\] \.mobile-action-item\{[\s\S]*?min-height:58px/);
- assert.match(css,/html\[data-device-class="tablet"\] \.mobile-action-separator\{/);
+test('tablet landscape and phone landscape use exactly the same responsive rail rules',()=>{
+ const section=css.match(/\/\* Mobile phone and tablet LANDSCAPE[\s\S]*?\/\* Unified viewport-safe dialogs/);
+ assert.ok(section,'shared phone/tablet rail missing');
+ const rules=section[0];
+ assert.match(rules,/@media \(orientation:landscape\)\{/);
+ assert.match(rules,/html:is\(\[data-device-class="phone"\],\[data-device-class="tablet"\]\)/);
+ assert.match(rules,/--handheld-rail-width:76px/);
+ for(const name of ['.mobile-action-nav','.mobile-action-scroll','.mobile-action-item','.mobile-action-item[data-active=true]','.mobile-action-separator']){
+  assert.ok(rules.includes(name),`shared ${name} missing`);
+ }
+ assert.match(rules,/overflow-y:auto;overflow-x:hidden/);
+ assert.match(rules,/scroll-snap-type:y proximity/);
+ assert.match(rules,/min-height:58px/);
+ assert.match(rules,/\.kavvanah-layout>\[data-slot="sidebar"\]\{display:none!important\}/);
+ assert.doesNotMatch(rules,/html\[data-device-class="tablet"\] \.mobile-action-(?:nav|scroll|item)/,'avoid tablet-only rail diverging again');
 });
 
-test('every dialog is viewport-bounded and keyboard-aware without transforming out of reach',()=>{
+test('viewport-bounded preferences dialog stays scrollable when keyboard shrinks height',()=>{
  const component=read('components/ui/dialog.tsx');
  assert.match(component,/window\.visualViewport/);
  assert.match(component,/viewport\.addEventListener\('resize',update\)/);
  assert.match(component,/viewport\.addEventListener\('scroll',update\)/);
  assert.match(component,/viewport\.removeEventListener\('resize',update\)/);
  assert.match(component,/ref=\{contentRef\}/);
- assert.match(css,/\[data-slot="dialog-content"\]\[data-state\]\{/);
- assert.match(css,/inset-block-start:calc\(var\(--kav-visible-top,0px\)/);
- assert.match(css,/max-height:calc\(var\(--kav-visible-height,100dvh\)/);
- assert.match(css,/\[data-slot="dialog-content"\]\.preferences-dialog\{[\s\S]*?overflow:hidden!important/);
+ assert.match(css,/height:min\(760px,max\(0px,calc\(var\(--kav-visible-height,100dvh\)/);
  assert.match(css,/\.preferences-dialog \.preferences-scroll\{[\s\S]*?overflow-y:auto/);
+ assert.match(css,/\[data-slot="dialog-content"\]\.preferences-dialog \.preferences-scroll\{[\s\S]*?overflow-y:auto/);
 });
-
 
 test('searchable prayer-selection sheet stays usable with the virtual keyboard',()=>{
  const component=read('components/ui/sheet.tsx');

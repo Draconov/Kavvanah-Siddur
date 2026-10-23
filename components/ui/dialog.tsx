@@ -68,7 +68,11 @@ function DialogContent({
       const element=contentRef.current
       if(!element)return
       element.style.setProperty('--kav-visible-height',`${viewport.height}px`)
+      element.style.setProperty('--kav-visible-width',`${viewport.width}px`)
       element.style.setProperty('--kav-visible-top',`${viewport.offsetTop}px`)
+      element.style.setProperty('--kav-visible-left',`${viewport.offsetLeft}px`)
+      element.style.setProperty('--kav-visible-center-x',`${viewport.offsetLeft + viewport.width / 2}px`)
+      element.style.setProperty('--kav-visible-center-y',`${viewport.offsetTop + viewport.height / 2}px`)
     }
     update()
     viewport.addEventListener('resize',update)
