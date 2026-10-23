@@ -321,78 +321,81 @@ html[data-device-class="tablet"]:is([data-device-input="touch"],[data-device-inp
   html[data-eink=true] .mobile-action-item[data-active=true]{box-shadow:inset 3px 0 0 var(--sidebar-primary)}
 }
 
-/* One viewport-safe dialog layout. Do not combine CSS translate-X/Y (used by
-   the standard Radix/Tailwind dialog) with transform:translate(-50%,-50%):
-   both apply and shift the popup a second time. This was the reason only the
-   right half of Settings was visible at 774x571 and other compact screens.
-
-   Keep the dialog INSIDE four visible-viewport edges and use auto margins to
-   center it. There is no transform/translate anywhere in the final contract,
-   including while the keyboard is open. Other mobile styles must not set
-   separate positioning for .preferences-dialog. */
-@media (max-width:1500px), (max-height:800px){
-  [data-slot="dialog-content"]{
-    position:fixed!important;
-    inset:auto!important;
-    inset-block:auto!important;
-    inset-inline:auto!important;
-    top:calc(var(--kav-visible-top,0px) + max(8px,env(safe-area-inset-top,0px)))!important;
-    left:calc(var(--kav-visible-left,0px) + max(8px,env(safe-area-inset-left,0px)))!important;
-    right:calc(max(0px,var(--kav-layout-width,100vw) - var(--kav-visible-left,0px) - var(--kav-visible-width,100vw)) + max(8px,env(safe-area-inset-right,0px)))!important;
-    bottom:calc(max(0px,var(--kav-layout-height,100dvh) - var(--kav-visible-top,0px) - var(--kav-visible-height,100dvh)) + max(8px,env(safe-area-inset-bottom,0px)))!important;
-    margin:auto!important;
-    transform:none!important;
-    translate:none!important;
-    width:min(560px,calc(var(--kav-visible-width,100vw) - 24px))!important;
-    min-width:0!important;
-    max-width:calc(var(--kav-visible-width,100vw) - 16px)!important;
-    height:max-content!important;
-    min-height:0!important;
-    max-height:max(0px,calc(var(--kav-visible-height,100dvh) - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;
-    overflow-x:hidden!important;
-    overflow-y:auto!important;
-    overscroll-behavior:contain;
-    box-sizing:border-box;
-    padding:clamp(12px,3vw,22px)!important;
+/* The portal owns dialog placement. It is fixed to the VisualViewport by
+   components/ui/dialog.tsx, not to the app shell or a device-width breakpoint.
+   No percentage centering offsets or translation positioning is needed on Content. */
+[data-slot="dialog-viewport"]{
+  position:fixed;inset:0;z-index:50;display:flex;align-items:center;
+  justify-content:center;box-sizing:border-box;min-width:0;min-height:0;
+  padding:max(16px,env(safe-area-inset-top,0px))
+          max(16px,env(safe-area-inset-right,0px))
+          max(16px,env(safe-area-inset-bottom,0px))
+          max(16px,env(safe-area-inset-left,0px));
+  pointer-events:none;
+}
+[data-slot="dialog-viewport"]>[data-slot="dialog-content"]{
+  position:relative!important;inset:auto!important;
+  top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;
+  translate:none!important;transform:none!important;
+  margin:0!important;box-sizing:border-box;
+  width:100%!important;min-width:0!important;
+  max-width:min(560px,100%)!important;
+  min-height:0!important;max-height:100%!important;
+  overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;
+}
+[data-slot="dialog-viewport"]>[data-slot="dialog-content"].preferences-dialog{
+  width:100%!important;max-width:min(680px,100%)!important;
+  height:min(760px,100%)!important;max-height:100%!important;
+  display:flex!important;flex-direction:column;
+  gap:0!important;padding:0!important;overflow:hidden!important;
+}
+[data-slot="dialog-viewport"] .preferences-dialog>[data-slot="dialog-header"]{
+  flex:0 0 auto;min-height:0;
+  padding:clamp(12px,2vw,22px);
+  padding-inline-end:50px;
+  overflow-wrap:anywhere;
+}
+[data-slot="dialog-viewport"] .preferences-dialog .preferences-scroll{
+  flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;
+  overscroll-behavior:contain;
+  padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+}
+[data-slot="dialog-viewport"] [data-slot="dialog-footer"]{
+  flex-shrink:0;flex-wrap:wrap;
+}
+[data-slot="dialog-viewport"] textarea{max-height:min(35dvh,200px)}
+/* A phone or short landscape window uses almost all of its actual available
+   viewport. The header/close stay visible while the settings body scrolls. */
+@media (max-width:800px), (max-height:600px){
+  [data-slot="dialog-viewport"]{
+    padding:max(8px,env(safe-area-inset-top,0px))
+            max(8px,env(safe-area-inset-right,0px))
+            max(8px,env(safe-area-inset-bottom,0px))
+            max(8px,env(safe-area-inset-left,0px));
   }
-  [data-slot="dialog-content"].preferences-dialog{
-    width:min(680px,calc(var(--kav-visible-width,100vw) - 24px))!important;
-    height:min(760px,max(0px,calc(var(--kav-visible-height,100dvh) - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))))!important;
-    max-height:max(0px,calc(var(--kav-visible-height,100dvh) - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;
-    display:flex!important;
-    flex-direction:column;
-    gap:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-    border-radius:10px!important;
+  [data-slot="dialog-viewport"]>[data-slot="dialog-content"],
+  [data-slot="dialog-viewport"]>[data-slot="dialog-content"].preferences-dialog{
+    max-width:100%!important;
   }
-  [data-slot="dialog-content"].preferences-dialog [data-slot="dialog-header"]{
-    flex:0 0 auto;
-    min-height:0;
-    padding:clamp(10px,2vw,20px);
-    padding-inline-end:50px;
-    overflow-wrap:anywhere;
+  [data-slot="dialog-viewport"]>[data-slot="dialog-content"].preferences-dialog{
+    height:100%!important;
   }
-  [data-slot="dialog-content"].preferences-dialog .preferences-scroll{
-    flex:1;
-    min-height:0;
-    overflow-x:hidden;
-    overflow-y:auto;
-    overscroll-behavior:contain;
-    padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  [data-slot="dialog-viewport"] .preferences-dialog>[data-slot="dialog-header"]{
+    padding:12px 14px;
+    padding-inline-end:48px;
   }
-  [data-slot="dialog-content"] [data-slot="dialog-footer"]{flex-shrink:0;flex-wrap:wrap}
-  [data-slot="dialog-content"] textarea{max-height:min(35dvh,200px)}
+  [data-slot="dialog-viewport"] .preferences-dialog .preferences-scroll{
+    padding:12px 14px max(16px,env(safe-area-inset-bottom,0px));
+  }
   [data-slot="select-content"]{
-    max-width:calc(var(--kav-visible-width,100vw) - 16px)!important;
+    max-width:calc(100vw - 16px)!important;
     max-height:min(var(--radix-select-content-available-height,65dvh),65dvh)!important;
     overscroll-behavior:contain;
   }
 }
-@media (max-height:500px){
-  [data-slot="dialog-content"].preferences-dialog [data-slot="dialog-header"]{padding-block:8px}
-  [data-slot="dialog-content"].preferences-dialog [data-slot="dialog-title"]{font-size:19px}
-  [data-slot="dialog-content"].preferences-dialog .preferences-scroll{padding:10px}
+@media(max-height:500px){
+  [data-slot="dialog-viewport"] .preferences-dialog [data-slot="dialog-title"]{font-size:19px}
 }
 
 /* The prayer picker is a popup too. Keep its searchable sheet fully inside

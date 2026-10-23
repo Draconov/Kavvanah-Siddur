@@ -66,27 +66,28 @@ test('calendar renders actual event markers on narrow phone and tablet viewports
  assert.doesNotMatch(read('app/globals.css'),/calendar-day:has\(small\)::after/);
 });
 
-test('compact dialog and select controls honor the actual visual viewport',()=>{
+test('popup uses its own visible-viewport centering host, not page-relative positioning',()=>{
  const component=read('components/ui/dialog.tsx');
- assert.match(css,/\[data-slot="dialog-content"\]\{/);
- assert.match(css,/top:calc\(var\(--kav-visible-top,0px\)/);
- assert.match(css,/left:calc\(var\(--kav-visible-left,0px\)/);
- assert.match(css,/transform:none!important/);
- assert.match(css,/translate:none!important/);
- assert.match(css,/margin:auto!important/);
- assert.match(css,/max-height:max\(0px,calc\(var\(--kav-visible-height,100dvh\)/);
- assert.match(css,/width:min\(560px,calc\(var\(--kav-visible-width,100vw\)/);
- assert.match(css,/\[data-slot="dialog-content"\]\.preferences-dialog\{[\s\S]*?overflow:hidden!important/);
- assert.match(css,/\[data-slot="select-content"\]/);
+ assert.match(component,/data-slot="dialog-viewport"/);
+ assert.match(component,/ref=\{viewportRef\}/);
+ assert.match(component,/window\.visualViewport/);
+ for(const key of ['viewport?.offsetLeft','viewport?.offsetTop','viewport?.width','viewport?.height',
+  'host.style.left','host.style.top','host.style.width','host.style.height']){
+  assert.ok(component.includes(key),`missing live viewport positioning ${key}`);
+ }
+ assert.match(css,/\[data-slot="dialog-viewport"\]\{[\s\S]*?display:flex;align-items:center;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\]\{[\s\S]*?justify-content:center;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\]>\[data-slot="dialog-content"\]\{[\s\S]*?position:relative!important;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\]>\[data-slot="dialog-content"\]\{[\s\S]*?translate:none!important;transform:none!important;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\]>\[data-slot="dialog-content"\]\.preferences-dialog\{[\s\S]*?overflow:hidden!important;/);
  assert.match(css,/\.time-zone-panel\{position:relative!important/);
  assert.match(read('components/siddur/Controls.tsx'),/collisionPadding=\{12\}/);
- for(const v of ['--kav-visible-height','--kav-visible-width','--kav-visible-center-x','--kav-visible-center-y','viewport.offsetTop','viewport.offsetLeft']){
-  assert.ok(component.includes(v),`viewport measurements missing ${v}`);
- }
+ // No desktop-style 50% offset or translation remains in the component.
+ assert.doesNotMatch(component,/top-\[50%\]|left-\[50%\]|translate-x-\[-50%\]|translate-y-\[-50%\]|zoom-in-95|zoom-out-95/);
 });
 
 test('phone and tablet landscape share one COMPLETE rail style across the 767px breakpoint',()=>{
- const section=css.match(/\/\* Compact landscape navigation is one visual component[\s\S]*?\/\* One viewport-safe dialog layout./);
+ const section=css.match(/\/\* Compact landscape navigation is one visual component[\s\S]*?\/\* The portal owns dialog placement./);
  assert.ok(section,'one canonical landscape rail block required');
  const rules=section[0];
  assert.match(rules,/@media \(orientation:landscape\)\{/);
@@ -126,16 +127,16 @@ test('the original short landscape fallback cannot override the common rail geom
  assert.doesNotMatch(fallback[0],/border-radius:8px/);
 });
 
-test('viewport-bounded preferences dialog stays scrollable when keyboard shrinks height',()=>{
+test('settings use full visible phone space and keep a scrolling body when keyboard opens',()=>{
  const component=read('components/ui/dialog.tsx');
- assert.match(component,/window\.visualViewport/);
- assert.match(component,/viewport\.addEventListener\('resize',update\)/);
- assert.match(component,/viewport\.addEventListener\('scroll',update\)/);
- assert.match(component,/viewport\.removeEventListener\('resize',update\)/);
- assert.match(component,/ref=\{contentRef\}/);
- assert.match(css,/height:min\(760px,max\(0px,calc\(var\(--kav-visible-height,100dvh\)/);
- assert.match(css,/\.preferences-dialog \.preferences-scroll\{[\s\S]*?overflow-y:auto/);
- assert.match(css,/\[data-slot="dialog-content"\]\.preferences-dialog \.preferences-scroll\{[\s\S]*?overflow-y:auto/);
+ assert.match(component,/viewport\?\.addEventListener\('resize',update\)/);
+ assert.match(component,/viewport\?\.addEventListener\('scroll',update\)/);
+ assert.match(component,/viewport\?\.removeEventListener\('resize',update\)/);
+ assert.match(component,/window\.addEventListener\('resize',update\)/);
+ assert.match(css,/@media \(max-width:800px\), \(max-height:600px\)\{/);
+ assert.match(css,/\[data-slot="dialog-viewport"\]>\[data-slot="dialog-content"\]\.preferences-dialog\{\s*height:100%!important;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\] \.preferences-dialog \.preferences-scroll\{[\s\S]*?overflow-y:auto;/);
+ assert.match(css,/\[data-slot="dialog-viewport"\] \.preferences-dialog>\[data-slot="dialog-header"\]\{[\s\S]*?flex:0 0 auto/);
 });
 
 test('searchable prayer-selection sheet stays usable with the virtual keyboard',()=>{
@@ -147,20 +148,18 @@ test('searchable prayer-selection sheet stays usable with the virtual keyboard',
  assert.match(css,/\.mobile-prayer-sheet \.mobile-prayer-results\{min-height:0;overflow-y:auto\}/);
 });
 
-// Guard against the double-centering regression shown in Settings at 774x571.
-test('dialogs use one positioning mechanism; no double translate or conflicting mobile overrides',()=>{
- const block=css.split('/* One viewport-safe dialog layout.')[1]?.split('/* The prayer picker is a popup too.')[0];
- assert.ok(block,'single viewport-safe dialog block');
- for(const rule of ['transform:none!important','translate:none!important','margin:auto!important',
-   'inset-block:auto!important','inset-inline:auto!important','--kav-layout-width','--kav-layout-height']){
-   assert.ok(block.includes(rule),`missing geometry safeguard ${rule}`);
- }
- assert.doesNotMatch(block.split('@media')[1],/transform:translate\(/);
- assert.doesNotMatch(css,/\.settings-dialog\.preferences-dialog\{(?:[^}]*)?(?:top:0!important|top:50%!important|transform:translate)/,
-   'separate portrait/landscape dialog centering rule reintroduced');
- assert.equal((css.match(/\/\* One viewport-safe dialog layout\./g)||[]).length,1);
+// Regression: the Samsung Galaxy A55 360px viewport must never show only
+// half of Settings. Center with ONE parent flexbox, not multiple CSS shifts.
+test('no duplicate centering or alternate dialog positioning survives',()=>{
  const component=read('components/ui/dialog.tsx');
- assert.match(component,/window\.innerWidth/);
- assert.match(component,/window\.innerHeight/);
- assert.match(component,/window\.addEventListener\('resize',update\)/);
+ const block=css.split('/* The portal owns dialog placement.')[1]?.split('/* The prayer picker is a popup too.')[0];
+ assert.ok(block,'canonical dialog viewport block missing');
+ assert.equal((css.match(/\/\* The portal owns dialog placement\./g)||[]).length,1);
+ assert.match(block,/pointer-events:none;/);
+ assert.match(component,/fixed inset-0 z-50 pointer-events-auto bg-black\/50/);
+ assert.match(component,/relative pointer-events-auto z-50/);
+ assert.match(block,/margin:0!important/);
+ assert.match(block,/inset:auto!important/);
+ assert.doesNotMatch(block.replace(/\/\*[\s\S]*?\*\//g,''),/left:50%|top:50%|transform:translate\(/);
+ assert.doesNotMatch(component,/left-\[50%\]|top-\[50%\]|translate-x-\[-50%\]|translate-y-\[-50%\]/);
 });
